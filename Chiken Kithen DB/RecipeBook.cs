@@ -38,6 +38,20 @@ namespace Chiken_Kithen_DB
             Recipes.Add(food);
             SaveChanges();
         }
+        public void RewriteRecipe(Food _food, string changeFoodName)
+        {
+            foreach(Food food in Recipes)
+            {
+                if(food.Name == changeFoodName)
+                {
+                    food.Ingredients = _food.Ingredients;
+                    food.Count = _food.Count;
+                    food.Name = _food.Name;
+                    SaveChanges();
+                    return;
+                }
+            }
+        }
         public void DeleteRecipe(string _foodName)
         {
             foreach(Food food in Recipes)

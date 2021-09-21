@@ -36,6 +36,19 @@ namespace Chiken_Kithen_DB
             Ingredients.Add(ingredient);
             SaveChanges();
         }
+        public void RewriteIngredientCount(Ingredient _ingredient, string chengeIngredientName)
+        {
+            foreach (Ingredient ingredient in Ingredients)
+            {
+                if (ingredient.Name == chengeIngredientName)
+                {
+                    ingredient.Name = _ingredient.Name;
+                    ingredient.Count = _ingredient.Count;
+                    SaveChanges();
+                    return;
+                }
+            }
+        }
         public void DeleteRecipe(string _ingredientName)
         {
             foreach (Ingredient ingredient in Ingredients)
