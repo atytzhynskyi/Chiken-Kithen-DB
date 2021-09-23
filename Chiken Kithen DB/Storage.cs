@@ -25,10 +25,7 @@ namespace Chiken_Kithen_DB
             {
                 BaseIngredients.Add(new Ingredient(i, 10));
             }
-            foreach(Ingredient ingredient in BaseIngredients)
-            {
-                Ingredients.Add(ingredient);
-            }
+            Ingredients.AddRange(BaseIngredients);
             SaveChanges();
         }
         public void AddNewIngredient(Ingredient ingredient)
@@ -38,15 +35,14 @@ namespace Chiken_Kithen_DB
         }
         public void RewriteIngredientCount(Ingredient _ingredient, string chengeIngredientName)
         {
-            foreach (Ingredient ingredient in Ingredients)
+            foreach (var ingredient in from Ingredient ingredient in Ingredients
+                                       where ingredient.Name == chengeIngredientName
+                                       select ingredient)
             {
-                if (ingredient.Name == chengeIngredientName)
-                {
-                    ingredient.Name = _ingredient.Name;
-                    ingredient.Count = _ingredient.Count;
-                    SaveChanges();
-                    return;
-                }
+                ingredient.Name = _ingredient.Name;
+                ingredient.Count = _ingredient.Count;
+                SaveChanges();
+                return;
             }
         }
         public void DeleteRecipe(string _ingredientName)

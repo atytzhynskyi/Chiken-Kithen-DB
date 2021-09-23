@@ -40,16 +40,15 @@ namespace Chiken_Kithen_DB
         }
         public void RewriteRecipe(Food _food, string changeFoodName)
         {
-            foreach(Food food in Recipes)
+            foreach (var food in from Food food in Recipes
+                                 where food.Name == changeFoodName
+                                 select food)
             {
-                if(food.Name == changeFoodName)
-                {
-                    food.Ingredients = _food.Ingredients;
-                    food.Count = _food.Count;
-                    food.Name = _food.Name;
-                    SaveChanges();
-                    return;
-                }
+                food.Ingredients = _food.Ingredients;
+                food.Count = _food.Count;
+                food.Name = _food.Name;
+                SaveChanges();
+                return;
             }
         }
         public void DeleteRecipe(string _foodName)
