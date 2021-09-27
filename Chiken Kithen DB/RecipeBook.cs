@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
+using CsvHelper;
+using CsvHelper.Configuration;
 using Microsoft.EntityFrameworkCore;
 
 namespace Chiken_Kithen_DB
@@ -19,18 +23,22 @@ namespace Chiken_Kithen_DB
         }
         public void AddBaseRecipe()
         {
-            Recipes.Add(new Food("Emperor Chicken", 0, new Ingredient("Fat Cat Chiken"), new Ingredient("Spicy Sauce"), new Ingredient("Tuna Cake")));
-            Recipes.Add(new Food("Fat Cat Chiken", 0, new Ingredient("Princess Chicken"), new Ingredient("Youth Sauce"), new Ingredient("Fries"), new Ingredient("Tuna Cake")));
-            Recipes.Add(new Food("Princess Chicken", 0, new Ingredient("Chicken"), new Ingredient("Youth Sauce")));
-            Recipes.Add(new Food("Youth Sauce", 0, new Ingredient("Asparagus"), new Ingredient("Milk"), new Ingredient("Honey")));
-            Recipes.Add(new Food("Spicy Sauce", 0, new Ingredient("Paprika"), new Ingredient("Garlic"), new Ingredient("Water")));
-            Recipes.Add(new Food("Omega Sauce", 0, new Ingredient("Lemon"), new Ingredient("Water")));
-            Recipes.Add(new Food("Diamond Salad", 0, new Ingredient("Tomatoes"), new Ingredient("Pickles"), new Ingredient("Feta")));
-            Recipes.Add(new Food("Ruby Salad", 0, new Ingredient("Tomatoes"), new Ingredient("Vinegar")));
-            Recipes.Add(new Food("Fries", 0, new Ingredient("Potatoes")));
-            Recipes.Add(new Food("Smashed Potatoes", 0, new Ingredient("Potatoes")));
-            Recipes.Add(new Food("Tuna Cake", 0, new Ingredient("Tuna"), new Ingredient("Chocolate"), new Ingredient("Youth Sauce")));
-            Recipes.Add(new Food("Fish In Water", 0, new Ingredient("Tuna"), new Ingredient("Omega Sauce"), new Ingredient("Ruby Salad")));
+            using var streamReader = File.OpenText("Foods.csv"); 
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                HasHeaderRecord = false,
+            };
+            using var csvReader = new CsvReader(streamReader, config);
+            string value;
+            while (csvReader.Read())
+            {
+                List<string> fileLine = new List<string>();
+                for (int i = 0; csvReader.TryGetField<string>(i, out value); i++)
+                {
+                    fileLine.Add(value);
+                }
+                Recipes.Add(new Food(fileLine.ToArray()));
+            }
             SaveChanges();
         }
         public void AddNewFood(Food food)
@@ -45,7 +53,6 @@ namespace Chiken_Kithen_DB
                                  select food)
             {
                 food.Ingredients = _food.Ingredients;
-                food.Count = _food.Count;
                 food.Name = _food.Name;
                 SaveChanges();
                 return;
@@ -53,9 +60,9 @@ namespace Chiken_Kithen_DB
         }
         public void DeleteRecipe(string _foodName)
         {
-            foreach(Food food in Recipes)
+            foreach (Food food in Recipes)
             {
-                if(food.Name == _foodName)
+                if (food.Name == _foodName)
                 {
                     Recipes.Remove(food);
                     SaveChanges();
@@ -70,7 +77,7 @@ namespace Chiken_Kithen_DB
             foreach (Food recipe in recipes)
             {
                 Console.WriteLine(recipe.Id + " " + recipe.Name + ":");
-                foreach(Ingredient ingredient in recipe.Ingredients)
+                foreach (Ingredient ingredient in recipe.Ingredients)
                 {
                     Console.Write(ingredient.Name + " ");
                 }

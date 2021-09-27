@@ -8,8 +8,8 @@ namespace Chiken_Kithen_DB
         {
             using(Storage storage = new Storage())
             {
-                storage.AddBaseIngredients();
-                storage.ShowIngredients();
+                //storage.AddBaseIngredients();
+                //storage.ShowIngredients();
                 storage.Database.EnsureDeleted();
                 storage.SaveChanges();
             }

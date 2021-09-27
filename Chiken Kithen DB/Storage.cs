@@ -1,6 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using CsvHelper;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -9,6 +13,7 @@ namespace Chiken_Kithen_DB
     class Storage : DbContext
     {
         public DbSet<Ingredient> Ingredients { get; set; }
+        public Dictionary<Ingredient, int> IngredientsAmount { get; set; } = new Dictionary<Ingredient, int>();
         public Storage()
         {
             Database.EnsureCreated();
@@ -19,33 +24,47 @@ namespace Chiken_Kithen_DB
         }
         public void AddBaseIngredients()
         {
-            List<Ingredient> BaseIngredients = new List<Ingredient>();
-            string[] BaseIngredientsStr = "Chicken, Tuna, Potatoes, Asparagus, Milk, Honey, Paprika, Garlic, Water, Lemon, Tomatoes, Pickles, Feta, Vinegar, Rice, Chocolate".Split(", ");
-            foreach (string i in BaseIngredientsStr)
+            using var streamReader = File.OpenText("Ingredients.csv");
+            using var csvReader = new CsvReader(streamReader, CultureInfo.CurrentCulture);
+
+            string value;
+            int amount;
+            while (csvReader.Read())
             {
-                BaseIngredients.Add(new Ingredient(i, 10));
+                Ingredient ingredient = new Ingredient();
+
+                csvReader.TryGetField<string>(1, out value);
+                if (!int.TryParse(value, out amount))
+                    continue;
+
+                csvReader.TryGetField<string>(0, out value);
+                ingredient.Name = value;
+                Ingredients.Add(ingredient);
+                SaveChanges();
+
+                csvReader.TryGetField<int>(1, out amount);
+                IngredientsAmount.Add(ingredient, amount);
             }
-            Ingredients.AddRange(BaseIngredients);
-            SaveChanges();
         }
-        public void AddNewIngredient(Ingredient ingredient)
+
+        public void AddNewIngredient(Ingredient ingredient, int amount)
         {
             Ingredients.Add(ingredient);
+            IngredientsAmount.Add(ingredient, amount);
             SaveChanges();
         }
-        public void RewriteIngredientCount(Ingredient _ingredient, string chengeIngredientName)
+        public void RewriteIngredientCount(int ingredientAmount, string chengeIngredientName)
         {
             foreach (var ingredient in from Ingredient ingredient in Ingredients
                                        where ingredient.Name == chengeIngredientName
                                        select ingredient)
             {
-                ingredient.Name = _ingredient.Name;
-                ingredient.Count = _ingredient.Count;
+                IngredientsAmount[ingredient] = ingredientAmount;
                 SaveChanges();
                 return;
             }
         }
-        public void DeleteRecipe(string _ingredientName)
+        public void DeleteIngredient(string _ingredientName)
         {
             foreach (Ingredient ingredient in Ingredients)
             {
@@ -60,14 +79,14 @@ namespace Chiken_Kithen_DB
         {
             var ingredients = Ingredients.ToList();
             Console.WriteLine("Ingredients List:");
-            foreach(Ingredient ingredient in ingredients)
+            foreach (Ingredient ingredient in ingredients)
             {
-                Console.WriteLine(ingredient.Id + " " + ingredient.Name + " " + ingredient.Count);
+                Console.WriteLine(ingredient.Name + " " + IngredientsAmount[ingredient]);
             }
         }
         public void Clear()
         {
-            foreach(Ingredient ingredient in Ingredients)
+            foreach (Ingredient ingredient in Ingredients)
             {
                 Ingredients.Remove(ingredient);
             }
