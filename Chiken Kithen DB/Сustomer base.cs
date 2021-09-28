@@ -18,7 +18,7 @@ namespace Chiken_Kithen_DB
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=customers;Trusted_Connection=True;");
+            optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=ChikenKitchen;Trusted_Connection=True;");
         }
         public void FillCustomerList()
         {
@@ -38,9 +38,9 @@ namespace Chiken_Kithen_DB
                         break;
                     case "Allergies":
                         Customer customer1 = Customers.SingleOrDefault(e => e.Id == lastId);
-                        for (int i=0; csv.TryGetField<string>(i, out string value); i++)
+                        for (int i=0; csv.TryGetField<string>(i, out string name); i++)
                         {
-                            Ingredient ingredient = new Ingredient(value);
+                            Ingredient ingredient = new Ingredient(name);
                             customer1.Allergies.Add(ingredient);
                         }
                         break;

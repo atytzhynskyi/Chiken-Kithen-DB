@@ -19,7 +19,7 @@ namespace Chiken_Kithen_DB
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=storage;Trusted_Connection=True;");
+            optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=ChikenKitchen;Trusted_Connection=True;MultipleActiveResultSets=True;");
         }
         public void AddBaseRecipe()
         {
@@ -29,13 +29,13 @@ namespace Chiken_Kithen_DB
                 HasHeaderRecord = false,
             };
             using var csvReader = new CsvReader(streamReader, config);
-            string value;
+            string name;
             while (csvReader.Read())
             {
                 List<string> fileLine = new List<string>();
-                for (int i = 0; csvReader.TryGetField<string>(i, out value); i++)
+                for (int i = 0; csvReader.TryGetField<string>(i, out name); i++)
                 {
-                    fileLine.Add(value);
+                    fileLine.Add(name);
                 }
                 Recipes.Add(new Food(fileLine.ToArray()));
             }
