@@ -6,7 +6,7 @@ namespace Chiken_Kithen_DB
     {
         static void Main(string[] args)
         {
-            using(Storage storage = new Storage())
+            using (Storage storage = new Storage())
             {
                 //storage.AddBaseIngredients();
                 //storage.ShowIngredients();
@@ -19,6 +19,16 @@ namespace Chiken_Kithen_DB
                 recipeBook.ShowRecipe();
                 recipeBook.Database.EnsureDeleted();
                 recipeBook.SaveChanges();
+            }
+            using (CustomerBase customerBase = new CustomerBase())
+            {
+                customerBase.Database.EnsureDeleted();
+                customerBase.Customers.Add(new Customer("Jey Jo"));
+                customerBase.SaveChanges();
+                //customerBase.FillCustomerList();
+                customerBase.ShowCustomers();
+                customerBase.Database.EnsureDeleted();
+                customerBase.SaveChanges();
             }
         }
     }

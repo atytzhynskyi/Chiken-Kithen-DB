@@ -10,10 +10,17 @@ namespace Chiken_Kithen_DB
         public string Name { get; set; }
         public Food Order { get; set; }
         public List<Ingredient> Allergies { get; set; } = new List<Ingredient>();
-        public Customer() { }
-        public Customer(string _Name, string OrderName, params string[] Allergies)
-        {
 
+        public Customer() { }
+
+        public Customer(string _Name) {
+            Name = _Name;
+        }
+
+        public Customer(string _Name, Food _Order, params Ingredient[] _Allergies){
+            Name = _Name;
+            Order = _Order;
+            Allergies.AddRange(_Allergies);
         }
     }
 }
