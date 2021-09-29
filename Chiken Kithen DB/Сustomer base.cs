@@ -9,45 +9,14 @@ using System.Linq;
 
 namespace Chiken_Kithen_DB
 {
-    class CustomerBase : DbContext
+    class CustomerBase
     {
-        public DbSet<Customer> Customers { get; set; }
-        public CustomerBase()
+        public List<Customer> Customers { get; set; }
+        public CustomerBase(DataBase db)
         {
-            Database.EnsureCreated();
+            Customers.AddRange(db.Customers);
         }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=ChikenKitchen;Trusted_Connection=True;");
-        }
-        public void FillCustomerList()
-        {
-            using var streamReader = File.OpenText("Customers.csv");
-            using var csv = new CsvReader(streamReader, CultureInfo.CurrentCulture);
-
-            int lastId = 0;
-            while (csv.Read())
-            {
-                switch (csv.GetField(0))
-                {
-                    case "Name":
-                        Customer customer = new Customer(csv.GetField(1));
-                        Customers.Add(customer);
-                        SaveChanges();
-                        lastId = customer.Id;
-                        break;
-                    case "Allergies":
-                        Customer customer1 = Customers.SingleOrDefault(e => e.Id == lastId);
-                        for (int i=0; csv.TryGetField<string>(i, out string name); i++)
-                        {
-                            Ingredient ingredient = new Ingredient(name);
-                            customer1.Allergies.Add(ingredient);
-                        }
-                        break;
-                }
-            }
-            SaveChanges();
-        }
+        
         public void ShowCustomers()
         {
             foreach(Customer customer in Customers)

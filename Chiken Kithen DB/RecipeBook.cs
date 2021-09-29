@@ -12,35 +12,12 @@ namespace Chiken_Kithen_DB
 {
     class RecipeBook : DbContext
     {
-        public DbSet<Food> Recipes { get; set; }
-        public RecipeBook()
+        public List<Food> Recipes { get; set; }
+        public RecipeBook(DataBase db)
         {
-            Database.EnsureCreated();
+            Recipes.AddRange(db.Recipes);
         }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=ChikenKitchen;Trusted_Connection=True;MultipleActiveResultSets=True;");
-        }
-        public void AddBaseRecipe()
-        {
-            using var streamReader = File.OpenText("Foods.csv"); 
-            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-            {
-                HasHeaderRecord = false,
-            };
-            using var csvReader = new CsvReader(streamReader, config);
-            string name;
-            while (csvReader.Read())
-            {
-                List<string> fileLine = new List<string>();
-                for (int i = 0; csvReader.TryGetField<string>(i, out name); i++)
-                {
-                    fileLine.Add(name);
-                }
-                Recipes.Add(new Food(fileLine.ToArray()));
-            }
-            SaveChanges();
-        }
+        
         public void AddNewFood(Food food)
         {
             Recipes.Add(food);

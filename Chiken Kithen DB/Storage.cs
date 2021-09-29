@@ -10,45 +10,15 @@ using System.Text;
 
 namespace Chiken_Kithen_DB
 {
-    class Storage : DbContext
+    class Storage
     {
-        public DbSet<Ingredient> Ingredients { get; set; }
+        public List<Ingredient> Ingredients { get; set; }
         public Dictionary<Ingredient, int> IngredientsAmount { get; set; } = new Dictionary<Ingredient, int>();
-        public Storage()
+        public Storage(DataBase db)
         {
-            Database.EnsureCreated();
-            
+            Ingredients.AddRange(db.Ingredients);
         }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=ChikenKitchen;Trusted_Connection=True;");
-        }
-        public void AddBaseIngredients()
-        {
-            using var streamReader = File.OpenText("Ingredients.csv");
-            using var csvReader = new CsvReader(streamReader, CultureInfo.CurrentCulture);
-
-            string name;
-            int amount;
-            while (csvReader.Read())
-            {
-                Ingredient ingredient = new Ingredient();
-
-                csvReader.TryGetField<string>(1, out name);
-                if (!int.TryParse(name, out amount))
-                    continue;
-
-                csvReader.TryGetField<string>(0, out name);
-                if (string.IsNullOrEmpty(name)) continue;
-
-                ingredient.Name = name;
-                Ingredients.Add(ingredient);
-                SaveChanges();
-
-                csvReader.TryGetField<int>(1, out amount);
-                IngredientsAmount.Add(ingredient, amount);
-            }
-        }
+        
         public void SetDictionary()
         {
             using var streamReader = File.OpenText("Ingredients.csv");
@@ -77,7 +47,6 @@ namespace Chiken_Kithen_DB
         {
             Ingredients.Add(ingredient);
             IngredientsAmount.Add(ingredient, amount);
-            SaveChanges();
         }
         public void RewriteIngredientCount(int ingredientAmount, string chengeIngredientName)
         {
@@ -86,7 +55,6 @@ namespace Chiken_Kithen_DB
                                        select ingredient)
             {
                 IngredientsAmount[ingredient] = ingredientAmount;
-                SaveChanges();
                 return;
             }
         }
@@ -116,7 +84,6 @@ namespace Chiken_Kithen_DB
             {
                 Ingredients.Remove(ingredient);
             }
-            SaveChanges();
         }
     }
 }
