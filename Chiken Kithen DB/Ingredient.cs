@@ -10,6 +10,7 @@ namespace Chiken_Kithen_DB
     {
         public int IngredientId { get; set; }
         public string Name { get; set; }
+        public List<RecipeItem> recipeItems { get; set; } = new List<RecipeItem>();
         public Ingredient() { }
         public Ingredient(string _Name,int _IngredientId)
         {

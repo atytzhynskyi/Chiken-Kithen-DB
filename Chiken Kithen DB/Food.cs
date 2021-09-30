@@ -5,18 +5,25 @@ using System.Text;
 
 namespace Chiken_Kithen_DB
 {
-    [Table("Recipes")]
+    [Table("Foods")]
     class Food
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        [ForeignKey("Ingredients")]
-        public List<Ingredient> Ingredients = new List<Ingredient>();
+        public List<RecipeItem> RecipeItems = new List<RecipeItem>();
         public Food() { }
-        public Food(string _Name, int _Count, params Ingredient[] _Ingredients)
+        public Food(string _Name, params RecipeItem[] _RecipeItem)
         {
             Name = _Name;
-            Ingredients.AddRange(_Ingredients);
+            RecipeItems.AddRange(_RecipeItem);
+        }
+        public Food(string _Name, params Ingredient[] _Ingredients)
+        {
+            Name = _Name;
+            foreach (Ingredient ingredient in _Ingredients)
+            {
+                RecipeItems.Add(new RecipeItem(this, ingredient));
+            }
         }
         public Food(params string[] nameAndIngredient)
         {
@@ -24,13 +31,8 @@ namespace Chiken_Kithen_DB
             foreach(string ingredientName in nameAndIngredient)
             {
                 if (Name == ingredientName) continue;
-                Ingredients.Add(new Ingredient(ingredientName));
+                RecipeItems.Add(new RecipeItem(this, new Ingredient(ingredientName)));
             }
-        }
-        public Food(string _Name, params Ingredient[] _Ingredients)
-        {
-            Name = _Name;
-            Ingredients.AddRange(_Ingredients);
         }
     }
 }

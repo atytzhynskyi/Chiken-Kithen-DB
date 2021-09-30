@@ -12,8 +12,8 @@ namespace Chiken_Kithen_DB
 {
     class RecipeBook : DbContext
     {
-        public List<Food> Recipes { get; set; }
-        public RecipeBook(DataBase db)
+        public List<Food> Recipes { get; set; } = new List<Food>();
+        public RecipeBook(ApplicationContext db)
         {
             Recipes.AddRange(db.Recipes);
         }
@@ -29,7 +29,7 @@ namespace Chiken_Kithen_DB
                                  where food.Name == changeFoodName
                                  select food)
             {
-                food.Ingredients = _food.Ingredients;
+                food.RecipeItems = _food.RecipeItems;
                 food.Name = _food.Name;
                 SaveChanges();
                 return;
@@ -47,18 +47,17 @@ namespace Chiken_Kithen_DB
                 }
             }
         }
-        public void ShowRecipe()
+        public void ShowRecipes()
         {
-            var recipes = Recipes.ToList();
             Console.WriteLine("Recipes List:");
-            foreach (Food recipe in recipes)
+            foreach (Food recipe in Recipes.ToList())
             {
                 Console.WriteLine(recipe.Id + " " + recipe.Name + ":");
-                foreach (Ingredient ingredient in recipe.Ingredients)
+                foreach (RecipeItem recipeItem in recipe.RecipeItems)
                 {
-                    Console.Write(ingredient.Name + " ");
+                    Console.Write(recipeItem.Ingredient.Name + ", ");
                 }
-                Console.Write(";\n");
+                Console.Write("\n");
             }
         }
     }

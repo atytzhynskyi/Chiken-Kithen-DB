@@ -1,5 +1,6 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -10,19 +11,38 @@ using System.Text;
 
 namespace Chiken_Kithen_DB
 {
-    class DataBase : DbContext
+    class ApplicationContext : DbContext
     {
-        public DbSet<Food> Recipes { get; set; }
         public DbSet<Ingredient> Ingredients { get; set; }
+        public DbSet<Food> Recipes { get; set; }
         public DbSet<Customer> Customers { get; set; }
+        public DbSet<RecipeItem> RecipeItems { get; set; }
 
-        public DataBase()
+        public ApplicationContext()
         {
             Database.EnsureCreated();
+            InitializateRecipeItems();
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=ChikenKitchen;Trusted_Connection=True;MultipleActiveResultSets=True;");
+        }
+        private void InitializateRecipeItems()
+        {
+            foreach (Food food in Recipes)
+            {
+                var readRecipeItems = RecipeItems.FromSqlRaw<RecipeItem>("SELECT * FROM RecipeItems WHERE FoodId=@id", new SqlParameter("@id", food.Id)).ToList();
+                foreach(Ingredient ingredient in Ingredients)
+                {
+                    foreach(RecipeItem recipeItem in readRecipeItems)
+                    {
+                        if (recipeItem.IngredientId == ingredient.IngredientId)
+                        {
+                            food.RecipeItems.Add(new RecipeItem(food, ingredient));
+                        }
+                    }
+                }
+            }
         }
         public void AddBaseRecipe()
         {
@@ -72,24 +92,27 @@ namespace Chiken_Kithen_DB
             using var streamReader = File.OpenText(@"..\..\..\Customers.csv");
             using var csv = new CsvReader(streamReader, CultureInfo.CurrentCulture);
 
-            int lastId = 0;
             while (csv.Read())
             {
-                switch (csv.GetField(0))
+                Customer customer = new Customer(csv.GetField(1));
+                Customers.Add(customer);
+                csv.Read();
+                for (int i = 1; csv.TryGetField<string>(i, out string ingredientName); i++)
                 {
-                    case "Name":
-                        Customer customer = new Customer(csv.GetField(1));
-                        Customers.Add(customer);
-                        lastId = customer.Id;
-                        break;
-                    case "Allergies":
-                        Customer customer1 = Customers.SingleOrDefault(e => e.Id == lastId);
-                        for (int i = 0; csv.TryGetField<string>(i, out string name); i++)
-                        {
-                            Ingredient ingredient = new Ingredient(name);
-                            customer1.Allergies.Add(ingredient);
-                        }
-                        break;
+                    if (string.IsNullOrEmpty(ingredientName)) break;
+                    Ingredient ingredient = new Ingredient(ingredientName);
+                    customer.Allergies.Add(ingredient);
+                }
+                SaveChanges();
+            }
+        }
+        public void SaveRecipeItems()
+        {
+            foreach (Food food in Recipes)
+            {
+                foreach (RecipeItem recipeItem in food.RecipeItems)
+                {
+                    RecipeItems.Add(new RecipeItem(food, recipeItem.Ingredient));
                 }
             }
             SaveChanges();

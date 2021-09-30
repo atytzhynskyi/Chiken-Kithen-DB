@@ -14,7 +14,7 @@ namespace Chiken_Kithen_DB
     {
         public List<Ingredient> Ingredients { get; set; }
         public Dictionary<Ingredient, int> IngredientsAmount { get; set; } = new Dictionary<Ingredient, int>();
-        public Storage(DataBase db)
+        public Storage(ApplicationContext db)
         {
             Ingredients.AddRange(db.Ingredients);
         }

@@ -6,11 +6,15 @@ namespace Chiken_Kithen_DB
     {
         static void Main(string[] args)
         {
-            using (DataBase dataBase = new DataBase())
+            using (ApplicationContext applicationContext = new ApplicationContext())
             {
-                //dataBase.FillCustomerList();
-                dataBase.AddBaseIngredients();
-                dataBase.AddBaseRecipe();
+                /*applicationContext.FillCustomerList();
+                applicationContext.AddBaseIngredients();
+                applicationContext.AddBaseRecipe();*/
+                RecipeBook recipes = new RecipeBook(applicationContext);
+                recipes.ShowRecipes();
+                //applicationContext.SaveRecipeItems();
+                //applicationContext.Database.EnsureDeleted();
             }
         }
     }
