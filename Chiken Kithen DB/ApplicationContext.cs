@@ -112,7 +112,17 @@ namespace Chiken_Kithen_DB
             {
                 foreach (RecipeItem recipeItem in food.RecipeItems)
                 {
-                    RecipeItems.Add(new RecipeItem(food, recipeItem.Ingredient));
+                    bool isFound = false;
+                    foreach(RecipeItem recipeItemDb in RecipeItems)
+                    {
+                        if(recipeItem.Food.Name==recipeItemDb.Food.Name&& recipeItem.Ingredient.Name == recipeItemDb.Ingredient.Name)
+                        {
+                            isFound = true;
+                            break;
+                        }
+                    }
+                    if(!isFound)
+                        RecipeItems.Add(new RecipeItem(food, recipeItem.Ingredient));
                 }
             }
             SaveChanges();
