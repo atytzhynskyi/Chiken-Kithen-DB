@@ -13,7 +13,6 @@ namespace Chiken_Kithen_DB
                 applicationContext.AddBaseRecipe();
                 RecipeBook recipes = new RecipeBook(applicationContext);
                 recipes.ShowRecipes();
-                applicationContext.SaveRecipeItems();
                 //applicationContext.Database.EnsureDeleted();
             }
         }

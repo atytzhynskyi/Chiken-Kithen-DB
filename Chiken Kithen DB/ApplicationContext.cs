@@ -61,9 +61,11 @@ namespace Chiken_Kithen_DB
                 {
                     fileLine.Add(name);
                 }
-                AddWithoutDuplicate(new Food(Ingredients.ToList<Ingredient>(), fileLine.ToArray()));
+                Food food = new Food(Ingredients.ToList(), fileLine.ToArray());
+                AddWithoutDuplicate(food);
+                SaveChanges();
+                SaveRecipeItems();
             }
-            SaveChanges();
         }
         public void AddBaseIngredients()
         {
@@ -123,6 +125,7 @@ namespace Chiken_Kithen_DB
                     }
                     if(!isFound)
                         RecipeItems.Add(new RecipeItem(food, recipeItem.Ingredient));
+
                 }
             }
             SaveChanges();
