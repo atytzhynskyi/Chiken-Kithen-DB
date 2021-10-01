@@ -25,13 +25,25 @@ namespace Chiken_Kithen_DB
                 RecipeItems.Add(new RecipeItem(this, ingredient));
             }
         }
-        public Food(params string[] nameAndIngredient)
+        public Food(List<Ingredient> ingredients, params string[] nameAndIngredient)
         {
             Name = nameAndIngredient[0];
-            foreach(string ingredientName in nameAndIngredient)
+            foreach (string ingredientName in nameAndIngredient)
             {
                 if (Name == ingredientName) continue;
-                RecipeItems.Add(new RecipeItem(this, new Ingredient(ingredientName)));
+                bool isFound = false;
+                foreach (Ingredient ingredient in ingredients)
+                {
+                    if (ingredientName == ingredient.Name)
+                    {
+                        isFound = true;
+                        RecipeItems.Add(new RecipeItem(this, ingredient));
+                    }
+                }
+                if (!isFound)
+                {
+                    RecipeItems.Add(new RecipeItem(this, new Ingredient(ingredientName)));
+                }
             }
         }
     }

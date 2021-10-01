@@ -17,6 +17,7 @@ namespace Chiken_Kithen_DB
         public DbSet<Food> Recipes { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<RecipeItem> RecipeItems { get; set; }
+        public DbSet<Allergy> Allergies { get; set; }
 
         public ApplicationContext()
         {
@@ -36,7 +37,7 @@ namespace Chiken_Kithen_DB
                 {
                     foreach(RecipeItem recipeItem in readRecipeItems)
                     {
-                        if (recipeItem.IngredientId == ingredient.IngredientId)
+                        if (recipeItem.IngredientId == ingredient.Id)
                         {
                             food.RecipeItems.Add(new RecipeItem(food, ingredient));
                         }
@@ -60,7 +61,7 @@ namespace Chiken_Kithen_DB
                 {
                     fileLine.Add(name);
                 }
-                Recipes.Add(new Food(fileLine.ToArray()));
+                AddWithoutDuplicate(new Food(Ingredients.ToList<Ingredient>(), fileLine.ToArray()));
             }
             SaveChanges();
         }
@@ -83,7 +84,7 @@ namespace Chiken_Kithen_DB
                 if (string.IsNullOrEmpty(name)) continue;
 
                 ingredient.Name = name;
-                Ingredients.Add(ingredient);
+                AddWithoutDuplicate(ingredient);
                 SaveChanges();
             }
         }
@@ -95,13 +96,12 @@ namespace Chiken_Kithen_DB
             while (csv.Read())
             {
                 Customer customer = new Customer(csv.GetField(1));
-                Customers.Add(customer);
+                AddWithoutDuplicate(customer);
                 csv.Read();
                 for (int i = 1; csv.TryGetField<string>(i, out string ingredientName); i++)
                 {
                     if (string.IsNullOrEmpty(ingredientName)) break;
-                    Ingredient ingredient = new Ingredient(ingredientName);
-                    customer.Allergies.Add(ingredient);
+                    customer.Allergies.Add(new Allergy(customer, new Ingredient(ingredientName)));
                 }
                 SaveChanges();
             }
@@ -125,6 +125,42 @@ namespace Chiken_Kithen_DB
                         RecipeItems.Add(new RecipeItem(food, recipeItem.Ingredient));
                 }
             }
+            SaveChanges();
+        }
+        public void AddWithoutDuplicate(Ingredient ingredient)
+        {
+            foreach(Ingredient ingredientRead in Ingredients)
+            {
+                if(ingredientRead.Name == ingredient.Name)
+                {
+                    return;
+                }
+            }
+            Ingredients.Add(ingredient);
+            SaveChanges();
+        }
+        public void AddWithoutDuplicate(Food food)
+        {
+            foreach(Food foodRead in Recipes)
+            {
+                if(food.Name == foodRead.Name)
+                {
+                    return;
+                }
+            }
+            Recipes.Add(food);
+            SaveChanges();
+        }
+        public void AddWithoutDuplicate(Customer customer)
+        {
+            foreach(Customer customerRead in Customers)
+            {
+                if(customer.Name == customerRead.Name)
+                {
+                    return;
+                }
+            }
+            Customers.Add(customer);
             SaveChanges();
         }
     }

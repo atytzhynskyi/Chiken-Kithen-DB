@@ -11,7 +11,7 @@ namespace Chiken_Kithen_DB
         public int Id { get; set; }
         public string Name { get; set; }
         public Food Order { get; set; }
-        public List<Ingredient> Allergies { get; set; } = new List<Ingredient>();
+        public List<Allergy> Allergies { get; set; } = new List<Allergy>();
 
         public Customer() { }
 
@@ -19,7 +19,7 @@ namespace Chiken_Kithen_DB
             Name = _Name;
         }
 
-        public Customer(string _Name, Food _Order, params Ingredient[] _Allergies){
+        public Customer(string _Name, Food _Order, params Allergy[] _Allergies){
             Name = _Name;
             Order = _Order;
             Allergies.AddRange(_Allergies);

@@ -74,7 +74,7 @@ namespace Chiken_Kithen_DB
             Console.WriteLine("Ingredients List:");
             foreach (Ingredient ingredient in Ingredients.ToList())
             {
-                Console.Write(ingredient.IngredientId+ " " + ingredient.Name + " ");
+                Console.Write(ingredient.Id+ " " + ingredient.Name + " ");
                 Console.Write(IngredientsAmount[ingredient]+ "\n");
             }
         }

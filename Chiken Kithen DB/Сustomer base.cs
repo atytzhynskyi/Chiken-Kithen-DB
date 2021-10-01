@@ -22,9 +22,9 @@ namespace Chiken_Kithen_DB
             foreach(Customer customer in Customers)
             {
                 Console.WriteLine(customer.Id + " " + customer.Name + "\n");
-                foreach(Ingredient ingredient in customer.Allergies)
+                foreach(Allergy allergy in customer.Allergies)
                 {
-                    Console.Write(ingredient.Name + " ");
+                    Console.Write(allergy.Ingredient.Name + " ");
                 }
             }
         }

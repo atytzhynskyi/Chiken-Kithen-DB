@@ -8,9 +8,9 @@ namespace Chiken_Kithen_DB
         {
             using (ApplicationContext applicationContext = new ApplicationContext())
             {
-                /*applicationContext.FillCustomerList();
+                applicationContext.FillCustomerList();
                 applicationContext.AddBaseIngredients();
-                applicationContext.AddBaseRecipe();*/
+                applicationContext.AddBaseRecipe();
                 RecipeBook recipes = new RecipeBook(applicationContext);
                 recipes.ShowRecipes();
                 applicationContext.SaveRecipeItems();
