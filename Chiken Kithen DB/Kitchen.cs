@@ -54,23 +54,22 @@ namespace Chiken_Kithen_DB
         }
         public bool isEnoughIngredients(Food food)
         {
-            List<Ingredient> CopyBaseIngredients = DeepCopyRecipe(BaseIngredients);
-            List<Ingredient> CopyRecipe = new List<Ingredient>();
-            foreach (Food recipe in RecipeBook.Recipes)
-            {
-                if (food.Name == recipe.Name)
-                    CopyRecipe = DeepCopyRecipe(recipe.Recipe);
-            }
-            CopyRecipe = GetBaseIngredientRecipe(CopyRecipe);
+            List<RecipeItem>fullRecipe = GetBaseIngredientRecipe(food.RecipeItems);
+            Dictionary<Ingredient, int> ingredientAmountsCopy = new Dictionary<Ingredient, int>();
 
-            foreach (Ingredient ingredientRecipe in CopyRecipe)
+            foreach(Ingredient ingredient in Storage.Ingredients)
             {
-                foreach (Ingredient ingredient in CopyBaseIngredients)
+                ingredientAmountsCopy.Add(ingredient, Storage.IngredientsAmount[ingredient]);
+            }
+
+            foreach (RecipeItem ingredientRecipe in fullRecipe)
+            {
+                foreach (Ingredient ingredient in Storage.Ingredients)
                 {
-                    if (ingredient.Name == ingredientRecipe.Name)
+                    if (ingredient.Name == ingredientRecipe.Ingredient.Name)
                     {
-                        ingredient.Count -= ingredientRecipe.Count;
-                        if (ingredient.Count < 0)
+                        ingredientAmountsCopy[ingredient]--;
+                        if (ingredientAmountsCopy[ingredient] < 0)
                         {
                             return false;
                         }
