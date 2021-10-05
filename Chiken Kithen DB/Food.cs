@@ -12,6 +12,7 @@ namespace Chiken_Kithen_DB
         public string Name { get; set; }
         public List<RecipeItem> RecipeItems = new List<RecipeItem>();
         public Food() { }
+        public Food(string _Name) { Name = _Name; }
         public Food(string _Name, params RecipeItem[] _RecipeItem)
         {
             Name = _Name;
