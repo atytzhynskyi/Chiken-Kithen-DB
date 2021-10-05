@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Chiken_Kithen_DB
 {
-    class RecipeBook : DbContext
+    class RecipeBook
     {
         public List<Food> Recipes { get; set; } = new List<Food>();
         public RecipeBook(ApplicationContext db)
@@ -21,7 +21,6 @@ namespace Chiken_Kithen_DB
         public void AddNewFood(Food food)
         {
             Recipes.Add(food);
-            SaveChanges();
         }
         public void RewriteRecipe(Food _food, string changeFoodName)
         {
@@ -31,7 +30,6 @@ namespace Chiken_Kithen_DB
             {
                 food.RecipeItems = _food.RecipeItems;
                 food.Name = _food.Name;
-                SaveChanges();
                 return;
             }
         }
@@ -42,7 +40,6 @@ namespace Chiken_Kithen_DB
                 if (food.Name == _foodName)
                 {
                     Recipes.Remove(food);
-                    SaveChanges();
                     return;
                 }
             }
