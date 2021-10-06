@@ -10,26 +10,10 @@ namespace Chiken_Kithen_DB
         public List<Food> GetFoods() => Foods;
         public Menu()
         {
-            FillFoodsRecipe();
         }
         public Menu(List<Food> _Foods)
         {
             Foods.AddRange(_Foods);
-        }
-        private void FillFoodsRecipe()
-        {
-            Foods.Add(new Food("Emperor Chicken"));
-            Foods.Add(new Food("Fat Cat Chiken"));
-            Foods.Add(new Food("Princess Chicken"));
-            Foods.Add(new Food("Youth Sauce"));
-            Foods.Add(new Food("Spicy Sauce"));
-            Foods.Add(new Food("Omega Sauce"));
-            Foods.Add(new Food("Diamond Salad"));
-            Foods.Add(new Food("Ruby Salad"));
-            Foods.Add(new Food("Fries"));
-            Foods.Add(new Food("Smashed Potatoes"));
-            Foods.Add(new Food("Tuna Cake"));
-            Foods.Add(new Food("Fish In Water"));
         }
         public void AddNewFood()
         {
