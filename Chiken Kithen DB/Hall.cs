@@ -7,14 +7,16 @@ namespace Chiken_Kithen_DB
     class Hall
     {
         CustomerBase AllCustomers = new CustomerBase();
+        Menu Menu = new Menu();
         public Hall() { }
         public Hall(ApplicationContext applicationContext)
         {
             AllCustomers = new CustomerBase(applicationContext);
         }
-        public Hall(List<Customer> customers)
+        public Hall(List<Customer> customers, Menu _Menu)
         {
             AllCustomers = new CustomerBase(customers);
+            Menu = _Menu;
         }
         public CustomerBase GetAllCustomers() => AllCustomers;
         public bool isNewCustomer(string Name)
@@ -90,12 +92,26 @@ namespace Chiken_Kithen_DB
             }
             return allergicIngredients;
         }
-        public Food AskOrder()
+        public Food AskOrder(Kitchen kitchen)
         {
             Console.WriteLine("What you prefer to order?");
-            string _Order = Console.ReadLine();
-            Food food = new Food(_Order);
-            return food;
+            string _OrderName = Console.ReadLine();
+            Food Order=new Food("NULL");
+            bool isFound = false;
+            foreach(Food food in kitchen.RecipeBook.Recipes)
+            {
+                if (food.Name.Contains(_OrderName))
+                {
+                    if (isFound)
+                    {
+                        Console.WriteLine("Sorry, can't do, {0} unidentified", _OrderName);
+                        break;
+                    }
+                    Order = food;
+                    isFound = true;
+                }
+            }
+            return Order;
         }
         public string AskName()
         {
