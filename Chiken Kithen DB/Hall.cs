@@ -6,16 +6,20 @@ namespace Chiken_Kithen_DB
 {
     class Hall
     {
-        List<Customer> AllCustomers = new List<Customer>();
+        CustomerBase AllCustomers = new CustomerBase();
         public Hall() { }
+        public Hall(ApplicationContext applicationContext)
+        {
+            AllCustomers = new CustomerBase(applicationContext);
+        }
         public Hall(List<Customer> customers)
         {
-            AllCustomers.AddRange(customers);
+            AllCustomers = new CustomerBase(customers);
         }
-        public List<Customer> GetAllCustomers() => AllCustomers;
+        public CustomerBase GetAllCustomers() => AllCustomers;
         public bool isNewCustomer(string Name)
         {
-            foreach (Customer customerTemp in AllCustomers)
+            foreach (Customer customerTemp in AllCustomers.Customers)
             {
                 if (customerTemp.Name == Name)
                 {
@@ -26,23 +30,35 @@ namespace Chiken_Kithen_DB
         }
         public void AddNewCustomer(Customer customer)
         {
-            AllCustomers.Add(customer);
+            AllCustomers.Customers.Add(customer);
         }
         public Customer GetCustomer(string Name)
         {
-            foreach (Customer customer in AllCustomers)
+            Customer customer = new Customer("NULL");
+            bool isFound = false;
+            foreach (Customer customerSearch in AllCustomers.Customers)
             {
-                if (customer.Name == Name)
+                if (customerSearch.Name == Name)
                 {
-                    return customer;
+                    customer = customerSearch;
+                    break;
                 }
-                if (GetFullNameByNick(Name, customer) == "NULL")
+                if (GetFullNameByNick(Name, customerSearch) == "NULL")
                 {
                     continue;
                 }
-                else return customer;
+                else
+                {
+                    customer = customerSearch;
+                    if (isFound)
+                    {
+                        Console.WriteLine("Sorry, can't do, " + Name + " is unidentified");
+                        return new Customer("NULL");
+                    }
+                    isFound = true;
+                }
             }
-            return new Customer("NULL");
+            return customer;
         }
         public void GiveFood(Kitchen kitchen, Customer customer)
         {
@@ -89,13 +105,9 @@ namespace Chiken_Kithen_DB
         }
         private string GetFullNameByNick(string nickName, Customer customer)
         {
-            string[] splitName = customer.Name.Split(" ");
-            foreach (string splitNamePart in splitName)
+            if (customer.Name.Contains(nickName))
             {
-                if (splitNamePart == nickName)
-                {
-                    return customer.Name;
-                }
+                return customer.Name;
             }
             return "NULL";
         }

@@ -10,12 +10,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Chiken_Kithen_DB
 {
-    class RecipeBook
+    public class RecipeBook
     {
         public List<Food> Recipes { get; set; } = new List<Food>();
-        public RecipeBook(ApplicationContext db)
+        public RecipeBook(List<Food> _Recipes)
         {
-            Recipes.AddRange(db.Recipes);
+            Recipes.AddRange(_Recipes);
         }
         
         public void AddNewFood(Food food)

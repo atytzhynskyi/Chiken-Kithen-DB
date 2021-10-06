@@ -12,6 +12,11 @@ namespace Chiken_Kithen_DB
     class CustomerBase
     {
         public List<Customer> Customers { get; set; }
+        public CustomerBase() { }
+        public CustomerBase(List<Customer> _Customers)
+        {
+            Customers = _Customers;
+        }
         public CustomerBase(ApplicationContext db)
         {
             Customers.AddRange(db.Customers);

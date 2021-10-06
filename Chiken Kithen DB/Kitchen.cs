@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Chiken_Kithen_DB
 {
-    class Kitchen
+    public class Kitchen
     {
         public Storage Storage;
         public RecipeBook RecipeBook;
@@ -33,13 +33,22 @@ namespace Chiken_Kithen_DB
                 Console.WriteLine("We dont have enough ingredients");
                 return;
             }
-            order.Recipe = GetBaseIngredientRecipe(order.Recipe);
+
             foreach (var ingredient in from Ingredient ingredient in Storage.Ingredients
                                        from RecipeItem ingredientRecipe in order.Recipe
                                        where ingredient.Name == ingredientRecipe.Ingredient.Name
                                        select ingredient)
             {
                 Storage.IngredientsAmount[ingredient] -= 1;
+            }
+
+            foreach (var food in from Food food in RecipeBook.Recipes
+                                 from RecipeItem ingredient in order.Recipe
+                                 where food.Name == ingredient.Ingredient.Name
+                                 select food)
+            {
+                Cook(food);
+                FoodAmount[food]--;
             }
 
             foreach (Food food in RecipeBook.Recipes)

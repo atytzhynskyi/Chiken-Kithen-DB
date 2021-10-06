@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace Chiken_Kithen_DB
 {
@@ -8,10 +9,10 @@ namespace Chiken_Kithen_DB
         {
             using (ApplicationContext applicationContext = new ApplicationContext())
             {
-                applicationContext.FillCustomerList();
+                /*applicationContext.FillCustomerList();
                 applicationContext.AddBaseIngredients();
-                applicationContext.AddBaseRecipe();
-                RecipeBook recipes = new RecipeBook(applicationContext);
+                applicationContext.AddBaseRecipe();*/
+                RecipeBook recipes = new RecipeBook(applicationContext.Recipes.ToList());
                 recipes.ShowRecipes();
                 //applicationContext.Database.EnsureDeleted();
             }

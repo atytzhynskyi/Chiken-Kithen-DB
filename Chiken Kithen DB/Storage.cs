@@ -10,13 +10,13 @@ using System.Text;
 
 namespace Chiken_Kithen_DB
 {
-    class Storage
+    public class Storage
     {
         public List<Ingredient> Ingredients { get; set; }
         public Dictionary<Ingredient, int> IngredientsAmount { get; set; } = new Dictionary<Ingredient, int>();
-        public Storage(ApplicationContext db)
+        public Storage(List<Ingredient> _Ingredients)
         {
-            Ingredients.AddRange(db.Ingredients);
+            Ingredients = _Ingredients;
         }
         
         public void SetDictionary()

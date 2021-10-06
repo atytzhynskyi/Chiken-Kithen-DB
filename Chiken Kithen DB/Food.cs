@@ -6,7 +6,7 @@ using System.Text;
 namespace Chiken_Kithen_DB
 {
     [Table("Foods")]
-    class Food
+    public class Food
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -18,10 +18,10 @@ namespace Chiken_Kithen_DB
             Name = _Name;
             Recipe.AddRange(_RecipeItem);
         }
-        public Food(string _Name, params Ingredient[] _Ingredients)
+        public Food(string _Name, params Ingredient[] _RecipeItem)
         {
             Name = _Name;
-            foreach (Ingredient ingredient in _Ingredients)
+            foreach (Ingredient ingredient in _RecipeItem)
             {
                 Recipe.Add(new RecipeItem(this, ingredient));
             }

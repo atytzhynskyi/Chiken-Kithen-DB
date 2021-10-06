@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Chiken_Kithen_DB
 {
-    class RecipeItem
+    public class RecipeItem
     {
         public int Id { get; set; }
         public int FoodId { get; set; }
