@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace Chiken_Kithen_DB
 {
@@ -9,9 +10,7 @@ namespace Chiken_Kithen_DB
         public Storage Storage;
         public RecipeBook RecipeBook;
         public Dictionary<Food, int> FoodAmount { get; set;} = new Dictionary<Food, int>();
-        public Kitchen()
-        {
-        }
+        public Kitchen(){}
         public Kitchen(Storage _Storage, RecipeBook _Recipes)
         {
             Storage = _Storage;
@@ -26,7 +25,7 @@ namespace Chiken_Kithen_DB
             foreach (Food recipe in RecipeBook.Recipes)
             {
                 if (recipe.Name == order.Name)
-                    order.RecipeItems = recipe.RecipeItems;
+                    order.Recipe = recipe.Recipe;
             }
 
             if (!isEnoughIngredients(order))
@@ -34,17 +33,15 @@ namespace Chiken_Kithen_DB
                 Console.WriteLine("We dont have enough ingredients");
                 return;
             }
-            order.RecipeItems = GetBaseIngredientRecipe(order.RecipeItems);
-            foreach (Ingredient ingredient in Storage.Ingredients)
+            order.Recipe = GetBaseIngredientRecipe(order.Recipe);
+            foreach (var ingredient in from Ingredient ingredient in Storage.Ingredients
+                                       from RecipeItem ingredientRecipe in order.Recipe
+                                       where ingredient.Name == ingredientRecipe.Ingredient.Name
+                                       select ingredient)
             {
-                foreach (RecipeItem ingredientRecipe in order.RecipeItems)
-                {
-                    if (ingredient.Name == ingredientRecipe.Ingredient.Name)
-                    {
-                        Storage.IngredientsAmount[ingredient] -= 1;
-                    }
-                }
+                Storage.IngredientsAmount[ingredient] -= 1;
             }
+
             foreach (Food food in RecipeBook.Recipes)
             {
                 if(food.Name == order.Name)
@@ -54,7 +51,7 @@ namespace Chiken_Kithen_DB
         }
         public bool isEnoughIngredients(Food food)
         {
-            List<RecipeItem>fullRecipe = GetBaseIngredientRecipe(food.RecipeItems);
+            List<RecipeItem>fullRecipe = GetBaseIngredientRecipe(food.Recipe);
             Dictionary<Ingredient, int> ingredientAmountsCopy = new Dictionary<Ingredient, int>();
 
             foreach(Ingredient ingredient in Storage.Ingredients)
@@ -87,7 +84,7 @@ namespace Chiken_Kithen_DB
                 {
                     if (food.Name == recipeItem.Ingredient.Name)
                     {
-                        fullRecipe.AddRange(GetBaseIngredientRecipe(food.RecipeItems));
+                        fullRecipe.AddRange(GetBaseIngredientRecipe(food.Recipe));
                         break;
                     }
                 }

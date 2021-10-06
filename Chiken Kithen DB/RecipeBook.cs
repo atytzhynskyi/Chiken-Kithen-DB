@@ -28,7 +28,7 @@ namespace Chiken_Kithen_DB
                                  where food.Name == changeFoodName
                                  select food)
             {
-                food.RecipeItems = _food.RecipeItems;
+                food.Recipe = _food.Recipe;
                 food.Name = _food.Name;
                 return;
             }
@@ -50,7 +50,7 @@ namespace Chiken_Kithen_DB
             foreach (Food recipe in Recipes.ToList())
             {
                 Console.WriteLine(recipe.Id + " " + recipe.Name + ":");
-                foreach (RecipeItem recipeItem in recipe.RecipeItems)
+                foreach (RecipeItem recipeItem in recipe.Recipe)
                 {
                     Console.Write(recipeItem.Ingredient.Name + ", ");
                 }

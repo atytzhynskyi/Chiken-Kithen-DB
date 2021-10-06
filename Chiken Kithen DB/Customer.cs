@@ -45,7 +45,7 @@ namespace Chiken_Kithen_DB
                     food = _food;
                 }
             }
-            foreach (RecipeItem recipeItem in food.RecipeItems)
+            foreach (RecipeItem recipeItem in food.Recipe)
             {
                 foreach (Allergy allergy in Allergies)
                 {
@@ -57,7 +57,7 @@ namespace Chiken_Kithen_DB
             }
             foreach (Food _food in kitchen.RecipeBook.Recipes)
             {
-                foreach (RecipeItem recipeItem in food.RecipeItems)
+                foreach (RecipeItem recipeItem in food.Recipe)
                 {
                     if (_food.Name == recipeItem.Ingredient.Name)
                     {

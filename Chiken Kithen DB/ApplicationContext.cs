@@ -33,13 +33,13 @@ namespace Chiken_Kithen_DB
             foreach (Food food in Recipes)
             {
                 var readRecipeItems = RecipeItems.FromSqlRaw<RecipeItem>("SELECT * FROM RecipeItems WHERE FoodId=@id", new SqlParameter("@id", food.Id)).ToList();
-                foreach(Ingredient ingredient in Ingredients)
+                foreach (Ingredient ingredient in Ingredients)
                 {
-                    foreach(RecipeItem recipeItem in readRecipeItems)
+                    foreach (RecipeItem recipeItem in readRecipeItems)
                     {
                         if (recipeItem.IngredientId == ingredient.Id)
                         {
-                            food.RecipeItems.Add(new RecipeItem(food, ingredient));
+                            food.Recipe.Add(new RecipeItem(food, ingredient));
                         }
                     }
                 }
@@ -112,18 +112,18 @@ namespace Chiken_Kithen_DB
         {
             foreach (Food food in Recipes)
             {
-                foreach (RecipeItem recipeItem in food.RecipeItems)
+                foreach (RecipeItem recipeItem in food.Recipe)
                 {
                     bool isFound = false;
-                    foreach(RecipeItem recipeItemDb in RecipeItems)
+                    foreach (RecipeItem recipeItemDb in RecipeItems)
                     {
-                        if(recipeItem.Food.Name==recipeItemDb.Food.Name&& recipeItem.Ingredient.Name == recipeItemDb.Ingredient.Name)
+                        if (recipeItem.Food.Name == recipeItemDb.Food.Name && recipeItem.Ingredient.Name == recipeItemDb.Ingredient.Name)
                         {
                             isFound = true;
                             break;
                         }
                     }
-                    if(!isFound)
+                    if (!isFound)
                         RecipeItems.Add(new RecipeItem(food, recipeItem.Ingredient));
 
                 }
@@ -132,36 +132,27 @@ namespace Chiken_Kithen_DB
         }
         public void AddWithoutDuplicate(Ingredient ingredient)
         {
-            foreach(Ingredient ingredientRead in Ingredients)
+            if (Ingredients.Any(ingredientRead => ingredientRead.Name == ingredient.Name))
             {
-                if(ingredientRead.Name == ingredient.Name)
-                {
-                    return;
-                }
+                return;
             }
             Ingredients.Add(ingredient);
             SaveChanges();
         }
         public void AddWithoutDuplicate(Food food)
         {
-            foreach(Food foodRead in Recipes)
+            if (Recipes.Any(foodRead => foodRead.Name == food.Name))
             {
-                if(food.Name == foodRead.Name)
-                {
-                    return;
-                }
+                return;
             }
             Recipes.Add(food);
             SaveChanges();
         }
         public void AddWithoutDuplicate(Customer customer)
         {
-            foreach(Customer customerRead in Customers)
+            if (Customers.Any(customerRead => customerRead.Name == customer.Name))
             {
-                if(customer.Name == customerRead.Name)
-                {
-                    return;
-                }
+                return;
             }
             Customers.Add(customer);
             SaveChanges();

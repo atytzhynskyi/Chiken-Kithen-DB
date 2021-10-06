@@ -38,12 +38,12 @@ namespace Chiken_Kithen_DB
             Food food = new Food(foodName);
             Console.WriteLine("What are in the recipe? (please use ',' between ingredients)");
             string[] ingredientsRecipeSplit = Console.ReadLine().Split(", ");
-            List<Ingredient> ingredientsRecipe = new List<Ingredient>();
+            List<RecipeItem> Recipe = new List<RecipeItem>();
             foreach (string ingredientNameStr in ingredientsRecipeSplit)
             {
-                ingredientsRecipe.Add(new Ingredient(ingredientNameStr));
+                Recipe.Add(new RecipeItem(food, new Ingredient(ingredientNameStr)));
             }
-            food.Recipe.AddRange(ingredientsRecipe);
+            food.Recipe.AddRange(Recipe);
             Foods.Add(food);
             Console.WriteLine(food.Name + " added to the menu");
         }
