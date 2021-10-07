@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
-namespace Chiken_Kithen_DB
+namespace BaseClasses
 {
     public class RecipeItem
     {

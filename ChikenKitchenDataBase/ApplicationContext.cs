@@ -8,10 +8,11 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using BaseClasses;
 
-namespace Chiken_Kithen_DB
+namespace ChikenKitchenDataBase
 {
-    class ApplicationContext : DbContext
+    public class ApplicationContext : DbContext
     {
         public DbSet<Ingredient> Ingredients { get; set; }
         public DbSet<Food> Recipes { get; set; }

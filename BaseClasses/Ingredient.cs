@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
-namespace Chiken_Kithen_DB
+namespace BaseClasses
 {
     [Table("Ingredients")]
     public class Ingredient

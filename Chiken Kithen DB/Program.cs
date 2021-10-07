@@ -1,7 +1,8 @@
-﻿using System;
+﻿using ChikenKitchenDataBase;
+using System;
 using System.Linq;
 
-namespace Chiken_Kithen_DB
+namespace ChikenKithen
 {
     class Program
     {

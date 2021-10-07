@@ -1,11 +1,12 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Chiken_Kithen_DB;
+using ChikenKithen;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using ChikenKItchenDB;
+using BaseClasses;
 
-namespace Chiken_Kithen_DB.Tests
+namespace ChikenKithen.Tests
 {
     [TestClass()]
     public class KitchenTests

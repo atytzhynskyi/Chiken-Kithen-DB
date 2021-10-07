@@ -6,8 +6,10 @@ using System.Text;
 using System.IO;
 using System.Globalization;
 using System.Linq;
+using BaseClasses;
+using ChikenKitchenDataBase;
 
-namespace Chiken_Kithen_DB
+namespace ChikenKithen
 {
     class CustomerBase
     {

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
-namespace Chiken_Kithen_DB
+namespace BaseClasses
 {
-    class Allergy
+    public class Allergy
     {
         public int Id { get; set; }
         public int CustomerId { get; set; }

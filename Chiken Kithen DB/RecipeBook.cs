@@ -4,11 +4,12 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using BaseClasses;
 using CsvHelper;
 using CsvHelper.Configuration;
 using Microsoft.EntityFrameworkCore;
 
-namespace Chiken_Kithen_DB
+namespace ChikenKithen
 {
     public class RecipeBook
     {

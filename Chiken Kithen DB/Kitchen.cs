@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
-
-namespace Chiken_Kithen_DB
+using BaseClasses;
+namespace ChikenKithen
 {
     public class Kitchen
     {

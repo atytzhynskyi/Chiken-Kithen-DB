@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Text;
+using BaseClasses;
+using CsvHelper;
 
-namespace Chiken_Kithen_DB
+namespace ChikenKithen
 {
     class Menu
     {
@@ -14,6 +18,11 @@ namespace Chiken_Kithen_DB
         public Menu(List<Food> _Foods)
         {
             Foods.AddRange(_Foods);
+        }
+        private void ReadFromFile()
+        {
+            using var streamReader = File.OpenText(@"..\..\..\Ingredients.csv");
+            using var csvReader = new CsvReader(streamReader, CultureInfo.CurrentCulture);
         }
         public void AddNewFood()
         {

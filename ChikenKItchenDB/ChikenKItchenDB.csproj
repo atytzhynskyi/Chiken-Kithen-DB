@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Chiken Kithen DB\Chiken Kithen DB.csproj" />
+    <ProjectReference Include="..\Chiken Kithen DB\ChikenKithen.csproj" />
   </ItemGroup>
 
 </Project>

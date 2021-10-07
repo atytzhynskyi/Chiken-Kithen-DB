@@ -1,4 +1,5 @@
-﻿using CsvHelper;
+﻿using BaseClasses;
+using CsvHelper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 using System;
@@ -8,7 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Chiken_Kithen_DB
+namespace ChikenKithen
 {
     public class Storage
     {

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
-namespace Chiken_Kithen_DB
+namespace BaseClasses
 {
     [Table("Customers")]
-    class Customer
+    public class Customer
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -24,9 +24,9 @@ namespace Chiken_Kithen_DB
             Order = _Order;
             Allergies.AddRange(_Allergies);
         }
-        public void SetOrder(Menu menu, Ingredient _Order)
+        public void SetOrder(List<Food> menu, Ingredient _Order)
         {
-            foreach (Food food in menu.Foods)
+            foreach (Food food in menu)
             {
                 if (_Order.Name == food.Name)
                 {
@@ -36,9 +36,9 @@ namespace Chiken_Kithen_DB
             }
             Console.WriteLine("Order doesnt exist in menu");
         }
-        public bool isAllergic(Kitchen kitchen, Food food)
+        public bool isAllergic(List<Food> recipes, Food food)
         {
-            foreach (Food _food in kitchen.RecipeBook.Recipes)
+            foreach (Food _food in recipes)
             {
                 if (_food.Name == food.Name)
                 {
@@ -55,13 +55,13 @@ namespace Chiken_Kithen_DB
                     }
                 }
             }
-            foreach (Food _food in kitchen.RecipeBook.Recipes)
+            foreach (Food _food in recipes)
             {
                 foreach (RecipeItem recipeItem in food.Recipe)
                 {
                     if (_food.Name == recipeItem.Ingredient.Name)
                     {
-                        if (isAllergic(kitchen, _food))
+                        if (isAllergic(recipes, _food))
                         {
                             return true;
                         }

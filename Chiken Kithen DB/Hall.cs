@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using BaseClasses;
+using ChikenKitchenDataBase;
 
-namespace Chiken_Kithen_DB
+namespace ChikenKithen
 {
     class Hall
     {
@@ -92,13 +94,13 @@ namespace Chiken_Kithen_DB
             }
             return allergicIngredients;
         }
-        public Food AskOrder(Kitchen kitchen)
+        public Food AskOrder()
         {
             Console.WriteLine("What you prefer to order?");
             string _OrderName = Console.ReadLine();
             Food Order=new Food("NULL");
             bool isFound = false;
-            foreach(Food food in kitchen.RecipeBook.Recipes)
+            foreach(Food food in Menu.Foods)
             {
                 if (food.Name.Contains(_OrderName))
                 {
