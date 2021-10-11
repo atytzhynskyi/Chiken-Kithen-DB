@@ -13,7 +13,7 @@ namespace ChikenKithen
 {
     class CustomerBase
     {
-        public List<Customer> Customers { get; set; }
+        public List<Customer> Customers { get; set; } = new List<Customer>();
         public CustomerBase() { }
         public CustomerBase(List<Customer> _Customers)
         {

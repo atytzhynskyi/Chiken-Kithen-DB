@@ -14,12 +14,14 @@ namespace ChikenKitchenDataBase
 {
     public class ApplicationContext : DbContext
     {
+        static void Main(string[] args)
+        { }
         public DbSet<Ingredient> Ingredients { get; set; }
+        public DbSet<IngredientProperties> IngredientProperties { get; set; }
         public DbSet<Food> Recipes { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<RecipeItem> RecipeItems { get; set; }
         public DbSet<Allergy> Allergies { get; set; }
-
         public ApplicationContext()
         {
             Database.EnsureCreated();
@@ -91,6 +93,73 @@ namespace ChikenKitchenDataBase
                 SaveChanges();
             }
         }
+        public void AddIngredientCount()
+        {
+            using var streamReader = File.OpenText(@"..\..\..\Ingredients.csv");
+            using var csvReader = new CsvReader(streamReader, CultureInfo.CurrentCulture);
+
+            string name;
+            int amount;
+            while (csvReader.Read())
+            {
+                csvReader.TryGetField<string>(1, out name);
+                if (!int.TryParse(name, out amount))
+                    continue;
+
+                csvReader.TryGetField<string>(0, out name);
+                if (string.IsNullOrEmpty(name)) continue;
+
+                if (!IngredientProperties.Any(ing => ing.IngredientId == Ingredients.Where(i => i.Name == name).FirstOrDefault().Id))
+                {
+                    AddWithoutDuplicate(new IngredientProperties(Ingredients.Where(ingredient => ingredient.Name == name).FirstOrDefault(), amount));
+                }
+            }
+            SaveIngredientsCount();
+        }
+        public void SaveAll(List<Ingredient> _Ingredients, Dictionary<Ingredient, int> _IngredientsAmount, List<Food> _Recipes, List<Customer> _Customers)
+        {
+            foreach (Ingredient _ingredient in _Ingredients)
+            {
+                if (!Ingredients.Any(i => i.Name == _ingredient.Name))
+                {
+                    Ingredients.Add(_ingredient);
+                }
+            }
+            SaveChanges();
+            foreach (Ingredient _ingredient in _Ingredients)
+            {
+                foreach (var ingredientAmount in _IngredientsAmount)
+                {
+                    if (ingredientAmount.Key.Name == _ingredient.Name)
+                    {
+                        IngredientProperties ing = new IngredientProperties(_ingredient, ingredientAmount.Value);
+                        ing.IngredientId = Ingredients.Where(i => i.Name == _ingredient.Name).FirstOrDefault().Id;
+                        AddWithoutDuplicate(ing);
+                    }
+                }
+            }
+            SaveIngredientsCount();
+            DeleteNullIdIngredientProperties();
+            SaveChanges();
+            foreach (Food _recipe in _Recipes)
+            {
+                if (!Recipes.Any(r => r.Name == _recipe.Name))
+                {
+                    Recipes.Add(_recipe);
+                }
+            }
+            SaveChanges();
+            SaveRecipeItems();
+            foreach (Customer _customer in _Customers)
+            {
+                if (!Customers.Any(c => c.Name == _customer.Name))
+                {
+                    Customers.Add(_customer);
+                }
+            }
+            SaveChanges();
+        }
+
         public void FillCustomerList()
         {
             using var streamReader = File.OpenText(@"..\..\..\Customers.csv");
@@ -109,26 +178,83 @@ namespace ChikenKitchenDataBase
                 SaveChanges();
             }
         }
+        public Dictionary<Ingredient, int> GetIngredientsAmount()
+        {
+            Dictionary<Ingredient, int> IngredientAmount = new Dictionary<Ingredient, int>();
+            foreach (IngredientProperties ingredientProperties in IngredientProperties)
+            {
+                IngredientAmount.Add(Ingredients.Where(i => i.Id == ingredientProperties.IngredientId).FirstOrDefault(), ingredientProperties.Count);
+            }
+            foreach (var ingredient in Ingredients)
+            {
+                try
+                {
+                    _ = IngredientAmount[ingredient];
+                }
+                catch (System.Collections.Generic.KeyNotFoundException)
+                {
+                    IngredientAmount.Add(ingredient, 0);
+                }
+            }
+            return IngredientAmount;
+        }
+        public void SaveIngredientsCount()
+        {
+            foreach (IngredientProperties ingredientProperties in IngredientProperties)
+            {
+                foreach (Ingredient ingredient in Ingredients)
+                {
+                    if (ingredientProperties.Ingredient == ingredient)
+                    {
+                        ingredientProperties.IngredientId = ingredient.Id;
+                    }
+                }
+            }
+
+            SaveChanges();
+        }
+        public void DeleteNullIdIngredientProperties()
+        {
+            foreach (var count in IngredientProperties)
+            {
+                if (count.IngredientId == 0)
+                {
+                    IngredientProperties.Remove(count);
+                }
+            }
+        }
         public void SaveRecipeItems()
         {
             foreach (Food food in Recipes)
             {
                 foreach (RecipeItem recipeItem in food.Recipe)
                 {
-                    bool isFound = false;
-                    foreach (RecipeItem recipeItemDb in RecipeItems)
+                    if (!RecipeItems.Any(recipeItemDb => recipeItem.Food.Name == recipeItemDb.Food.Name
+                                                      && recipeItem.Ingredient.Name == recipeItemDb.Ingredient.Name))
                     {
-                        if (recipeItem.Food.Name == recipeItemDb.Food.Name && recipeItem.Ingredient.Name == recipeItemDb.Ingredient.Name)
-                        {
-                            isFound = true;
-                            break;
-                        }
-                    }
-                    if (!isFound)
                         RecipeItems.Add(new RecipeItem(food, recipeItem.Ingredient));
-
+                    }
                 }
             }
+            SaveChanges();
+        }
+        public void AddWithoutDuplicate(IngredientProperties _ingredientProperties)
+        {
+            foreach (IngredientProperties ingredientProp in IngredientProperties)
+            {
+                foreach (Ingredient ingredient in Ingredients)
+                {
+                    if (ingredient.Name == _ingredientProperties.Ingredient.Name)
+                    {
+                        _ingredientProperties.IngredientId = ingredient.Id;
+                        if (_ingredientProperties.IngredientId == ingredientProp.IngredientId)
+                        {
+                            return;
+                        }
+                    }
+                }
+            }
+            IngredientProperties.Add(_ingredientProperties);
             SaveChanges();
         }
         public void AddWithoutDuplicate(Ingredient ingredient)

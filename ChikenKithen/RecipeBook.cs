@@ -19,8 +19,20 @@ namespace ChikenKithen
             Recipes.AddRange(_Recipes);
         }
         
-        public void AddNewFood(Food food)
+        public void AddNewRecipe(Food food)
         {
+            Recipes.Add(food);
+        }
+        public void AddNewRecipe()
+        {
+            Food food = new Food();
+            Console.WriteLine("What is name of this food?");
+            food.Name = Console.ReadLine();
+            Console.WriteLine("What's in the recipe?(please use ',' between ingredients)");
+            foreach (string ingredientName in Console.ReadLine().Split(", "))
+            {
+                food.Recipe.Add(new RecipeItem(food, new Ingredient(ingredientName)));
+            }
             Recipes.Add(food);
         }
         public void RewriteRecipe(Food _food, string changeFoodName)

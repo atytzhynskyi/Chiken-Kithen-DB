@@ -14,7 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Chiken Kithen DB\ChikenKithen.csproj" />
+    <ProjectReference Include="..\BaseClasses\BaseClasses.csproj" />
+    <ProjectReference Include="..\ChikenKithen\ChikenKithen.csproj" />
   </ItemGroup>
 
 </Project>

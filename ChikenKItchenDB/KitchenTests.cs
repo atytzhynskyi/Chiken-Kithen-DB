@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using ChikenKItchenDB;
 using BaseClasses;
+using ChikenKithen;
 
 namespace ChikenKithen.Tests
 {
@@ -28,7 +29,7 @@ namespace ChikenKithen.Tests
             recipeBook = new RecipeBook(new List<Food> { ice, iceWithWater });
             kitchen = new Kitchen(storage, recipeBook);
             kitchen.Cook(iceWithWater);
-            
+            //bool B = isEnoughIngredients(iceWithWater);
         }
         [TestMethod()]
         public void CookTestFinalFoodCount()
@@ -51,7 +52,7 @@ namespace ChikenKithen.Tests
         [TestMethod()]
         public void isEnoughIngredientsTest()
         {
-            //Assert.IsTrue(isEnoughIngredients(iceWithWater));
+            //Assert.IsTrue(isEnoughIngredients());
         }
     }
 }

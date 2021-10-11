@@ -17,26 +17,36 @@ namespace BaseClasses
 
         public Customer(string _Name) {
             Name = _Name;
-        } 
-
+        }
+        public Customer(string _Name, params Ingredient[] _Allergies)
+        {
+            Name = _Name;
+            foreach(Ingredient ingredient in _Allergies)
+                Allergies.Add(new Allergy(this, ingredient));
+        }
+        public Customer(string _Name, params Allergy[] _Allergies)
+        {
+            Name = _Name;
+            Allergies.AddRange(_Allergies);
+        }
         public Customer(string _Name, Food _Order, params Allergy[] _Allergies){
             Name = _Name;
             Order = _Order;
             Allergies.AddRange(_Allergies);
         }
-        public void SetOrder(List<Food> menu, Ingredient _Order)
+        public void SetOrder(List<Food> menu, Food _Order)
         {
             foreach (Food food in menu)
             {
                 if (_Order.Name == food.Name)
                 {
-                    Order.Name = food.Name;
+                    Order = food;
                     return;
                 }
             }
             Console.WriteLine("Order doesnt exist in menu");
         }
-        public bool isAllergic(List<Food> recipes, Food food)
+        public (bool, Ingredient) isAllergic(List<Food> recipes, Food food)
         {
             foreach (Food _food in recipes)
             {
@@ -51,7 +61,7 @@ namespace BaseClasses
                 {
                     if (allergy.Ingredient.Name == recipeItem.Ingredient.Name)
                     {
-                        return true;
+                        return (true, allergy.Ingredient);
                     }
                 }
             }
@@ -61,14 +71,14 @@ namespace BaseClasses
                 {
                     if (_food.Name == recipeItem.Ingredient.Name)
                     {
-                        if (isAllergic(recipes, _food))
+                        if (isAllergic(recipes, _food).Item1)
                         {
-                            return true;
+                            return (true, isAllergic(recipes, _food).Item2);
                         }
                     }
                 }
             }
-            return false;
+            return (false, new Ingredient("NULL"));
         }
     }
 }

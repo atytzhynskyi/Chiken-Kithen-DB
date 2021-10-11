@@ -15,21 +15,25 @@ namespace ChikenKithen
     {
         public List<Ingredient> Ingredients { get; set; }
         public Dictionary<Ingredient, int> IngredientsAmount { get; set; } = new Dictionary<Ingredient, int>();
+        public Storage(List<Ingredient> _Ingredients, Dictionary<Ingredient, int> _IngredientsAmount)
+        {
+            Ingredients = _Ingredients;
+            IngredientsAmount = _IngredientsAmount;
+        }
         public Storage(List<Ingredient> _Ingredients)
         {
             Ingredients = _Ingredients;
         }
         
-        public void SetDictionary()
+        public void SetDictionaryFromFile()
         {
-            using var streamReader = File.OpenText("Ingredients.csv");
+            using var streamReader = File.OpenText(@"..\..\..\Ingredients.csv");
             using var csvReader = new CsvReader(streamReader, CultureInfo.CurrentCulture);
 
             string name;
             int amount;
             while (csvReader.Read())
             {
-
                 csvReader.TryGetField<string>(1, out name);
                 if (!int.TryParse(name, out amount))
                     continue;
@@ -39,10 +43,33 @@ namespace ChikenKithen
 
                 if (string.IsNullOrEmpty(name)|| Object.Equals(amount, null))
                     continue;
-                IngredientsAmount.Add((Ingredient)(from Ingredient ingredient in Ingredients
+                try
+                {
+                    IngredientsAmount.Add((Ingredient)(from Ingredient ingredient in Ingredients
                                                        where ingredient.Name == name
                                                        select ingredient).First(i => i.Name == name), amount);
+                }
+                catch (System.ArgumentException){}
             }
+            foreach (var ingredient in IngredientsAmount)
+            {
+                Console.WriteLine(ingredient.Key.Name + " " + ingredient.Value);
+            }
+        }
+        public void AddNewIngredient()
+        {
+            Ingredient ingredient = new Ingredient();
+            Console.WriteLine("What is name of this ingredient?");
+            ingredient.Name = Console.ReadLine();
+            Console.WriteLine("How much do you want?");
+            int count = Convert.ToInt32(Console.ReadLine());
+            if (!Ingredients.Any(i => i.Name == ingredient.Name))
+            {
+                IngredientsAmount.Add(ingredient, count);
+            }
+            else IngredientsAmount[Ingredients.Find(i => i.Name == ingredient.Name)] = count;
+            Ingredients.Add(ingredient);
+            return;
         }
         public void AddNewIngredient(Ingredient ingredient, int amount)
         {
@@ -75,8 +102,16 @@ namespace ChikenKithen
             Console.WriteLine("Ingredients List:");
             foreach (Ingredient ingredient in Ingredients.ToList())
             {
-                Console.Write(ingredient.Id+ " " + ingredient.Name + " ");
-                Console.Write(IngredientsAmount[ingredient]+ "\n");
+                try
+                {
+                    _ = IngredientsAmount[ingredient];
+                }
+                catch (System.Collections.Generic.KeyNotFoundException)
+                {
+                    continue;
+                }
+                Console.Write(ingredient.Name + " ");
+                Console.Write(IngredientsAmount[ingredient] + "\n");
             }
         }
         public void Clear()

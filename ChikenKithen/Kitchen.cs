@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using BaseClasses;
+
 namespace ChikenKithen
 {
     public class Kitchen
     {
         public Storage Storage;
         public RecipeBook RecipeBook;
-        public Dictionary<Food, int> FoodAmount { get; set;} = new Dictionary<Food, int>();
-        public Kitchen(){}
+        public Dictionary<Food, int> FoodAmount { get; set; } = new Dictionary<Food, int>();
+        public Kitchen() { }
         public Kitchen(Storage _Storage, RecipeBook _Recipes)
         {
             Storage = _Storage;
@@ -53,17 +54,17 @@ namespace ChikenKithen
 
             foreach (Food food in RecipeBook.Recipes)
             {
-                if(food.Name == order.Name)
+                if (food.Name == order.Name)
                     FoodAmount[food]++;
             }
             return;
         }
         public bool isEnoughIngredients(Food food)
         {
-            List<RecipeItem>fullRecipe = GetBaseIngredientRecipe(food.Recipe);
+            List<RecipeItem> fullRecipe = new List<RecipeItem>(GetBaseIngredientRecipe(food.Recipe));
             Dictionary<Ingredient, int> ingredientAmountsCopy = new Dictionary<Ingredient, int>();
 
-            foreach(Ingredient ingredient in Storage.Ingredients)
+            foreach (Ingredient ingredient in Storage.Ingredients)
             {
                 ingredientAmountsCopy.Add(ingredient, Storage.IngredientsAmount[ingredient]);
             }

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 using BaseClasses;
 using ChikenKitchenDataBase;
-
+using System.Linq;
 namespace ChikenKithen
 {
     class Hall
     {
-        CustomerBase AllCustomers = new CustomerBase();
+        public CustomerBase AllCustomers = new CustomerBase();
         Menu Menu = new Menu();
         public Hall() { }
         public Hall(ApplicationContext applicationContext)
@@ -23,14 +23,10 @@ namespace ChikenKithen
         public CustomerBase GetAllCustomers() => AllCustomers;
         public bool isNewCustomer(string Name)
         {
-            foreach (Customer customerTemp in AllCustomers.Customers)
-            {
-                if (customerTemp.Name == Name)
-                {
-                    return false;
-                }
-            }
-            return true;
+            if(AllCustomers.Customers.Any(c => c.Name == Name))
+                return false;
+            else
+                return true;
         }
         public void AddNewCustomer(Customer customer)
         {
@@ -72,18 +68,16 @@ namespace ChikenKithen
                 {
                     if (kitchen.FoodAmount[food] < 1)
                     {
-                        Console.WriteLine("We dont have " + customer.Order.Name);
                         return;
                     }
                     kitchen.FoodAmount[food]--;
-                    Console.WriteLine(customer.Name + " get " + food.Name);
                     customer.Order = new Food("");
                     return;
                 }
             }
             Console.WriteLine("Order doesnt exist in Ingedient List");
         }
-        public List<Ingredient> AskAllergies()
+        public List<Ingredient> AskAllergiesIngredients()
         {
             List<Ingredient> allergicIngredients = new List<Ingredient>();
             Console.WriteLine("Do you have any allergies? (please use ',' between allergic food)");
@@ -98,9 +92,9 @@ namespace ChikenKithen
         {
             Console.WriteLine("What you prefer to order?");
             string _OrderName = Console.ReadLine();
-            Food Order=new Food("NULL");
+            Food Order = new Food("NULL");
             bool isFound = false;
-            foreach(Food food in Menu.Foods)
+            foreach (Food food in Menu.Foods)
             {
                 if (food.Name.Contains(_OrderName))
                 {
