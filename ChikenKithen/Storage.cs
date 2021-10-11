@@ -51,10 +51,6 @@ namespace ChikenKithen
                 }
                 catch (System.ArgumentException){}
             }
-            foreach (var ingredient in IngredientsAmount)
-            {
-                Console.WriteLine(ingredient.Key.Name + " " + ingredient.Value);
-            }
         }
         public void AddNewIngredient()
         {
@@ -110,6 +106,7 @@ namespace ChikenKithen
                 {
                     continue;
                 }
+                if (IngredientsAmount[ingredient] == 0) continue;
                 Console.Write(ingredient.Name + " ");
                 Console.Write(IngredientsAmount[ingredient] + "\n");
             }

@@ -23,15 +23,14 @@ namespace ChikenKithen.Tests
         {
             water = new Ingredient("water");
             storage = new Storage(new List<Ingredient> { water });
-            storage.IngredientsAmount.Add(water, 3);
+            storage.IngredientsAmount.Add(water, 4);
             ice = new Food("Ice", water);
             iceWithWater = new Food("Ice with water", water, new Ingredient("Ice"));
             recipeBook = new RecipeBook(new List<Food> { ice, iceWithWater });
             kitchen = new Kitchen(storage, recipeBook);
             kitchen.Cook(iceWithWater);
-            //bool B = isEnoughIngredients(iceWithWater);
         }
-        [TestMethod()]
+            [TestMethod()]
         public void CookTestFinalFoodCount()
         {
             Assert.AreEqual(1, kitchen.FoodAmount[iceWithWater], "final food count doesn't right");
@@ -40,7 +39,7 @@ namespace ChikenKithen.Tests
         [TestMethod()]
         public void CookTestBaseIngredientCount()
         {
-            Assert.AreEqual(1, storage.IngredientsAmount[water], "base ingredient count doesn't right");
+            Assert.AreEqual(2, storage.IngredientsAmount[water], "base ingredient count doesn't right");
         }
 
         [TestMethod()]
@@ -50,9 +49,17 @@ namespace ChikenKithen.Tests
         }
 
         [TestMethod()]
-        public void isEnoughIngredientsTest()
+        public void isEnoughIngredientsTestFalse()
         {
-            //Assert.IsTrue(isEnoughIngredients());
+            Assert.IsTrue(kitchen.isEnoughIngredients(iceWithWater));
+        }
+
+
+        [TestMethod()]
+        public void isEnoughIngredientsTestTrue()
+        {
+            kitchen.Cook(iceWithWater);
+            Assert.IsFalse(kitchen.isEnoughIngredients(iceWithWater));
         }
     }
 }

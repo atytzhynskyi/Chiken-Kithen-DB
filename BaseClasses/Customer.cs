@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
+using System.Linq;
 
 namespace BaseClasses
 {
@@ -48,33 +49,22 @@ namespace BaseClasses
         }
         public (bool, Ingredient) isAllergic(List<Food> recipes, Food food)
         {
-            foreach (Food _food in recipes)
+            food = recipes.Where(r => r.Name == food.Name).FirstOrDefault();
+            foreach (var recipe in from Food recipe in recipes
+                                   from RecipeItem recipeItem in food.Recipe
+                                   where recipe.Name == recipeItem.Ingredient.Name
+                                   where isAllergic(recipes, recipe).Item1
+                                   select recipe)
             {
-                if (_food.Name == food.Name)
-                {
-                    food = _food;
-                }
+                return (true, isAllergic(recipes, recipe).Item2);
             }
-            foreach (RecipeItem recipeItem in food.Recipe)
+            foreach(RecipeItem recipeItem in food.Recipe)
             {
-                foreach (Allergy allergy in Allergies)
+                if(!recipes.Any(r => r.Name == recipeItem.Ingredient.Name))
                 {
-                    if (allergy.Ingredient.Name == recipeItem.Ingredient.Name)
+                    if(Allergies.Any(a=> a.Ingredient.Name == recipeItem.Ingredient.Name))
                     {
-                        return (true, allergy.Ingredient);
-                    }
-                }
-            }
-            foreach (Food _food in recipes)
-            {
-                foreach (RecipeItem recipeItem in food.Recipe)
-                {
-                    if (_food.Name == recipeItem.Ingredient.Name)
-                    {
-                        if (isAllergic(recipes, _food).Item1)
-                        {
-                            return (true, isAllergic(recipes, _food).Item2);
-                        }
+                        return (true, recipeItem.Ingredient);
                     }
                 }
             }

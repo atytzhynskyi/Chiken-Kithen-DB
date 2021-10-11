@@ -71,7 +71,6 @@ namespace ChikenKithen
                         return;
                     }
                     kitchen.FoodAmount[food]--;
-                    customer.Order = new Food("");
                     return;
                 }
             }

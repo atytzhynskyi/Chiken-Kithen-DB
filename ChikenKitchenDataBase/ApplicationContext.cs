@@ -26,10 +26,18 @@ namespace ChikenKitchenDataBase
         {
             Database.EnsureCreated();
             InitializateRecipeItems();
+            SetCustomersAllergies();
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=ChikenKitchen;Trusted_Connection=True;MultipleActiveResultSets=True;");
+        }
+        private void SetCustomersAllergies()
+        {
+            foreach(Allergy allergy in Allergies)
+            {
+                Customers.Where(c => c.Id == allergy.CustomerId).FirstOrDefault().Allergies.Add(allergy);
+            }
         }
         private void InitializateRecipeItems()
         {
@@ -116,6 +124,16 @@ namespace ChikenKitchenDataBase
             }
             SaveIngredientsCount();
         }
+
+        public void SetNullOrder()
+        {
+            foreach(Customer customer in Customers)
+            {
+                customer.Order = null;
+            }
+            SaveChanges();
+        }
+
         public void SaveAll(List<Ingredient> _Ingredients, Dictionary<Ingredient, int> _IngredientsAmount, List<Food> _Recipes, List<Customer> _Customers)
         {
             foreach (Ingredient _ingredient in _Ingredients)

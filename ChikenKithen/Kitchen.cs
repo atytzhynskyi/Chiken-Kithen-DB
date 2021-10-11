@@ -23,21 +23,22 @@ namespace ChikenKithen
         }
         public void Cook(Food order)
         {
+            if (!isEnoughIngredients(order))
+            {
+                Console.WriteLine("aaa");
+                return;
+            }
+
             foreach (Food recipe in RecipeBook.Recipes)
             {
                 if (recipe.Name == order.Name)
                     order.Recipe = recipe.Recipe;
             }
 
-            if (!isEnoughIngredients(order))
-            {
-                Console.WriteLine("We dont have enough ingredients");
-                return;
-            }
-
             foreach (var ingredient in from Ingredient ingredient in Storage.Ingredients
                                        from RecipeItem ingredientRecipe in order.Recipe
                                        where ingredient.Name == ingredientRecipe.Ingredient.Name
+                                       where !RecipeBook.Recipes.Any(f => f.Name==ingredient.Name)
                                        select ingredient)
             {
                 Storage.IngredientsAmount[ingredient] -= 1;
@@ -63,17 +64,15 @@ namespace ChikenKithen
         {
             List<RecipeItem> fullRecipe = new List<RecipeItem>(GetBaseIngredientRecipe(food.Recipe));
             Dictionary<Ingredient, int> ingredientAmountsCopy = new Dictionary<Ingredient, int>();
-
-            foreach (Ingredient ingredient in Storage.Ingredients)
+            foreach(var ingredientAmount in Storage.IngredientsAmount)
             {
-                ingredientAmountsCopy.Add(ingredient, Storage.IngredientsAmount[ingredient]);
+                ingredientAmountsCopy.Add(ingredientAmount.Key, ingredientAmount.Value);
             }
-
-            foreach (RecipeItem ingredientRecipe in fullRecipe)
+            foreach (RecipeItem recipeItem in GetBaseIngredientRecipe(food.Recipe))
             {
                 foreach (Ingredient ingredient in Storage.Ingredients)
                 {
-                    if (ingredient.Name == ingredientRecipe.Ingredient.Name)
+                    if (ingredient.Name == recipeItem.Ingredient.Name && !RecipeBook.Recipes.Any(f => f.Name==ingredient.Name))
                     {
                         ingredientAmountsCopy[ingredient]--;
                         if (ingredientAmountsCopy[ingredient] < 0)
