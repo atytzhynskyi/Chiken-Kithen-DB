@@ -20,7 +20,7 @@ namespace ChikenKitchenDataBase
         public DbSet<IngredientProperties> IngredientProperties { get; set; }
         public DbSet<Food> Recipes { get; set; }
         public DbSet<Customer> Customers { get; set; }
-        public DbSet<RecipeItem> RecipeItems { get; set; }
+        public DbSet<Component> Components { get; set; }
         public DbSet<Allergy> Allergies { get; set; }
         public ApplicationContext()
         {
@@ -34,24 +34,27 @@ namespace ChikenKitchenDataBase
         }
         private void SetCustomersAllergies()
         {
-            foreach(Allergy allergy in Allergies)
+            foreach (Allergy allergy in Allergies)
             {
-                Customers.Where(c => c.Id == allergy.CustomerId).FirstOrDefault().Allergies.Add(allergy);
+                foreach (Customer customer in Customers.Where(c => c.Id == allergy.CustomerId).ToList())
+                {
+                    customer.Allergies.Add(allergy);
+                }
             }
         }
         private void InitializateRecipeItems()
         {
-            foreach (Food food in Recipes)
+            foreach (Component component in Components)
             {
-                var readRecipeItems = RecipeItems.FromSqlRaw<RecipeItem>("SELECT * FROM RecipeItems WHERE FoodId=@id", new SqlParameter("@id", food.Id)).ToList();
-                foreach (Ingredient ingredient in Ingredients)
+                foreach (Food food in Recipes.Where(r => r.Id == component.RecipeId).ToList())
                 {
-                    foreach (RecipeItem recipeItem in readRecipeItems)
+                    if (!object.Equals(component.FoodId, null))
                     {
-                        if (recipeItem.IngredientId == ingredient.Id)
-                        {
-                            food.Recipe.Add(new RecipeItem(food, ingredient));
-                        }
+                        food.Recipe.Add(new RecipeItem(food, new Ingredient(Recipes.Where(r=>r.Id == component.FoodId).FirstOrDefault().Name)));
+                    }
+                    if (!object.Equals(component.IngredientId, null))
+                    {
+                        food.Recipe.Add(new RecipeItem(food, Ingredients.Where(i=>i.Id==component.IngredientId).FirstOrDefault()));
                     }
                 }
             }
@@ -127,7 +130,7 @@ namespace ChikenKitchenDataBase
 
         public void SetNullOrder()
         {
-            foreach(Customer customer in Customers)
+            foreach (Customer customer in Customers)
             {
                 customer.Order = null;
             }
@@ -247,10 +250,20 @@ namespace ChikenKitchenDataBase
             {
                 foreach (RecipeItem recipeItem in food.Recipe)
                 {
-                    if (!RecipeItems.Any(recipeItemDb => recipeItem.Food.Name == recipeItemDb.Food.Name
-                                                      && recipeItem.Ingredient.Name == recipeItemDb.Ingredient.Name))
+                    if (Recipes.Any(r => r.Name == recipeItem.Ingredient.Name))
                     {
-                        RecipeItems.Add(new RecipeItem(food, recipeItem.Ingredient));
+                        if (!Components.Any(c => c.FoodId == Recipes.Where(r => r.Name == recipeItem.Ingredient.Name).FirstOrDefault().Id))
+                        {
+                            Components.Add(new Component(food, Recipes.Where(r => r.Name == recipeItem.Ingredient.Name).FirstOrDefault()));
+                            continue;
+                        }
+                    }
+                    if (Ingredients.Any(r => r.Name == recipeItem.Ingredient.Name))
+                    {
+                        if (!Components.Any(c => c.IngredientId == recipeItem.IngredientId))
+                        {
+                            Components.Add(new Component(food, Ingredients.Where(i=>i.Name == recipeItem.Ingredient.Name).FirstOrDefault()));
+                        }
                     }
                 }
             }

@@ -37,11 +37,6 @@ namespace ChikenKithen
                             while (inputStr != "")
                             {
                                 string name = inputStr.Split(", ")[0];
-                                /*if (hall.isNewCustomer(name))
-                                {
-                                    hall.AddNewCustomer(new Customer(name, hall.AskAllergiesIngredients().ToArray()));
-                                    applicationContext.SaveChanges();
-                                }*/
                                 if (hall.isNewCustomer(name))
                                 {
                                     continue;
