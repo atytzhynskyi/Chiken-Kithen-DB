@@ -10,42 +10,26 @@ namespace BaseClasses
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public List<RecipeItem> Recipe = new List<RecipeItem>();
+        public List<Food> RecipeFoods = new List<Food>();
+        public List<Ingredient> RecipeIngredients = new List<Ingredient>();
+        //public List<RecipeItem> Recipe = new List<RecipeItem>();
         public Food() { }
         public Food(string _Name) { Name = _Name; }
-        public Food(string _Name, params RecipeItem[] _RecipeItem)
+        public Food(string _Name, params Ingredient[] _RecipeIngredients)
         {
             Name = _Name;
-            Recipe.AddRange(_RecipeItem);
+            RecipeIngredients.AddRange(_RecipeIngredients);
         }
-        public Food(string _Name, params Ingredient[] _RecipeItem)
+        public Food(string _Name, params Food[] _RecipeFoods)
         {
             Name = _Name;
-            foreach (Ingredient ingredient in _RecipeItem)
-            {
-                Recipe.Add(new RecipeItem(this, ingredient));
-            }
+            RecipeFoods.AddRange(_RecipeFoods);
         }
-        public Food(List<Ingredient> ingredients, params string[] nameAndIngredient)
+        public Food(string _Name, List<Ingredient> _RecipeIngredients, List<Food>_RecipeFoods)
         {
-            Name = nameAndIngredient[0];
-            foreach (string ingredientName in nameAndIngredient)
-            {
-                if (Name == ingredientName) continue;
-                bool isFound = false;
-                foreach (Ingredient ingredient in ingredients)
-                {
-                    if (ingredientName == ingredient.Name)
-                    {
-                        isFound = true;
-                        Recipe.Add(new RecipeItem(this, ingredient));
-                    }
-                }
-                if (!isFound)
-                {
-                    Recipe.Add(new RecipeItem(this, new Ingredient(ingredientName)));
-                }
-            }
+            Name = _Name;
+            RecipeIngredients.AddRange(_RecipeIngredients);
+            RecipeFoods.AddRange(_RecipeFoods);
         }
     }
 }

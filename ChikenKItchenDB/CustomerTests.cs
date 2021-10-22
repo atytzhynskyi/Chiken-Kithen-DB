@@ -22,7 +22,7 @@ namespace BaseClasses.Tests
             Customer customer = new Customer("SugarMan", water);
             Food ice = new Food("Ice", water);
             Food saltWater = new Food("Salt water", salt, water);
-            Food saltwaterIce = new Food("Salt water ice", new Ingredient(saltWater.Name), new Ingredient(ice.Name));
+            Food saltwaterIce = new Food("Salt water ice", new List<Food>{ saltWater, ice}.ToArray());
             Food saltRock = new Food("Salt rock", salt);
             RecipeBook recipeBook = new RecipeBook(new List<Food> { ice, saltWater, saltwaterIce, saltRock });
 

@@ -15,6 +15,7 @@ namespace ChikenKithen
     {
         public List<Ingredient> Ingredients { get; set; }
         public Dictionary<Ingredient, int> IngredientsAmount { get; set; } = new Dictionary<Ingredient, int>();
+        public Dictionary<Ingredient, int> IngredientsPrice { get; set; } = new Dictionary<Ingredient, int>();
         public Storage(List<Ingredient> _Ingredients, Dictionary<Ingredient, int> _IngredientsAmount)
         {
             Ingredients = _Ingredients;
@@ -32,6 +33,7 @@ namespace ChikenKithen
 
             string name;
             int amount;
+            int price;
             while (csvReader.Read())
             {
                 csvReader.TryGetField<string>(1, out name);
@@ -40,6 +42,7 @@ namespace ChikenKithen
 
                 csvReader.TryGetField<string>(0, out name);
                 csvReader.TryGetField<int>(1, out amount);
+                csvReader.TryGetField<int>(2, out price);
 
                 if (string.IsNullOrEmpty(name)|| Object.Equals(amount, null))
                     continue;
@@ -50,6 +53,13 @@ namespace ChikenKithen
                                                        select ingredient).First(i => i.Name == name), amount);
                 }
                 catch (System.ArgumentException){}
+                try
+                {
+                    IngredientsPrice.Add((Ingredient)(from Ingredient ingredient in Ingredients
+                                                      where ingredient.Name == name
+                                                      select ingredient).First(i => i.Name == name), price);
+                }
+                catch (System.ArgumentException) { }
             }
         }
         public void AddNewIngredient()
@@ -108,7 +118,8 @@ namespace ChikenKithen
                 }
                 if (IngredientsAmount[ingredient] == 0) continue;
                 Console.Write(ingredient.Name + " ");
-                Console.Write(IngredientsAmount[ingredient] + "\n");
+                Console.Write(IngredientsAmount[ingredient] + " ");
+                Console.Write(IngredientsPrice[ingredient] + "\n");
             }
         }
         public void Clear()

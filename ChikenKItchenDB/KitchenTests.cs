@@ -25,7 +25,7 @@ namespace ChikenKithen.Tests
             storage = new Storage(new List<Ingredient> { water });
             storage.IngredientsAmount.Add(water, 4);
             ice = new Food("Ice", water);
-            iceWithWater = new Food("Ice with water", water, new Ingredient("Ice"));
+            iceWithWater = new Food("Ice with water", new List<Ingredient> { water }, new List<Food> { ice });
             recipeBook = new RecipeBook(new List<Food> { ice, iceWithWater });
             kitchen = new Kitchen(storage, recipeBook);
             kitchen.Cook(iceWithWater);

@@ -25,28 +25,29 @@ namespace ChikenKithen
         {
             if (!isEnoughIngredients(order))
             {
-                Console.WriteLine("aaa");
                 return;
             }
 
             foreach (Food recipe in RecipeBook.Recipes)
             {
                 if (recipe.Name == order.Name)
-                    order.Recipe = recipe.Recipe;
+                {
+                    order.RecipeIngredients = recipe.RecipeIngredients;
+                    order.RecipeFoods = recipe.RecipeFoods;
+                }
             }
 
             foreach (var ingredient in from Ingredient ingredient in Storage.Ingredients
-                                       from RecipeItem ingredientRecipe in order.Recipe
-                                       where ingredient.Name == ingredientRecipe.Ingredient.Name
-                                       where !RecipeBook.Recipes.Any(f => f.Name==ingredient.Name)
+                                       from Ingredient ingredientRecipe in order.RecipeIngredients
+                                       where ingredient.Name == ingredientRecipe.Name
                                        select ingredient)
             {
                 Storage.IngredientsAmount[ingredient] -= 1;
             }
 
             foreach (var food in from Food food in RecipeBook.Recipes
-                                 from RecipeItem ingredient in order.Recipe
-                                 where food.Name == ingredient.Ingredient.Name
+                                 from Food RecipeFood in order.RecipeFoods
+                                 where food.Name == RecipeFood.Name
                                  select food)
             {
                 Cook(food);
@@ -56,23 +57,24 @@ namespace ChikenKithen
             foreach (Food food in RecipeBook.Recipes)
             {
                 if (food.Name == order.Name)
+                {
                     FoodAmount[food]++;
+                    return;
+                }
             }
-            return;
         }
         public bool isEnoughIngredients(Food food)
         {
-            List<RecipeItem> fullRecipe = new List<RecipeItem>(GetBaseIngredientRecipe(food.Recipe));
             Dictionary<Ingredient, int> ingredientAmountsCopy = new Dictionary<Ingredient, int>();
             foreach(var ingredientAmount in Storage.IngredientsAmount)
             {
                 ingredientAmountsCopy.Add(ingredientAmount.Key, ingredientAmount.Value);
             }
-            foreach (RecipeItem recipeItem in GetBaseIngredientRecipe(food.Recipe))
+            foreach (Ingredient ingredientRecipe in GetBaseIngredientRecipe(food))
             {
                 foreach (Ingredient ingredient in Storage.Ingredients)
                 {
-                    if (ingredient.Name == recipeItem.Ingredient.Name && !RecipeBook.Recipes.Any(f => f.Name==ingredient.Name))
+                    if (ingredient.Name == ingredientRecipe.Name)
                     {
                         ingredientAmountsCopy[ingredient]--;
                         if (ingredientAmountsCopy[ingredient] < 0)
@@ -84,27 +86,15 @@ namespace ChikenKithen
             }
             return true;
         }
-        private List<RecipeItem> GetBaseIngredientRecipe(List<RecipeItem> Recipe)
+        private List<Ingredient> GetBaseIngredientRecipe(Food food)
         {
-            List<RecipeItem> fullRecipe = new List<RecipeItem>();
-            foreach (RecipeItem recipeItem in Recipe)
-            {
-                foreach (Food food in RecipeBook.Recipes)
-                {
-                    if (food.Name == recipeItem.Ingredient.Name)
-                    {
-                        fullRecipe.AddRange(GetBaseIngredientRecipe(food.Recipe));
-                        break;
-                    }
-                }
-                foreach (Ingredient baseIngredient in Storage.Ingredients)
-                {
-                    if (baseIngredient.Name == recipeItem.Ingredient.Name)
-                    {
-                        fullRecipe.Add(recipeItem);
-                    }
-                }
-            }
+            List<Ingredient> fullRecipe = new List<Ingredient>();
+
+            fullRecipe.AddRange(food.RecipeIngredients);
+            
+            foreach (Food recipeFood in food.RecipeFoods)
+                fullRecipe.AddRange(GetBaseIngredientRecipe(recipeFood));
+
             return fullRecipe;
         }
         public void ShowAll()

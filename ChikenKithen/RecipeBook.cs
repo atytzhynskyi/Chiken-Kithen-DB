@@ -31,31 +31,13 @@ namespace ChikenKithen
             Console.WriteLine("What's in the recipe?(please use ',' between ingredients)");
             foreach (string ingredientName in Console.ReadLine().Split(", "))
             {
-                food.Recipe.Add(new RecipeItem(food, new Ingredient(ingredientName)));
+                if (Recipes.Any(r => r.Name == ingredientName)) {
+                    food.RecipeFoods.Add(Recipes.Where(r => r.Name == ingredientName).FirstOrDefault());
+                    continue;
+                }
+                food.RecipeIngredients.Add(new Ingredient(ingredientName));
             }
             Recipes.Add(food);
-        }
-        public void RewriteRecipe(Food _food, string changeFoodName)
-        {
-            foreach (var food in from Food food in Recipes
-                                 where food.Name == changeFoodName
-                                 select food)
-            {
-                food.Recipe = _food.Recipe;
-                food.Name = _food.Name;
-                return;
-            }
-        }
-        public void DeleteRecipe(string _foodName)
-        {
-            foreach (Food food in Recipes)
-            {
-                if (food.Name == _foodName)
-                {
-                    Recipes.Remove(food);
-                    return;
-                }
-            }
         }
         public void ShowRecipes()
         {
@@ -63,9 +45,13 @@ namespace ChikenKithen
             foreach (Food recipe in Recipes.ToList())
             {
                 Console.WriteLine(recipe.Id + " " + recipe.Name + ":");
-                foreach (RecipeItem recipeItem in recipe.Recipe)
+                foreach (Food food in recipe.RecipeFoods)
                 {
-                    Console.Write(recipeItem.Ingredient.Name + ", ");
+                    Console.Write(food.Name + ", ");
+                }
+                foreach(Ingredient ingredient in recipe.RecipeIngredients)
+                {
+                    Console.Write(ingredient.Name + ", ");
                 }
                 Console.Write("\n");
             }

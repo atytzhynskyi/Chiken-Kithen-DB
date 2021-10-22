@@ -20,7 +20,8 @@ namespace ChikenKitchenDataBase
         public DbSet<IngredientProperties> IngredientProperties { get; set; }
         public DbSet<Food> Recipes { get; set; }
         public DbSet<Customer> Customers { get; set; }
-        public DbSet<Component> Components { get; set; }
+        public DbSet<FoodComponent> FoodComponents { get; set; }
+        public DbSet<IngredientComponent> IngredientComponents { get; set; }
         public DbSet<Allergy> Allergies { get; set; }
         public ApplicationContext()
         {
@@ -44,17 +45,23 @@ namespace ChikenKitchenDataBase
         }
         private void InitializateRecipeItems()
         {
-            foreach (Component component in Components)
+            foreach(FoodComponent foodComponent in FoodComponents)
             {
-                foreach (Food food in Recipes.Where(r => r.Id == component.RecipeId).ToList())
+                foreach(Food food in Recipes)
                 {
-                    if (!object.Equals(component.FoodId, null))
+                    if (food.Id == foodComponent.RecipeId)
                     {
-                        food.Recipe.Add(new RecipeItem(food, new Ingredient(Recipes.Where(r=>r.Id == component.FoodId).FirstOrDefault().Name)));
+                        food.RecipeFoods.Add(Recipes.Where(r=>r.Id==foodComponent.Id).FirstOrDefault());
                     }
-                    if (!object.Equals(component.IngredientId, null))
+                }
+            }
+            foreach (IngredientComponent ingredientComponent in IngredientComponents)
+            {
+                foreach (Food food in Recipes)
+                {
+                    if (food.Id == ingredientComponent.RecipeId)
                     {
-                        food.Recipe.Add(new RecipeItem(food, Ingredients.Where(i=>i.Id==component.IngredientId).FirstOrDefault()));
+                        food.RecipeIngredients.Add(Ingredients.Where(i=>i.Id==ingredientComponent.IngredientId).FirstOrDefault());
                     }
                 }
             }
@@ -62,23 +69,35 @@ namespace ChikenKitchenDataBase
         public void AddBaseRecipe()
         {
             using var streamReader = File.OpenText(@"..\..\..\Foods.csv");
-            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-            {
-                HasHeaderRecord = false,
-            };
-            using var csvReader = new CsvReader(streamReader, config);
+            using var csvReader = new CsvReader(streamReader, CultureInfo.CurrentCulture);
+
             string name;
             while (csvReader.Read())
             {
                 List<string> fileLine = new List<string>();
-                for (int i = 0; csvReader.TryGetField<string>(i, out name); i++)
+                csvReader.TryGetField<string>(0, out name);
+
+                if (string.IsNullOrEmpty(name)) continue;
+                if (Recipes.Any(r => r.Name == name)) continue;
+
+                Food food = new Food(name);
+                for (int i = 1; csvReader.TryGetField<string>(i, out name); i++)
                 {
-                    fileLine.Add(name);
+                    if (string.IsNullOrEmpty(name)) continue;
+
+                    if (Recipes.Any(r => r.Name == name))
+                    {
+                        food.RecipeFoods.Add(Recipes.Where(r => r.Name == name).FirstOrDefault());
+                        continue;
+                    }
+                    if (Ingredients.Any(i => i.Name == name))
+                    {
+                        food.RecipeIngredients.Add(Ingredients.Where(i=>i.Name==name).FirstOrDefault());
+                        continue;
+                    }
+                    food.RecipeFoods.Add(new Food(name));
                 }
-                Food food = new Food(Ingredients.ToList(), fileLine.ToArray());
                 AddWithoutDuplicate(food);
-                SaveChanges();
-                SaveRecipeItems();
             }
         }
         public void AddBaseIngredients()
@@ -166,7 +185,7 @@ namespace ChikenKitchenDataBase
             {
                 if (!Recipes.Any(r => r.Name == _recipe.Name))
                 {
-                    Recipes.Add(_recipe);
+                    AddWithoutDuplicate(_recipe);
                 }
             }
             SaveChanges();
@@ -248,22 +267,18 @@ namespace ChikenKitchenDataBase
         {
             foreach (Food food in Recipes)
             {
-                foreach (RecipeItem recipeItem in food.Recipe)
+                foreach(Food recipeFood in food.RecipeFoods)
                 {
-                    if (Recipes.Any(r => r.Name == recipeItem.Ingredient.Name))
+                    if (!FoodComponents.Any(fc => fc.RecipeId == food.Id && fc.FoodId == recipeFood.Id))
                     {
-                        if (!Components.Any(c => c.FoodId == Recipes.Where(r => r.Name == recipeItem.Ingredient.Name).FirstOrDefault().Id))
-                        {
-                            Components.Add(new Component(food, Recipes.Where(r => r.Name == recipeItem.Ingredient.Name).FirstOrDefault()));
-                            continue;
-                        }
+                        FoodComponents.Add(new FoodComponent(food, Recipes.Where(r=>r.Name == recipeFood.Name).FirstOrDefault()));
                     }
-                    if (Ingredients.Any(r => r.Name == recipeItem.Ingredient.Name))
+                }
+                foreach(Ingredient ingredient in food.RecipeIngredients)
+                {
+                    if (!IngredientComponents.Any(ic => ic.Ingredient.Name == ingredient.Name && ic.Recipe.Name == food.Name))
                     {
-                        if (!Components.Any(c => c.IngredientId == recipeItem.IngredientId))
-                        {
-                            Components.Add(new Component(food, Ingredients.Where(i=>i.Name == recipeItem.Ingredient.Name).FirstOrDefault()));
-                        }
+                        IngredientComponents.Add(new IngredientComponent(food, ingredient));
                     }
                 }
             }

@@ -13,16 +13,17 @@ namespace BaseClasses
         public string Name { get; set; }
         public Food Order { get; set; }
         public List<Allergy> Allergies { get; set; } = new List<Allergy>();
-
+        public int budget;
         public Customer() { }
 
-        public Customer(string _Name) {
+        public Customer(string _Name)
+        {
             Name = _Name;
         }
         public Customer(string _Name, params Ingredient[] _Allergies)
         {
             Name = _Name;
-            foreach(Ingredient ingredient in _Allergies)
+            foreach (Ingredient ingredient in _Allergies)
                 Allergies.Add(new Allergy(this, ingredient));
         }
         public Customer(string _Name, params Allergy[] _Allergies)
@@ -30,7 +31,8 @@ namespace BaseClasses
             Name = _Name;
             Allergies.AddRange(_Allergies);
         }
-        public Customer(string _Name, Food _Order, params Allergy[] _Allergies){
+        public Customer(string _Name, Food _Order, params Allergy[] _Allergies)
+        {
             Name = _Name;
             Order = _Order;
             Allergies.AddRange(_Allergies);
@@ -51,21 +53,18 @@ namespace BaseClasses
         {
             food = recipes.Where(r => r.Name == food.Name).FirstOrDefault();
             foreach (var recipe in from Food recipe in recipes
-                                   from RecipeItem recipeItem in food.Recipe
-                                   where recipe.Name == recipeItem.Ingredient.Name
+                                   from Food recipeFood in food.RecipeFoods
+                                   where recipe.Name == recipeFood.Name
                                    where isAllergic(recipes, recipe).Item1
                                    select recipe)
             {
                 return (true, isAllergic(recipes, recipe).Item2);
             }
-            foreach(RecipeItem recipeItem in food.Recipe)
+            foreach (Ingredient ingredient in food.RecipeIngredients)
             {
-                if(!recipes.Any(r => r.Name == recipeItem.Ingredient.Name))
+                if (Allergies.Any(a => a.Ingredient.Name == ingredient.Name))
                 {
-                    if(Allergies.Any(a=> a.Ingredient.Name == recipeItem.Ingredient.Name))
-                    {
-                        return (true, recipeItem.Ingredient);
-                    }
+                    return (true, ingredient);
                 }
             }
             return (false, new Ingredient("NULL"));
