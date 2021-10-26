@@ -9,7 +9,7 @@ namespace ChikenKithen
     class Hall
     {
         public CustomerBase AllCustomers = new CustomerBase();
-        Menu Menu = new Menu();
+        public Menu Menu = new Menu();
         public Hall() { }
         public Hall(ApplicationContext applicationContext)
         {

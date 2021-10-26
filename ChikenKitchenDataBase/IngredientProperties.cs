@@ -14,7 +14,15 @@ namespace ChikenKitchenDataBase
         [ForeignKey("IngredientId")]
         public Ingredient Ingredient { get; }
         public int Count { get; set; }
+        [Column("Price")]
+        public int Price { get; set; }
         public IngredientProperties() { }
+        public IngredientProperties(Ingredient _Ingredient, int _Count, int _Price)
+        {
+            Ingredient = _Ingredient;
+            Count = _Count;
+            Price = _Price;
+        }
         public IngredientProperties(Ingredient _Ingredient, int _Count)
         {
             Ingredient = _Ingredient;

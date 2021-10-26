@@ -14,6 +14,7 @@ namespace ChikenKithen
     class CustomerBase
     {
         public List<Customer> Customers { get; set; } = new List<Customer>();
+        public Dictionary<Customer, int> CustomersBudget = new Dictionary<Customer, int>();
         public CustomerBase() { }
         public CustomerBase(List<Customer> _Customers)
         {

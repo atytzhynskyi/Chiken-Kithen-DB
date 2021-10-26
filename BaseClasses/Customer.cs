@@ -12,8 +12,8 @@ namespace BaseClasses
         public int Id { get; set; }
         public string Name { get; set; }
         public Food Order { get; set; }
+        public int budget { get; set; }
         public List<Allergy> Allergies { get; set; } = new List<Allergy>();
-        public int budget;
         public Customer() { }
 
         public Customer(string _Name)

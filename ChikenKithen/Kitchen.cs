@@ -21,6 +21,19 @@ namespace ChikenKithen
                 FoodAmount.Add(food, 0);
             }
         }
+        public int CalculateFoodPrice(Food food)
+        {
+            int price = 0;
+            foreach(Food foodRecipe in food.RecipeFoods)
+            {
+                price += CalculateFoodPrice(foodRecipe);
+            }
+            foreach(Ingredient ingredient in food.RecipeIngredients)
+            {
+                price += Storage.IngredientsPrice[Storage.Ingredients.Where(i => i.Name == ingredient.Name).First()];
+            }
+            return price;
+        }
         public void Cook(Food order)
         {
             if (!isEnoughIngredients(order))

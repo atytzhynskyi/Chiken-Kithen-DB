@@ -1,6 +1,7 @@
 ﻿using BaseClasses;
 using ChikenKitchenDataBase;
 using System;
+using System.IO;
 using System.Linq;
 
 namespace ChikenKithen
@@ -12,10 +13,18 @@ namespace ChikenKithen
             using (ApplicationContext applicationContext = new ApplicationContext())
             {
                 //applicationContext.Database.EnsureDeleted();
+                
+                applicationContext.DeleteNullIdIngredientProperties();
+                applicationContext.RemoveZeroIngredientProperties();
+
                 applicationContext.FillCustomerList();
                 applicationContext.AddBaseIngredients();
                 applicationContext.AddIngredientCount();
+                applicationContext.AddBaseFoods();
                 applicationContext.AddBaseRecipe();
+
+                applicationContext.RemoveZeroIngredientProperties();
+
 
                 Storage storage = new Storage(applicationContext.Ingredients.ToList(), applicationContext.GetIngredientsAmount());
                 storage.SetDictionaryFromFile();
@@ -26,9 +35,9 @@ namespace ChikenKithen
 
                 while (2 + 2 != 5)
                 {
-                    Console.WriteLine("What you prefer to do?\n 1.Get order and serve\n 2.Show all recipe\n 3.Show all Ingredient\n 4.Add new ingredient\n 5.Add new recipe\n 6.Close program\n");
+                    Console.WriteLine("What you prefer to do?\n 1.Get order and serve\n 2.Show all recipe\n 3.Show all Ingredient\n 4.Add new ingredient\n 5.Add new recipe\n 6.Read command from file\n 7.Close program\n");
                     int input = Convert.ToInt32(Console.ReadLine());
-                    if (input == 6) break;
+                    if (input == 7) break;
                     switch (input)
                     {
                         case 1:
@@ -39,25 +48,27 @@ namespace ChikenKithen
                                 string name = inputStr.Split(", ")[0];
                                 if (hall.isNewCustomer(name))
                                 {
+                                    inputStr = Console.ReadLine();
                                     continue;
                                 }
                                 Customer customer = hall.GetCustomer(name);
                                 Food food = new Food(inputStr.Split(", ")[1]);
                                 if(!kitchen.RecipeBook.Recipes.Any(f => f.Name == food.Name))
                                 {
+                                    inputStr = Console.ReadLine();
                                     continue;
                                 }
-                                Console.Write(name + " - " + food.Name + ": ");
-                                customer.SetOrder(kitchen.RecipeBook.Recipes, food);
+                                customer.Order = food;
+                                //customer.SetOrder(kitchen.RecipeBook.Recipes, food);
                                 inputStr = Console.ReadLine();
                             }
                             foreach (Customer customer in from Customer customer in hall.AllCustomers.Customers
-                                                          where object.Equals(customer.Order, null)
+                                                          where !object.Equals(customer.Order, null)
                                                           select customer)
                             {
                                 if (customer.isAllergic(kitchen.RecipeBook.Recipes, customer.Order).Item1)
                                 {
-                                    Console.Write("Can't order: allergic to: " + customer.isAllergic(kitchen.RecipeBook.Recipes, customer.Order).Item2);
+                                    Console.WriteLine("Can't order: allergic to: " + customer.isAllergic(kitchen.RecipeBook.Recipes, customer.Order).Item2.Name);
                                     continue;
                                 }
                                 if (!kitchen.isEnoughIngredients(customer.Order))
@@ -84,13 +95,23 @@ namespace ChikenKithen
                             kitchen.RecipeBook.AddNewRecipe();
                             applicationContext.SaveChanges();
                             break;
+                        case 6:
+                            using (StreamReader sr = new StreamReader(@"..\..\..\Commands.csv"))
+                            {
+                                string readLine;
+                                while ((readLine = sr.ReadLine()) != null)
+                                {
+                                    Command.ExecuteCommand(readLine, kitchen, hall);
+                                }
+                            }
+                            break;
                         default:
                             Console.WriteLine("Unknow comand");
                             break;
                     }
                 }
-                applicationContext.SaveAll(storage.Ingredients, storage.IngredientsAmount, kitchen.RecipeBook.Recipes, hall.AllCustomers.Customers);
-                //applicationContext.Database.EnsureDeleted();*/
+                applicationContext.SaveAll(storage.Ingredients, storage.IngredientsAmount, storage.IngredientsPrice, kitchen.RecipeBook.Recipes, hall.AllCustomers.Customers);
+                //*/
             }
         }
     }
