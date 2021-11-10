@@ -1,0 +1,11 @@
+INIT
+
+Warehouse: Tuna 6, Chicken 9, Potatoes 4, Asparagus 4, Milk 4, Honey 4, Paprika 9, Garlic 9, Water 9, Lemon 10, Tomatoes 9, Pickles 9, Feta 9, Vinegar 10, Rice 10, Chocolate 6, Olives 0, Soy 0, Emperor Chicken 0, Fat Cat Chicken 0, Princess Chicken 0, Youth Sauce 0, Spicy Sauce 0, Omega Sauce 0, Diamond Salad 0, Ruby Salad 0, Fries 0, Smashed Potatoes 0, Tuna Cake 0, Fish In Water 0, 
+Budget: 5318
+
+START
+
+Buy, Alexandra Smith, Tuna Cake -> success
+Warehouse: Tuna 5, Chicken 9, Potatoes 4, Asparagus 3, Milk 3, Honey 3, Paprika 9, Garlic 9, Water 9, Lemon 10, Tomatoes 9, Pickles 9, Feta 9, Vinegar 10, Rice 10, Chocolate 5, Olives 0, Soy 0, Emperor Chicken 0, Fat Cat Chicken 0, Princess Chicken 0, Youth Sauce 0, Spicy Sauce 0, Omega Sauce 0, Diamond Salad 0, Ruby Salad 0, Fries 0, Smashed Potatoes 0, Tuna Cake 0, Fish In Water 0, 
+Budget: 5475
+

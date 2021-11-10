@@ -46,7 +46,7 @@ namespace CommandModule
         }
         public void AddRecordIfSomeChange(string command, Kitchen kitchen, Hall hall)
         {
-            if (IsSomethinkChanged(kitchen))
+            if (!IsSomethinkChanged(kitchen))
             {
                 return;
             }
