@@ -16,9 +16,10 @@ namespace ChikenKitchenDataBase
     {
         static void Main(string[] args)
         { }
+        public DbSet<Budget> Budgets { get; set; }
         public DbSet<Ingredient> Ingredients { get; set; }
         public DbSet<IngredientProperties> IngredientProperties { get; set; }
-        public DbSet<Food> Recipes { get; set; }
+        public DbSet<Food> Foods { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<FoodComponent> FoodComponents { get; set; }
         public DbSet<IngredientComponent> IngredientComponents { get; set; }
@@ -26,238 +27,68 @@ namespace ChikenKitchenDataBase
         public ApplicationContext()
         {
             Database.EnsureCreated();
-            InitializateRecipeItems();
+
+            SetRecipes();
             SetCustomersAllergies();
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=ChikenKitchen;Trusted_Connection=True;MultipleActiveResultSets=True;");
         }
-        private void SetCustomersAllergies()
+
+        public void InitializeFromFiles()
         {
-            foreach (Allergy allergy in Allergies)
+            if (!Budgets.Any())
             {
-                foreach (Customer customer in Customers.Where(c => c.Id == allergy.CustomerId).ToList())
-                {
-                    customer.Allergies.Add(allergy);
-                }
+                Budgets.Add(new Budget(500));
             }
+            if (!Ingredients.Any())
+            {
+                SaveIngredients(ReadFile.GetIngredients());
+            }
+
+            if (!Foods.Any())
+            {
+                SaveFoods(ReadFile.GetFoods());
+            }
+
+            if (!Customers.Any())
+            {
+                SaveCustomers(ReadFile.GetCustomers());
+            }
+
+            if (!IngredientProperties.Any())
+            {
+                IngredientProperties.AddRange(ReadFile.GetIngredientsProperties(Ingredients.ToList()));
+                SetPropertiesIngredientsId();
+            }
+
+            if (!Allergies.Any())
+            {
+                SaveAllergies(ReadFile.GetCustomers());
+                SetCustomersAllergies();
+            }
+
+            if (!FoodComponents.Any() || !IngredientComponents.Any())
+            {
+                SaveRecipeItems(ReadFile.GetFoodsWithRecipes(Foods.ToList(), Ingredients.ToList()));
+                SetRecipes();
+            }
+
+            SaveChanges();
         }
-        private void InitializateRecipeItems()
+        public void SetPropertiesIngredientsId()
         {
-            foreach (FoodComponent foodComponent in FoodComponents)
+            foreach (IngredientProperties ingredientProperties in IngredientProperties)
             {
-                foreach (Food food in Recipes)
-                {
-                    if (food.Id == foodComponent.RecipeId)
-                    {
-                        food.RecipeFoods.Add(Recipes.Where(r => r.Id == foodComponent.Id).FirstOrDefault());
-                    }
-                }
-            }
-            foreach (IngredientComponent ingredientComponent in IngredientComponents)
-            {
-                foreach (Food food in Recipes)
-                {
-                    if (food.Id == ingredientComponent.RecipeId)
-                    {
-                        food.RecipeIngredients.Add(Ingredients.Where(i => i.Id == ingredientComponent.IngredientId).FirstOrDefault());
-                    }
-                }
-            }
-        }
-        public void AddBaseFoods()
-        {
-            using var streamReader = File.OpenText(@"..\..\..\Foods.csv");
-            using var csvReader = new CsvReader(streamReader, CultureInfo.CurrentCulture);
-
-            string name;
-            while (csvReader.Read())
-            {
-                List<string> fileLine = new List<string>();
-                csvReader.TryGetField<string>(0, out name);
-                if (string.IsNullOrEmpty(name)) continue;
-                if (Recipes.Any(f => f.Name == name)) continue;
-
-                Food food = new Food(name);
-                AddWithoutDuplicate(food);
-            }
-        }
-        public void AddBaseRecipe()
-        {
-            using var streamReader = File.OpenText(@"..\..\..\Foods.csv");
-            using var csvReader = new CsvReader(streamReader, CultureInfo.CurrentCulture);
-
-            string name;
-            while (csvReader.Read())
-            {
-                List<string> fileLine = new List<string>();
-                csvReader.TryGetField<string>(0, out name);
-
-                if (string.IsNullOrEmpty(name)) continue;
-
-                Food food = Recipes.Where(f=>f.Name==name).FirstOrDefault();
-                for (int i = 1; csvReader.TryGetField<string>(i, out name); i++)
-                {
-                    if (string.IsNullOrEmpty(name)) continue;
-
-                    if (Recipes.Any(r => r.Name == name))
-                    {
-                        if (food.RecipeFoods.Any(r => r.Name == name)) continue;
-                        food.RecipeFoods.Add(Recipes.Where(r => r.Name == name).FirstOrDefault());
-                        continue;
-                    }
-                    if (Ingredients.Any(i => i.Name == name))
-                    {
-                        if (food.RecipeIngredients.Any(r => r.Name == name)) continue;
-                        food.RecipeIngredients.Add(Ingredients.Where(i => i.Name == name).FirstOrDefault());
-                        continue;
-                    }
-                }
-                SaveRecipeItems(food);
-            }
-        }
-
-        private void SaveRecipeItems(Food food)
-        {
-            foreach (Food recipeFood in food.RecipeFoods)
-            {
-                if (!FoodComponents.Any(fc => fc.RecipeId == food.Id && fc.FoodId == recipeFood.Id))
-                {
-                    FoodComponents.Add(new FoodComponent(food, Recipes.Where(r => r.Name == recipeFood.Name).FirstOrDefault()));
-                }
-            }
-            foreach (Ingredient ingredient in food.RecipeIngredients)
-            {
-                if (!IngredientComponents.Any(ic => ic.Ingredient.Name == ingredient.Name && ic.Recipe.Name == food.Name))
-                {
-                    IngredientComponents.Add(new IngredientComponent(food, ingredient));
-                }
+                if (object.Equals(ingredientProperties.Ingredient, null)) continue;
+                ingredientProperties.IngredientId = ingredientProperties.Ingredient.Id;
             }
             SaveChanges();
         }
-
-        public void AddBaseIngredients()
+        public int GetBudget()
         {
-            using var streamReader = File.OpenText(@"..\..\..\Ingredients.csv");
-            using var csvReader = new CsvReader(streamReader, CultureInfo.CurrentCulture);
-
-            string name;
-            int amount;
-            while (csvReader.Read())
-            {
-                Ingredient ingredient = new Ingredient();
-
-                csvReader.TryGetField<string>(1, out name);
-                if (!int.TryParse(name, out amount))
-                    continue;
-
-                csvReader.TryGetField<string>(0, out name);
-                if (string.IsNullOrEmpty(name)) continue;
-
-                ingredient.Name = name;
-                AddWithoutDuplicate(ingredient);
-                SaveChanges();
-            }
-        }
-        public void AddIngredientCount()
-        {
-            using var streamReader = File.OpenText(@"..\..\..\Ingredients.csv");
-            using var csvReader = new CsvReader(streamReader, CultureInfo.CurrentCulture);
-
-            string name;
-            int amount;
-            while (csvReader.Read())
-            {
-                csvReader.TryGetField<string>(1, out name);
-                if (!int.TryParse(name, out amount))
-                    continue;
-
-                csvReader.TryGetField<string>(0, out name);
-                if (string.IsNullOrEmpty(name)) continue;
-
-                if (!IngredientProperties.Any(ing => ing.IngredientId == Ingredients.Where(i => i.Name == name).FirstOrDefault().Id))
-                {
-                    AddWithoutDuplicate(new IngredientProperties(Ingredients.Where(ingredient => ingredient.Name == name).FirstOrDefault(), amount));
-                }
-            }
-            SaveIngredientsProperties();
-        }
-
-        public void SetNullOrder()
-        {
-            foreach (Customer customer in Customers)
-            {
-                customer.Order = null;
-            }
-            SaveChanges();
-        }
-
-        public void SaveAll(List<Ingredient> _Ingredients, Dictionary<Ingredient, int> _IngredientsAmount, Dictionary<Ingredient, int> _IngredientsPrice, List<Food> _Recipes, List<Customer> _Customers)
-        {
-            foreach (Ingredient _ingredient in _Ingredients)
-            {
-                if (!Ingredients.Any(i => i.Name == _ingredient.Name))
-                {
-                    Ingredients.Add(_ingredient);
-                }
-            }
-            SaveChanges();
-
-            foreach (Ingredient _ingredient in _Ingredients)
-            {
-                try
-                {
-                    IngredientProperties ing = new IngredientProperties(_ingredient, _IngredientsAmount[_ingredient], _IngredientsPrice[_ingredient]);
-                    ing.IngredientId = Ingredients.Where(i => i.Name == _ingredient.Name).FirstOrDefault().Id;
-                    AddWithoutDuplicate(ing);
-                }
-                catch (System.Collections.Generic.KeyNotFoundException) { }
-            }
-            SaveIngredientsProperties();
-            DeleteNullIdIngredientProperties();
-            RemoveZeroIngredientProperties();
-            SaveChanges();
-
-            foreach (Food _recipe in _Recipes)
-            {
-                if (!Recipes.Any(r => r.Name == _recipe.Name))
-                {
-                    AddWithoutDuplicate(_recipe);
-                }
-            }
-            SaveChanges();
-            SaveRecipeItems();
-
-            foreach (Customer _customer in _Customers)
-            {
-                if (!Customers.Any(c => c.Name == _customer.Name))
-                {
-                    Customers.Add(_customer);
-                }
-            }
-            SaveChanges();
-        }
-
-        public void FillCustomerList()
-        {
-            using var streamReader = File.OpenText(@"..\..\..\Customers.csv");
-            using var csv = new CsvReader(streamReader, CultureInfo.CurrentCulture);
-
-            while (csv.Read())
-            {
-                Customer customer = new Customer(csv.GetField(1));
-                AddWithoutDuplicate(customer);
-                csv.Read();
-                csv.TryGetField<int>(1, out int budget);
-                csv.Read();
-                for (int i = 1; csv.TryGetField<string>(i, out string ingredientName); i++)
-                {
-                    if (string.IsNullOrEmpty(ingredientName)) break;
-                    customer.Allergies.Add(new Allergy(customer, new Ingredient(ingredientName)));
-                }
-                SaveChanges();
-            }
+            return Budgets.First().Balance;
         }
         public Dictionary<Ingredient, int> GetIngredientsAmount()
         {
@@ -279,20 +110,73 @@ namespace ChikenKitchenDataBase
             }
             return IngredientAmount;
         }
-        public void SaveIngredientsProperties()
+
+        public Dictionary<Ingredient, int> GetIngredientsPrice()
         {
+            Dictionary<Ingredient, int> IngredientPrice = new Dictionary<Ingredient, int>();
             foreach (IngredientProperties ingredientProperties in IngredientProperties)
             {
-                foreach (Ingredient ingredient in Ingredients)
+                IngredientPrice.Add(Ingredients.Where(i => i.Id == ingredientProperties.IngredientId).FirstOrDefault(), ingredientProperties.Price);
+            }
+            foreach (var ingredient in Ingredients)
+            {
+                try
                 {
-                    if (ingredientProperties.IngredientId == ingredient.Id)
-                    {
-                        ingredientProperties.IngredientId = ingredient.Id;
-                    }
+                    _ = IngredientPrice[ingredient];
+                }
+                catch (System.Collections.Generic.KeyNotFoundException)
+                {
+                    IngredientPrice.Add(ingredient, 0);
+                }
+            }
+            return IngredientPrice;
+        }
+
+        public List<Food> GetFoods()
+        {
+            return Foods.ToList();
+        }
+        public void SetRecipes()
+        {
+            List<FoodComponent> foodComponentsCopy = FoodComponents.ToList();
+            var groupFoodsComponents = foodComponentsCopy.GroupBy(x => x.RecipeId);
+
+            foreach (var item in groupFoodsComponents)
+            {
+                foreach (var value in item)
+                {
+                    Foods.Where(x => x.Id == item.Key).First().RecipeFoods.AddRange(Foods.Where(f => f.Id == value.FoodId));
                 }
             }
 
-            SaveChanges();
+            List<IngredientComponent> ingredientComponentsCopy = IngredientComponents.ToList();
+            var groupIngredientsComponents = ingredientComponentsCopy.GroupBy(x => x.RecipeId);
+
+            foreach (var item in groupIngredientsComponents)
+            {
+                foreach (var value in item)
+                {
+                    Foods.Where(x => x.Id == item.Key).First().RecipeIngredients.AddRange(Ingredients.Where(i => i.Id == value.IngredientId));
+                }
+            }
+        }
+        public List<Customer> GetCustomers()
+        {
+            SetCustomersAllergies();
+            return Customers.ToList();
+        }
+        public void SetCustomersAllergies()
+        {
+            List<Allergy> allergies = Allergies.ToList();
+            var groupAllergies = allergies.GroupBy(x => x.CustomerId);
+
+            foreach (var item in groupAllergies)
+            {
+                foreach (var value in item)
+                {
+                    Customers.Where(c => c.Id == item.Key).First().Allergies.AddRange(Ingredients.Where(i => i.Id == value.IngredientId));
+                }
+            }
         }
         public void RemoveZeroIngredientProperties()
         {
@@ -305,6 +189,7 @@ namespace ChikenKitchenDataBase
             }
             SaveChanges();
         }
+
         public void DeleteNullIdIngredientProperties()
         {
             foreach (var count in IngredientProperties)
@@ -315,46 +200,133 @@ namespace ChikenKitchenDataBase
                 }
             }
         }
-        public void SaveRecipeItems()
+
+        public void SaveAll(List<Ingredient> _Ingredients, Dictionary<Ingredient, int> _IngredientsAmount, Dictionary<Ingredient, int> _IngredientsPrice, List<Food> _Recipes, List<Customer> _Customers, int _Budget)
         {
-            foreach (Food food in Recipes)
+            SaveIngredients(_Ingredients);
+            SaveIngredientsProperties(_IngredientsAmount, _IngredientsPrice);
+            SaveFoods(_Recipes);
+            SaveRecipeItems(_Recipes);
+            SaveCustomers(_Customers);
+            SaveAllergies(_Customers);
+            SaveBudget(_Budget);
+            SaveChanges();
+        }
+        public void SaveIngredients(List<Ingredient> _Ingredients)
+        {
+            foreach (Ingredient _ingredient in _Ingredients)
             {
-                foreach (Food recipeFood in food.RecipeFoods)
+                AddWithoutDuplicate(_ingredient);
+            }
+            SaveChanges();
+        }
+        public void SaveBudget(int _Budget)
+        {
+            Budgets.First().Balance = _Budget;
+            SaveChanges();
+        }
+        public void SaveIngredientsProperties(Dictionary<Ingredient, int> _IngredientsAmount, Dictionary<Ingredient, int> _IngredientsPrice)
+        {
+            foreach (Ingredient _ingredient in Ingredients)
+            {
+                IngredientProperties ing = new IngredientProperties(_ingredient, _IngredientsAmount[_ingredient], _IngredientsPrice[_ingredient]);
+                ing.IngredientId = Ingredients.Where(i => i.Name == _ingredient.Name).FirstOrDefault().Id;
+                AddWithoutDuplicate(ing);
+            }
+            SaveChanges();
+
+            foreach (Ingredient _ingredient in Ingredients)
+            {
+                try
                 {
-                    if (!FoodComponents.Any(fc => fc.RecipeId == food.Id && fc.FoodId == recipeFood.Id))
-                    {
-                        FoodComponents.Add(new FoodComponent(food, Recipes.Where(r => r.Name == recipeFood.Name).FirstOrDefault()));
-                    }
+                    IngredientProperties ing = new IngredientProperties(_ingredient, _IngredientsAmount[_ingredient], _IngredientsPrice[_ingredient]);
+                    ing.IngredientId = Ingredients.Where(i => i.Name == _ingredient.Name).FirstOrDefault().Id;
+                    IngredientProperties.Where(ip => ip.IngredientId == ing.IngredientId).FirstOrDefault().Count = ing.Count;
+                    IngredientProperties.Where(ip => ip.IngredientId == ing.IngredientId).FirstOrDefault().Price = ing.Price;
                 }
-                foreach (Ingredient ingredient in food.RecipeIngredients)
+                catch (System.Collections.Generic.KeyNotFoundException) { }
+            }
+
+            SaveChanges();
+        }
+
+        public void SaveFoods(List<Food> _Foods)
+        {
+            foreach (Food _recipe in _Foods)
+            {
+                if (!Foods.Any(r => r.Name == _recipe.Name))
                 {
-                    if (!IngredientComponents.Any(ic => ic.Ingredient.Name == ingredient.Name && ic.Recipe.Name == food.Name))
-                    {
-                        IngredientComponents.Add(new IngredientComponent(food, ingredient));
-                    }
+                    AddWithoutDuplicate(_recipe);
                 }
             }
             SaveChanges();
         }
+
+        public void SaveRecipeItems(List<Food> _Recipes)
+        {
+            foreach (Food food in _Recipes)
+            {
+                SaveRecipeItems(_Recipes, food);
+            }
+            SaveChanges();
+        }
+
+        private void SaveRecipeItems(List<Food> _Recipes, Food food)
+        {
+            foreach (Food recipeFood in food.RecipeFoods)
+            {
+                if (!FoodComponents.Any(fc => fc.RecipeId == food.Id && fc.FoodId == recipeFood.Id))
+                {
+                    FoodComponents.Add(new FoodComponent(food, _Recipes.Where(r => r.Name == recipeFood.Name).FirstOrDefault()));
+                }
+            }
+            foreach (Ingredient ingredient in food.RecipeIngredients)
+            {
+                if (!IngredientComponents.Any(ic => ic.Ingredient.Name == ingredient.Name && ic.Recipe.Name == food.Name))
+                {
+                    IngredientComponents.Add(new IngredientComponent(food, ingredient));
+                }
+            }
+            SaveChanges();
+        }
+
+        public void SaveCustomers(List<Customer> _Customers)
+        {
+            foreach (Customer _customer in _Customers)
+            {
+                AddWithoutDuplicate(_customer);
+                Customers.Where(c => c.Name == _customer.Name).FirstOrDefault().budget = _customer.budget;
+            }
+        }
+
+        public void SaveAllergies(List<Customer> _Customers)
+        {
+            foreach (Customer _customer in _Customers)
+            {
+                Customer customer = Customers.Where(c => c.Name == _customer.Name).FirstOrDefault();
+                foreach (Ingredient ingredient in _customer.Allergies)
+                {
+                    Ingredient allergyIngredient = Ingredients.Where(i => i.Name == ingredient.Name).FirstOrDefault();
+                    if (object.Equals(allergyIngredient, null))
+                    {
+                        Ingredients.Add(ingredient);
+                        SaveChanges();
+                        allergyIngredient = ingredient;
+                    }
+                    AddWithoutDuplicate(new Allergy(customer, allergyIngredient));
+                }
+            }
+        }
+
         public void AddWithoutDuplicate(IngredientProperties _ingredientProperties)
         {
-            foreach (IngredientProperties ingredientProp in IngredientProperties)
+            if (IngredientProperties.Any(ip => ip.IngredientId == _ingredientProperties.IngredientId))
             {
-                foreach (Ingredient ingredient in Ingredients)
-                {
-                    if (ingredient.Name == _ingredientProperties.Ingredient.Name)
-                    {
-                        _ingredientProperties.IngredientId = ingredient.Id;
-                        if (_ingredientProperties.IngredientId == ingredientProp.IngredientId)
-                        {
-                            return;
-                        }
-                    }
-                }
+                return;
             }
             IngredientProperties.Add(_ingredientProperties);
-            SaveChanges();
         }
+
         public void AddWithoutDuplicate(Ingredient ingredient)
         {
             if (Ingredients.Any(ingredientRead => ingredientRead.Name == ingredient.Name))
@@ -364,15 +336,17 @@ namespace ChikenKitchenDataBase
             Ingredients.Add(ingredient);
             SaveChanges();
         }
+
         public void AddWithoutDuplicate(Food food)
         {
-            if (Recipes.Any(foodRead => foodRead.Name == food.Name))
+            if (Foods.Any(foodRead => foodRead.Name == food.Name))
             {
                 return;
             }
-            Recipes.Add(food);
+            Foods.Add(food);
             SaveChanges();
         }
+
         public void AddWithoutDuplicate(Customer customer)
         {
             if (Customers.Any(customerRead => customerRead.Name == customer.Name))
@@ -381,6 +355,23 @@ namespace ChikenKitchenDataBase
             }
             Customers.Add(customer);
             SaveChanges();
+        }
+
+        public void AddWithoutDuplicate(Allergy allergy)
+        {
+            allergy.IngredientId = Ingredients.Where(i => i.Name == allergy.Ingredient.Name).FirstOrDefault().Id;
+            allergy.CustomerId = Customers.Where(c => c.Name == allergy.Customer.Name).FirstOrDefault().Id;
+
+            if (allergy.CustomerId == 0 || allergy.IngredientId == 0)
+            {
+                return;
+            }
+
+            if (!Allergies.Any(a => a.CustomerId == allergy.CustomerId && a.IngredientId == allergy.IngredientId))
+            {
+                Allergies.Add(allergy);
+                SaveChanges();
+            }
         }
     }
 }

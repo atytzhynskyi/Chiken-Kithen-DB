@@ -1,6 +1,4 @@
 ﻿using BaseClasses;
-using CsvHelper;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
@@ -16,6 +14,12 @@ namespace ChikenKithen
         public List<Ingredient> Ingredients { get; set; }
         public Dictionary<Ingredient, int> IngredientsAmount { get; set; } = new Dictionary<Ingredient, int>();
         public Dictionary<Ingredient, int> IngredientsPrice { get; set; } = new Dictionary<Ingredient, int>();
+        public Storage(List<Ingredient> _Ingredients, Dictionary<Ingredient, int> _IngredientsAmount, Dictionary<Ingredient, int> _IngredientsPrice)
+        {
+            Ingredients = _Ingredients;
+            IngredientsAmount = _IngredientsAmount;
+            IngredientsPrice = _IngredientsPrice;
+        }
         public Storage(List<Ingredient> _Ingredients, Dictionary<Ingredient, int> _IngredientsAmount)
         {
             Ingredients = _Ingredients;
@@ -26,42 +30,6 @@ namespace ChikenKithen
             Ingredients = _Ingredients;
         }
         
-        public void SetDictionaryFromFile()
-        {
-            using var streamReader = File.OpenText(@"..\..\..\Ingredients.csv");
-            using var csvReader = new CsvReader(streamReader, CultureInfo.CurrentCulture);
-
-            string name;
-            int amount;
-            int price;
-            while (csvReader.Read())
-            {
-                csvReader.TryGetField<string>(1, out name);
-                if (!int.TryParse(name, out amount))
-                    continue;
-
-                csvReader.TryGetField<string>(0, out name);
-                csvReader.TryGetField<int>(1, out amount);
-                csvReader.TryGetField<int>(2, out price);
-
-                if (string.IsNullOrEmpty(name)|| Object.Equals(amount, null))
-                    continue;
-                try
-                {
-                    IngredientsAmount.Add((Ingredient)(from Ingredient ingredient in Ingredients
-                                                       where ingredient.Name == name
-                                                       select ingredient).First(i => i.Name == name), amount);
-                }
-                catch (System.ArgumentException){}
-                try
-                {
-                    IngredientsPrice.Add((Ingredient)(from Ingredient ingredient in Ingredients
-                                                      where ingredient.Name == name
-                                                      select ingredient).First(i => i.Name == name), price);
-                }
-                catch (System.ArgumentException) { }
-            }
-        }
         public void AddNewIngredient()
         {
             Ingredient ingredient = new Ingredient();

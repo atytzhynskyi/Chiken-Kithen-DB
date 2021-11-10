@@ -16,7 +16,7 @@ namespace ChikenKithen.Tests
         Storage storage;
         Food ice;
         Food iceWithWater;
-        RecipeBook recipeBook;
+        List<Food> recipeBook;
         Kitchen kitchen;
         [TestInitialize]
         public void SetupContext()
@@ -26,8 +26,8 @@ namespace ChikenKithen.Tests
             storage.IngredientsAmount.Add(water, 4);
             ice = new Food("Ice", water);
             iceWithWater = new Food("Ice with water", new List<Ingredient> { water }, new List<Food> { ice });
-            recipeBook = new RecipeBook(new List<Food> { ice, iceWithWater });
-            kitchen = new Kitchen(storage, recipeBook);
+            recipeBook = new List<Food>(new List<Food> { ice, iceWithWater });
+            kitchen = new Kitchen(storage, recipeBook, 500);
             kitchen.Cook(iceWithWater);
         }
             [TestMethod()]
@@ -49,17 +49,16 @@ namespace ChikenKithen.Tests
         }
 
         [TestMethod()]
-        public void isEnoughIngredientsTestFalse()
-        {
-            Assert.IsTrue(kitchen.isEnoughIngredients(iceWithWater));
-        }
-
-
-        [TestMethod()]
         public void isEnoughIngredientsTestTrue()
         {
+            Assert.IsTrue(kitchen.IsEnoughIngredients(iceWithWater));
+        }
+
+        [TestMethod()]
+        public void isEnoughIngredientsTestFalse()
+        {
             kitchen.Cook(iceWithWater);
-            Assert.IsFalse(kitchen.isEnoughIngredients(iceWithWater));
+            Assert.IsFalse(kitchen.IsEnoughIngredients(iceWithWater));
         }
     }
 }

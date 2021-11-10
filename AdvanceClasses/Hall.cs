@@ -2,41 +2,38 @@
 using System.Collections.Generic;
 using System.Text;
 using BaseClasses;
-using ChikenKitchenDataBase;
 using System.Linq;
 namespace ChikenKithen
 {
-    class Hall
+    public class Hall
     {
-        public CustomerBase AllCustomers = new CustomerBase();
-        public Menu Menu = new Menu();
+        public List<Customer> Customers { get; set; }
+
+        public List<Food> Menu = new List<Food>();
         public Hall() { }
-        public Hall(ApplicationContext applicationContext)
+
+        public Hall(List<Customer> customers, List<Food> _Menu)
         {
-            AllCustomers = new CustomerBase(applicationContext);
-        }
-        public Hall(List<Customer> customers, Menu _Menu)
-        {
-            AllCustomers = new CustomerBase(customers);
+            Customers = customers;
             Menu = _Menu;
         }
-        public CustomerBase GetAllCustomers() => AllCustomers;
+
         public bool isNewCustomer(string Name)
         {
-            if(AllCustomers.Customers.Any(c => c.Name == Name))
+            if(Customers.Any(c => c.Name == Name))
                 return false;
             else
                 return true;
         }
         public void AddNewCustomer(Customer customer)
         {
-            AllCustomers.Customers.Add(customer);
+            Customers.Add(customer);
         }
         public Customer GetCustomer(string Name)
         {
             Customer customer = new Customer("NULL");
             bool isFound = false;
-            foreach (Customer customerSearch in AllCustomers.Customers)
+            foreach (Customer customerSearch in Customers)
             {
                 if (customerSearch.Name == Name)
                 {
@@ -62,19 +59,20 @@ namespace ChikenKithen
         }
         public void GiveFood(Kitchen kitchen, Customer customer)
         {
-            foreach (Food food in kitchen.RecipeBook.Recipes)
+            foreach (Food food in kitchen.Recipes)
             {
                 if (food.Name == customer.Order.Name)
                 {
                     if (kitchen.FoodAmount[food] < 1)
                     {
+                        Console.WriteLine("We dont have enough {0} for {1}", customer.Order.Name, customer.Name);
                         return;
                     }
                     kitchen.FoodAmount[food]--;
                     return;
                 }
             }
-            Console.WriteLine("Order doesnt exist in Ingedient List");
+            Console.WriteLine("Order doesnt exist in Food List");
         }
         public List<Ingredient> AskAllergiesIngredients()
         {
@@ -87,33 +85,7 @@ namespace ChikenKithen
             }
             return allergicIngredients;
         }
-        public Food AskOrder()
-        {
-            Console.WriteLine("What you prefer to order?");
-            string _OrderName = Console.ReadLine();
-            Food Order = new Food("NULL");
-            bool isFound = false;
-            foreach (Food food in Menu.Foods)
-            {
-                if (food.Name.Contains(_OrderName))
-                {
-                    if (isFound)
-                    {
-                        Console.WriteLine("Sorry, can't do, {0} unidentified", _OrderName);
-                        break;
-                    }
-                    Order = food;
-                    isFound = true;
-                }
-            }
-            return Order;
-        }
-        public string AskName()
-        {
-            Console.WriteLine("Welcome to Chicken Kitchen, what is your name?");
-            string Name = Console.ReadLine();
-            return Name;
-        }
+        
         private string GetFullNameByNick(string nickName, Customer customer)
         {
             if (customer.Name.Contains(nickName))
@@ -121,6 +93,13 @@ namespace ChikenKithen
                 return customer.Name;
             }
             return "NULL";
+        }
+
+        public void GetPaid(Kitchen kitchen, Customer customer)
+        {
+            int price = kitchen.CalculateFoodMenuPrice(customer.Order);
+            customer.budget -= price;
+            kitchen.Budget += kitchen.CalculateFoodMenuPrice(customer.Order);
         }
     }
 }

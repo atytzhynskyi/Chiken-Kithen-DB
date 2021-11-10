@@ -24,11 +24,11 @@ namespace BaseClasses.Tests
             Food saltWater = new Food("Salt water", salt, water);
             Food saltwaterIce = new Food("Salt water ice", new List<Food>{ saltWater, ice}.ToArray());
             Food saltRock = new Food("Salt rock", salt);
-            RecipeBook recipeBook = new RecipeBook(new List<Food> { ice, saltWater, saltwaterIce, saltRock });
+            List<Food> recipeBook = new List<Food> { ice, saltWater, saltwaterIce, saltRock };
 
-            Assert.IsTrue(customer.isAllergic(recipeBook.Recipes, saltwaterIce).Item1);
-            Assert.IsTrue(customer.isAllergic(recipeBook.Recipes, saltWater).Item1);
-            Assert.IsFalse(customer.isAllergic(recipeBook.Recipes, saltRock).Item1);
+            Assert.IsTrue(customer.isAllergic(recipeBook, saltwaterIce).Item1);
+            Assert.IsTrue(customer.isAllergic(recipeBook, saltWater).Item1);
+            Assert.IsFalse(customer.isAllergic(recipeBook, saltRock).Item1);
         }
     }
 }

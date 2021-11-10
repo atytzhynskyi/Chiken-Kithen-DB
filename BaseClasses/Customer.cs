@@ -11,9 +11,11 @@ namespace BaseClasses
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        [NotMapped]
         public Food Order { get; set; }
         public int budget { get; set; }
-        public List<Allergy> Allergies { get; set; } = new List<Allergy>();
+        [NotMapped]
+        public List<Ingredient> Allergies { get; set; } = new List<Ingredient>();
         public Customer() { }
 
         public Customer(string _Name)
@@ -23,15 +25,9 @@ namespace BaseClasses
         public Customer(string _Name, params Ingredient[] _Allergies)
         {
             Name = _Name;
-            foreach (Ingredient ingredient in _Allergies)
-                Allergies.Add(new Allergy(this, ingredient));
-        }
-        public Customer(string _Name, params Allergy[] _Allergies)
-        {
-            Name = _Name;
             Allergies.AddRange(_Allergies);
         }
-        public Customer(string _Name, Food _Order, params Allergy[] _Allergies)
+        public Customer(string _Name, Food _Order, params Ingredient[] _Allergies)
         {
             Name = _Name;
             Order = _Order;
@@ -62,7 +58,7 @@ namespace BaseClasses
             }
             foreach (Ingredient ingredient in food.RecipeIngredients)
             {
-                if (Allergies.Any(a => a.Ingredient.Name == ingredient.Name))
+                if (Allergies.Any(a => a.Name == ingredient.Name))
                 {
                     return (true, ingredient);
                 }
