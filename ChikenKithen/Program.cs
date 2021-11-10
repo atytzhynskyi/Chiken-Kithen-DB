@@ -25,7 +25,7 @@ namespace ChikenKithen
                 
                 Kitchen kitchen = new Kitchen(storage, recipeBook, applicationContext.GetBudget());
                 Hall hall = new Hall(applicationContext.GetCustomers(), kitchen.Recipes);
-                Audit audit = new Audit();
+                Audit audit = new Audit(kitchen);
                 Command command = new Command();
 
 

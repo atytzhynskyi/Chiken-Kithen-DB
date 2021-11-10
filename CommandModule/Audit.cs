@@ -11,7 +11,6 @@ namespace CommandModule
     public class Audit
     {
         List<Record> Records = new List<Record>();
-        public Audit() { }
         public Audit(Kitchen kitchen)
         {
             Records.Add(new Record(kitchen));

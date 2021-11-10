@@ -74,6 +74,7 @@ namespace CommandModule
                     audit.CreateAuditFile();
                     break;
                 default:
+                    Console.WriteLine("Unknow command");
                     return;
             }
             audit.AddRecordIfSomeChange(command, kitchen, hall);
