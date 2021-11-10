@@ -79,7 +79,7 @@ namespace CommandModule
             audit.AddRecordIfSomeChange(command, kitchen, hall);
         }
 
-        private static void CookFood(string command, Kitchen kitchen)
+        private void CookFood(string command, Kitchen kitchen)
         {
             string foodName = command.Split(", ")[1];
             if (!int.TryParse(command.Split(", ")[2], out int cookAmount))
@@ -101,7 +101,7 @@ namespace CommandModule
             Console.Write("success");
         }
 
-        private static void Table(string command, Kitchen kitchen, Hall hall)
+        private void Table(string command, Kitchen kitchen, Hall hall)
         {
             List<string> commandSplit = new List<string>(command.Split(", "));
             
@@ -165,7 +165,7 @@ namespace CommandModule
             Console.Write("}\n");
         }
 
-        private static void ShowCustomers(Hall hall)
+        private void ShowCustomers(Hall hall)
         {
             foreach(Customer customer in hall.Customers)
             {
@@ -180,7 +180,7 @@ namespace CommandModule
             }
         }
 
-        private static void ChangeBudget(string command, Kitchen kitchen)
+        private void ChangeBudget(string command, Kitchen kitchen)
         {
             if (!int.TryParse(command.Split(", ")[2], out int count)) { return; }
             string signCommand = command.Split(", ")[1];
@@ -200,22 +200,22 @@ namespace CommandModule
             }
         }
 
-        private static void PlusBudget(Kitchen kitchen, int count)
+        private void PlusBudget(Kitchen kitchen, int count)
         {
             kitchen.Budget += count;
         }
 
-        private static void MinuseBudget(Kitchen kitchen, int count)
+        private void MinuseBudget(Kitchen kitchen, int count)
         {
             kitchen.Budget -= count;
         }
 
-        private static void EquateBudget(Kitchen kitchen, int budget)
+        private void EquateBudget(Kitchen kitchen, int budget)
         {
             kitchen.Budget = budget;
         }
 
-        public static void ShowFoods(Kitchen kitchen)
+        public void ShowFoods(Kitchen kitchen)
         {
             foreach (Food food in kitchen.Recipes)
             {
@@ -235,7 +235,7 @@ namespace CommandModule
                 }
             }
         }
-        public static void Buy(string customerName, string foodName, Kitchen kitchen, Hall hall)
+        public void Buy(string customerName, string foodName, Kitchen kitchen, Hall hall)
         {
             if (hall.isNewCustomer(customerName))
             {
@@ -276,7 +276,7 @@ namespace CommandModule
             hall.GetPaid(kitchen, customer);
             Console.Write("success");
         }
-        public static void Order(string command, Kitchen kitchen)
+        public void Order(string command, Kitchen kitchen)
         {
             Ingredient ingredient = new Ingredient(command.Split(", ")[1]);
             int amount = Convert.ToInt32(command.Split(", ")[2]);
@@ -293,18 +293,18 @@ namespace CommandModule
             kitchen.Storage.IngredientsAmount[ingredient] += Convert.ToInt32(command.Split(",")[2]);
             Console.WriteLine("success");
         }
-        public static void ShowIngredients(Kitchen kitchen)
+        public void ShowIngredients(Kitchen kitchen)
         {
             kitchen.Storage.ShowIngredients();
         }
-        public static void ExecuteFileCommands(Kitchen kitchen, Hall hall, Audit audit)
+        public void ExecuteFileCommands(Kitchen kitchen, Hall hall, Audit audit)
         {
             using (StreamReader sr = new StreamReader(@"..\..\..\Commands.csv"))
             {
                 string readLine;
                 while ((readLine = sr.ReadLine()) != null)
                 {
-                    Command.ExecuteCommand(readLine, kitchen, hall, audit);
+                    ExecuteCommand(readLine, kitchen, hall, audit);
                 }
             }
         }
