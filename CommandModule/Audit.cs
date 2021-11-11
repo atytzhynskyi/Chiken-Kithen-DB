@@ -109,7 +109,7 @@ namespace CommandModule
 
                     buyRecords.Add(recordTemp);
                 }
-                string tableRecord = string.Format("{0} {\n", command);
+                string tableRecord = ($"{command}" + "{\n");
                 foreach (string buyRecord in buyRecords)
                 {
                     tableRecord += $"\t{buyRecord}\n";
