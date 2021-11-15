@@ -12,6 +12,8 @@ namespace BaseClasses
         public int Id { get; set; }
         public string Name { get; set; }
         [NotMapped]
+        public int VisitsCount { get; set; }
+        [NotMapped]
         public Food Order { get; set; }
         public int budget { get; set; }
         [NotMapped]

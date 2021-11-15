@@ -9,28 +9,21 @@ namespace ChikenKithen
     public class Kitchen
     {
         public Storage Storage;
-        public List<Food> Recipes;
-        public int Budget;
-        public Dictionary<Food, int> FoodAmount { get; set; } = new Dictionary<Food, int>();
+        public int Budget { get; private set; }
         public Kitchen() { }
-        public Kitchen(Storage _Storage, List<Food> _Recipes, int _Budget)
+        public Kitchen(Storage _Storage, int _Budget)
         {
             Storage = _Storage;
-            Recipes = _Recipes;
-            foreach (Food food in Recipes)
+            foreach (Food food in Storage.Recipes)
             {
-                FoodAmount.Add(food, 0);
+                Storage.FoodAmount.Add(food, 0);
             }
             Budget = _Budget;
-        }
-        public Food GetRecipeByName(string Name)
-        {
-            return Recipes.Where(r=>r.Name == Name).FirstOrDefault();
         }
         public int CalculateFoodCostPrice(Food food)
         {
             int price = 0;
-            food = GetRecipeByName(food.Name);
+            food = Storage.GetRecipeByName(food.Name);
             foreach(Food foodRecipe in food.RecipeFoods)
             {
                 price += CalculateFoodCostPrice(foodRecipe);
@@ -39,11 +32,11 @@ namespace ChikenKithen
             {
                 price += Storage.IngredientsPrice[Storage.Ingredients.Where(i => i.Name == ingredient.Name).First()];
             }
-            return Convert.ToInt32(price*1.3);
+            return price;
         }
         public int CalculateFoodMenuPrice(Food food)
         {
-            return Convert.ToInt32(CalculateFoodCostPrice(food));
+            return Convert.ToInt32(CalculateFoodCostPrice(food)*1.3);
         }
         public void Cook(Food order)
         {
@@ -52,12 +45,12 @@ namespace ChikenKithen
                 return;
             }
 
-            if(!Recipes.Any(r=>r.Name == order.Name))
+            if(!Storage.Recipes.Any(r=>r.Name == order.Name))
             {
                 return;
             }
 
-            order = Recipes.Where(r => r.Name == order.Name).First();
+            order = Storage.Recipes.Where(r => r.Name == order.Name).First();
             
             foreach (var ingredient in from Ingredient ingredient in Storage.Ingredients
                                        from Ingredient ingredientRecipe in order.RecipeIngredients
@@ -67,16 +60,16 @@ namespace ChikenKithen
                 Storage.IngredientsAmount[ingredient] -= 1;
             }
 
-            foreach (var food in from Food food in Recipes
+            foreach (var food in from Food food in Storage.Recipes
                                  from Food RecipeFood in order.RecipeFoods
                                  where food.Name == RecipeFood.Name
                                  select food)
             {
                 Cook(food);
-                FoodAmount[food]--;
+                Storage.FoodAmount[food]--;
             }
 
-            FoodAmount[order]++;
+            Storage.FoodAmount[order]++;
         }
 
         public bool IsEnoughIngredients(Food food)
@@ -113,10 +106,22 @@ namespace ChikenKithen
             {
                 Console.WriteLine(ingredient.Name + " " + Storage.IngredientsAmount[ingredient]);
             }
-            foreach (Food food in Recipes)
+            foreach (Food food in Storage.Recipes)
             {
                 Console.WriteLine(food.Name);
             }
+        }
+        public void UseMoney(int amount)
+        {
+            Budget -= amount;
+        }
+        public void AddMoney(int amount)
+        {
+            Budget += amount;
+        }
+        public void SetMoney(int amount)
+        {
+            Budget = amount;
         }
     }
 }

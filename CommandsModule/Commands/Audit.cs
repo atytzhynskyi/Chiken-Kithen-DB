@@ -6,17 +6,23 @@ using System.Text;
 using BaseClasses;
 using ChikenKithen;
 
-namespace CommandModule
+namespace CommandsModule
 {
-    public class Audit
+    public class Audit : Command
     {
         List<Record> Records = new List<Record>();
-        public Audit(Kitchen kitchen)
+        public Audit(Hall hall, Kitchen kitchen, string commandString) : base(hall, kitchen, commandString)
         {
             Records.Add(new Record(kitchen));
         }
-        public void CreateAuditFile()
+        public void ExecuteCommand()
         {
+            if (!IsAllowed)
+            {
+                Result = "Command not allowed";
+                return;
+            }
+
             string fileName = "";
             for (int i = 0; true; i++)
             {
@@ -46,7 +52,7 @@ namespace CommandModule
         }
         public void AddRecordIfSomeChange(string command, Kitchen kitchen, Hall hall)
         {
-            if (!IsSomethinkChanged(kitchen))
+            if (!IsSomethingChanged(kitchen))
             {
                 return;
             }
@@ -65,7 +71,7 @@ namespace CommandModule
 
         private void AddTableRecord(string command, Kitchen kitchen, Hall hall)
         {
-            if (IsFoodsChanged(kitchen.FoodAmount) || IsIngredientsChanged(kitchen.Storage.IngredientsAmount))
+            if (IsFoodsChanged(kitchen.Storage.FoodAmount) || IsIngredientsChanged(kitchen.Storage.IngredientsAmount))
             {
                 List<string> commandSplit = new List<string>(command.Split(", "));
 
@@ -80,10 +86,10 @@ namespace CommandModule
                 List<Food> orders = new List<Food>();
                 for (int i = commandSplit.Count - 1; i > 1; i--)
                 {
-                    Food order = kitchen.Recipes.Where(r => r.Name == commandSplit[i]).FirstOrDefault();
+                    Food order = kitchen.Storage.Recipes.Where(r => r.Name == commandSplit[i]).FirstOrDefault();
                     if (object.Equals(order, null))
                     {
-                        if (hall.GetCustomer(commandSplit[i]).Name != "NULL") ;
+                        if (hall.GetCustomer(commandSplit[i]).Name != "NULL")
                         break;
                     }
                     orders.Add(order);
@@ -129,25 +135,25 @@ namespace CommandModule
         public string FormBuyRecord(string command, Kitchen kitchen, Hall hall)
         {
             Customer customer = hall.GetCustomer(command.Split(", ")[1]);
-            Food order = kitchen.GetRecipeByName(command.Split(", ")[2]);
-            if (IsFoodsChanged(kitchen.FoodAmount) || IsIngredientsChanged(kitchen.Storage.IngredientsAmount))
+            Food order = kitchen.Storage.GetRecipeByName(command.Split(", ")[2]);
+            if (IsFoodsChanged(kitchen.Storage.FoodAmount) || IsIngredientsChanged(kitchen.Storage.IngredientsAmount))
             {
                 if (kitchen.Budget != Records.Last().Budget)
                 {
                     return ($"{command} -> success");
                 }
-                return ($"{command} -> Customer allergic to {customer.isAllergic(kitchen.Recipes, order).Item2}");
+                return ($"{command} -> Customer allergic to {customer.isAllergic(kitchen.Storage.Recipes, order).Item2}");
             }
             else return "NULL";
         }
-        public bool IsSomethinkChanged(Kitchen kitchen)
+        public bool IsSomethingChanged(Kitchen kitchen)
         {
             if (kitchen.Budget != Records.Last().Budget)
             {
                 return true;
             }
 
-            if (IsFoodsChanged(kitchen.FoodAmount))
+            if (IsFoodsChanged(kitchen.Storage.FoodAmount))
             {
                 return true;
             }

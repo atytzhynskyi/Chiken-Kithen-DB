@@ -5,7 +5,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using AdvanceClasses;
-using CommandModule;
+using CommandsModule;
+using jsonReadModule;
 
 namespace ChikenKithen
 {
@@ -20,24 +21,22 @@ namespace ChikenKithen
                 applicationContext.InitializeFromFiles();
                 applicationContext.SetPropertiesIngredientsId();
 
-                Storage storage = new Storage(applicationContext.Ingredients.ToList(), applicationContext.GetIngredientsAmount(), applicationContext.GetIngredientsPrice());
-                List<Food> recipeBook = new List<Food>(applicationContext.GetFoods());
+                Storage storage = new Storage(
+                    applicationContext.GetFoods(), applicationContext.Ingredients.ToList(), 
+                    applicationContext.GetIngredientsAmount(), applicationContext.GetIngredientsPrice());
                 
-                Kitchen kitchen = new Kitchen(storage, recipeBook, applicationContext.GetBudget());
-                Hall hall = new Hall(applicationContext.GetCustomers(), kitchen.Recipes);
-                Audit audit = new Audit(kitchen);
-                Command command = new Command();
-
+                Kitchen kitchen = new Kitchen(storage, applicationContext.GetBudget());
+                Hall hall = new Hall(applicationContext.GetCustomers(), kitchen.Storage.Recipes);
 
                 while (2 + 2 != 5)
                 {
                     Console.WriteLine("Restaurant budget: {0}", kitchen.Budget);
                     Warehouse(kitchen);
                     string input = Console.ReadLine();
-                    Console.Write(input + " -> ");
-                    command.ExecuteCommand(input, kitchen, hall, audit);
-                    Console.WriteLine("\n");
-                    applicationContext.SaveAll(storage.Ingredients, storage.IngredientsAmount, storage.IngredientsPrice, kitchen.Recipes, hall.Customers, kitchen.Budget);
+                    Command command = CommandBuilder.Build(hall, kitchen, input);
+                    command.ExecuteCommand(hall, kitchen);
+                    Console.WriteLine($"{command.FullCommand} -> {command.Result}");
+                    applicationContext.SaveAll(storage.Ingredients, storage.IngredientsAmount, storage.IngredientsPrice, kitchen.Storage.Recipes, hall.Customers, kitchen.Budget);
                 }
                 //*/
             }
@@ -52,13 +51,13 @@ namespace ChikenKithen
                 }
                 Console.Write($"{ingredient.Name} {kitchen.Storage.IngredientsAmount[ingredient]}, ");
             }
-            foreach(Food food in kitchen.Recipes)
+            foreach(Food food in kitchen.Storage.Recipes)
             {
-                if (kitchen.FoodAmount[food] == 0)
+                if (kitchen.Storage.FoodAmount[food] == 0)
                 {
                     continue;
                 }
-                Console.Write($"{food.Name} {kitchen.FoodAmount[food]}, ");
+                Console.Write($"{food.Name} {kitchen.Storage.FoodAmount[food]}, ");
             }
             Console.Write('\n');
         }

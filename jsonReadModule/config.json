@@ -1,0 +1,8 @@
+{
+  "Audit": true,
+  "Budget": false,
+  "Buy": true,
+  "Cook": false,
+  "Order": true,
+  "Table": true
+}

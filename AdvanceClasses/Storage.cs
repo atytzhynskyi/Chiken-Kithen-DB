@@ -1,4 +1,5 @@
 ﻿using BaseClasses;
+using jsonReadModule;
 using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
@@ -13,23 +14,81 @@ namespace ChikenKithen
     {
         public List<Ingredient> Ingredients { get; set; }
         public Dictionary<Ingredient, int> IngredientsAmount { get; set; } = new Dictionary<Ingredient, int>();
+
         public Dictionary<Ingredient, int> IngredientsPrice { get; set; } = new Dictionary<Ingredient, int>();
-        public Storage(List<Ingredient> _Ingredients, Dictionary<Ingredient, int> _IngredientsAmount, Dictionary<Ingredient, int> _IngredientsPrice)
+
+        public List<Food> Recipes;
+        public Dictionary<Food, int> FoodAmount { get; set; } = new Dictionary<Food, int>();
+
+        private readonly int maxIngredientType;
+        private readonly int totalMax;
+        const string fileName = @"..\..\..\WarehouseSize.json";
+
+        public Storage(List<Food> _Foods, List<Ingredient> _Ingredients, Dictionary<Ingredient, int> _IngredientsAmount, Dictionary<Ingredient, int> _IngredientsPrice)
         {
+            Dictionary<string, int> read = jsonRead.ReadFromJson<int>(fileName);
+            totalMax = read.Where(x => x.Key == "total maximum").FirstOrDefault().Value;
+            maxIngredientType = read.Where(x => x.Key == "max ingredient type").FirstOrDefault().Value;
+
             Ingredients = _Ingredients;
             IngredientsAmount = _IngredientsAmount;
             IngredientsPrice = _IngredientsPrice;
+            Recipes = _Foods;
         }
         public Storage(List<Ingredient> _Ingredients, Dictionary<Ingredient, int> _IngredientsAmount)
         {
+            Dictionary<string, int> read = jsonRead.ReadFromJson<int>(fileName);
+            totalMax = read.Where(x => x.Key == "total maximum").FirstOrDefault().Value;
+            maxIngredientType = read.Where(x => x.Key == "max ingredient type").FirstOrDefault().Value;
+
             Ingredients = _Ingredients;
             IngredientsAmount = _IngredientsAmount;
         }
         public Storage(List<Ingredient> _Ingredients)
         {
+            Dictionary<string, int> read = jsonRead.ReadFromJson<int>(fileName);
+            totalMax = read.Where(x => x.Key == "total maximum").FirstOrDefault().Value;
+            maxIngredientType = read.Where(x => x.Key == "max ingredient type").FirstOrDefault().Value;
+
             Ingredients = _Ingredients;
         }
-        
+        public bool AddIngredient(string ingredientName, int amount)
+        {
+            var ingredient = Ingredients.Where(x => x.Name == ingredientName).FirstOrDefault();
+            int newTotalAmount = GetTotalAmoun() + amount;
+            int ingredientAmount = IngredientsAmount[ingredient];
+            int wasted = 0;
+
+            if (newTotalAmount > totalMax)
+            {
+                wasted = newTotalAmount - totalMax;
+                amount -= wasted;
+                if (ingredientAmount + amount> maxIngredientType)
+                {
+                    wasted += ingredientAmount + amount - maxIngredientType;
+
+                    Console.WriteLine($"Wasted: {ingredientName}, amount: {IngredientsAmount[ingredient] + amount - maxIngredientType}");
+                }
+                IngredientsAmount[ingredient] += maxIngredientType; 
+            }
+
+            IngredientsAmount[ingredient] += amount;
+            return true;
+        }
+
+        private int GetTotalAmoun()
+        {
+            return IngredientsAmount.Values.Sum() + FoodAmount.Values.Sum();
+        }
+
+        public Food GetRecipeByName(string Name)
+        {
+            return Recipes.Find(r => r.Name == Name);
+        }
+        public Ingredient GetIngredient(string name)
+        {
+            return Ingredients.Find(i => i.Name == name);
+        }
         public void AddNewIngredient()
         {
             Ingredient ingredient = new Ingredient();

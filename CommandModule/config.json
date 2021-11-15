@@ -1,8 +1,0 @@
-{
-  "Audit": "yes",
-  "Budget": "no",
-  "Buy": "yes",
-  "Cook": "no",
-  "Order": "yes",
-  "Table": "yes"
-}

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using BaseClasses;
 using System.Linq;
+using jsonReadModule;
+
 namespace ChikenKithen
 {
     public class Hall
@@ -59,16 +61,16 @@ namespace ChikenKithen
         }
         public void GiveFood(Kitchen kitchen, Customer customer)
         {
-            foreach (Food food in kitchen.Recipes)
+            foreach (Food food in kitchen.Storage.Recipes)
             {
                 if (food.Name == customer.Order.Name)
                 {
-                    if (kitchen.FoodAmount[food] < 1)
+                    if (kitchen.Storage.FoodAmount[food] < 1)
                     {
                         Console.WriteLine("We dont have enough {0} for {1}", customer.Order.Name, customer.Name);
                         return;
                     }
-                    kitchen.FoodAmount[food]--;
+                    kitchen.Storage.FoodAmount[food]--;
                     return;
                 }
             }
@@ -98,8 +100,28 @@ namespace ChikenKithen
         public void GetPaid(Kitchen kitchen, Customer customer)
         {
             int price = kitchen.CalculateFoodMenuPrice(customer.Order);
+            customer.VisitsCount++;
+
+            if (IsDiscountAppliable(customer))
+            {
+                price -= Convert.ToInt32(GetDiscount() * price);
+            }
             customer.budget -= price;
-            kitchen.Budget += kitchen.CalculateFoodMenuPrice(customer.Order);
+            kitchen.Budget += price;
+        }
+
+        private double GetDiscount()
+        {
+            return jsonRead.ReadFromJson<int>(@"..\..\..\discount.json").Values.First()/100;
+        }
+
+        private bool IsDiscountAppliable(Customer customer)
+        {
+            if (customer.VisitsCount % 3 == 0)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

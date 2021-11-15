@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CommandModule
+namespace CommandsModule
 {
     class Record
     {
@@ -18,14 +18,14 @@ namespace CommandModule
         public Record(Kitchen kitchen)
         {
             CommandAndResult = "";
-            FoodsAmount = kitchen.FoodAmount.ToDictionary(x => x.Key, x => x.Value);
+            FoodsAmount = kitchen.Storage.FoodAmount.ToDictionary(x => x.Key, x => x.Value);
             IngredientsAmount = kitchen.Storage.IngredientsAmount.ToDictionary(x => x.Key, x => x.Value);
             Budget = kitchen.Budget;
         }
         public Record(Kitchen kitchen, string _CommandAndResult)
         {
             CommandAndResult = _CommandAndResult;
-            FoodsAmount = kitchen.FoodAmount.ToDictionary(x => x.Key, x => x.Value);
+            FoodsAmount = kitchen.Storage.FoodAmount.ToDictionary(x => x.Key, x => x.Value);
             IngredientsAmount = kitchen.Storage.IngredientsAmount.ToDictionary(x => x.Key, x => x.Value);
             Budget = kitchen.Budget;
         }
