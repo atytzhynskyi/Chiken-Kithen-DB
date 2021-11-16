@@ -56,6 +56,16 @@ namespace ChikenKithen
 
             Ingredients = _Ingredients;
         }
+        public Storage(List<Food> food, List<Ingredient> _Ingredients)
+        {
+            Dictionary<string, int> read = jsonRead.ReadFromJson<int>(fileName);
+            totalMax = read.Where(x => x.Key == "total maximum").FirstOrDefault().Value;
+            maxIngredientType = read.Where(x => x.Key == "max ingredient type").FirstOrDefault().Value;
+            maxFoodType = read.Where(x => x.Key == "max dish type").FirstOrDefault().Value;
+
+            Ingredients = _Ingredients;
+            Recipes = food;
+        }
         public void AddIngredient(string ingredientName, int amount)
         {
             var ingredient = Ingredients.Where(x => x.Name == ingredientName).FirstOrDefault();

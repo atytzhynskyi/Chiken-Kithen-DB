@@ -66,10 +66,8 @@ namespace ChikenKithen
                                  select food)
             {
                 Cook(food);
-                // Storage.FoodAmount[food]--;
             }
 
-            // Storage.FoodAmount[order]++;
             return true;
         }
 
