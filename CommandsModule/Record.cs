@@ -7,24 +7,23 @@ using System.Text;
 
 namespace CommandsModule
 {
-    class Record
+    public class Record
     {
-        public string CommandAndResult;
+        public Command Command;
 
         public Dictionary<Food, int> FoodsAmount = new Dictionary<Food, int>();
         public Dictionary<Ingredient, int> IngredientsAmount = new Dictionary<Ingredient, int>();
         public int Budget;
 
+        public Record(Command command)
+        {
+            Command = command;
+            FoodsAmount = command.Kitchen.Storage.FoodAmount.ToDictionary(x => x.Key, x => x.Value);
+            IngredientsAmount = command.Kitchen.Storage.IngredientsAmount.ToDictionary(x => x.Key, x => x.Value);
+            Budget = command.Kitchen.Budget;
+        }
         public Record(Kitchen kitchen)
         {
-            CommandAndResult = "";
-            FoodsAmount = kitchen.Storage.FoodAmount.ToDictionary(x => x.Key, x => x.Value);
-            IngredientsAmount = kitchen.Storage.IngredientsAmount.ToDictionary(x => x.Key, x => x.Value);
-            Budget = kitchen.Budget;
-        }
-        public Record(Kitchen kitchen, string _CommandAndResult)
-        {
-            CommandAndResult = _CommandAndResult;
             FoodsAmount = kitchen.Storage.FoodAmount.ToDictionary(x => x.Key, x => x.Value);
             IngredientsAmount = kitchen.Storage.IngredientsAmount.ToDictionary(x => x.Key, x => x.Value);
             Budget = kitchen.Budget;

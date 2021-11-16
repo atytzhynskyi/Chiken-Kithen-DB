@@ -107,7 +107,7 @@ namespace ChikenKithen
                 price -= Convert.ToInt32(GetDiscount() * price);
             }
             customer.budget -= price;
-            kitchen.Budget += price;
+            kitchen.AddMoney(price);
         }
 
         private double GetDiscount()

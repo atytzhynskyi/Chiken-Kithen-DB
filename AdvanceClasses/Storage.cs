@@ -55,7 +55,7 @@ namespace ChikenKithen
         public bool AddIngredient(string ingredientName, int amount)
         {
             var ingredient = Ingredients.Where(x => x.Name == ingredientName).FirstOrDefault();
-            int newTotalAmount = GetTotalAmoun() + amount;
+            int newTotalAmount = GetTotalAmount() + amount;
             int ingredientAmount = IngredientsAmount[ingredient];
             int wasted = 0;
 
@@ -76,7 +76,7 @@ namespace ChikenKithen
             return true;
         }
 
-        private int GetTotalAmoun()
+        private int GetTotalAmount()
         {
             return IngredientsAmount.Values.Sum() + FoodAmount.Values.Sum();
         }

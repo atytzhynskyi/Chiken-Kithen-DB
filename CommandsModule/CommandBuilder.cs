@@ -11,16 +11,9 @@ using CommandsModule.Commands;
 
 namespace CommandsModule
 {
-    public class CommandBuilder
+    public static class CommandBuilder
     {
-        Dictionary<string, bool> permissions = new Dictionary<string, bool>();
-        public CommandBuilder() { }
-
-        public void SetPermisionsFromFile()
-        {
-            permissions = jsonRead.ReadFromJson<bool>(@"..\..\..\config.json");
-        }
-        static public Command Build(Hall hall, Kitchen kitchen, string commandString)
+        static public Command Build(Hall hall, Kitchen kitchen, string commandString, RecordsBase RecordsBase)
         {
             Command command;
 
@@ -50,7 +43,7 @@ namespace CommandsModule
                     command = new Budget(hall, kitchen, commandString);
                     break;
                 case ("Audit"):
-                    command = new Audit(hall, kitchen, commandString);
+                    command = new Audit(hall, kitchen, commandString, RecordsBase);
                     break;
                 default:
                     command = new Table(hall, kitchen, "Table, ");

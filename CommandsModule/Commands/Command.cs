@@ -11,8 +11,8 @@ namespace CommandsModule
         public readonly string FullCommand;
         public readonly string CommandType;
 
-        protected Kitchen Kitchen;
-        protected Hall Hall;
+        public readonly Kitchen Kitchen;
+        public readonly Hall Hall;
 
         public string Result { get; protected set; }
         public bool IsAllowed { get; protected set; }
