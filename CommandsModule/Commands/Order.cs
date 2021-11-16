@@ -29,7 +29,7 @@ namespace CommandsModule
                 Result = "Dont have enought money";
             }
             Kitchen.UseMoney(price);
-            Kitchen.Storage.IngredientsAmount[Ingredient] += Amount;
+            Kitchen.Storage.AddIngredient(Ingredient.Name, Amount);
             Result = "success";
         }
     }

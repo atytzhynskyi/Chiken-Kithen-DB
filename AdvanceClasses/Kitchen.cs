@@ -38,16 +38,16 @@ namespace ChikenKithen
         {
             return Convert.ToInt32(CalculateFoodCostPrice(food)*1.3);
         }
-        public void Cook(Food order)
+        public bool Cook(Food order)
         {
             if (!IsEnoughIngredients(order))
             {
-                return;
+                return false;
             }
 
             if(!Storage.Recipes.Any(r=>r.Name == order.Name))
             {
-                return;
+                return false;
             }
 
             order = Storage.Recipes.Where(r => r.Name == order.Name).First();
@@ -66,10 +66,11 @@ namespace ChikenKithen
                                  select food)
             {
                 Cook(food);
-                Storage.FoodAmount[food]--;
+                // Storage.FoodAmount[food]--;
             }
 
-            Storage.FoodAmount[order]++;
+            // Storage.FoodAmount[order]++;
+            return true;
         }
 
         public bool IsEnoughIngredients(Food food)

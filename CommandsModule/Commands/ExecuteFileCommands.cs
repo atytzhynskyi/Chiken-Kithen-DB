@@ -9,8 +9,9 @@ namespace CommandsModule.Commands
     public class ExecuteFileCommands : Command
     {
         readonly string FileName;
+        RecordsBase records;
         List<Command> Commands = new List<Command>();
-        public ExecuteFileCommands(Hall Hall, Kitchen Kitchen, string FullCommand) : base(Hall, Kitchen, FullCommand)
+        public ExecuteFileCommands(Hall Hall, Kitchen Kitchen, string FullCommand, RecordsBase records) : base(Hall, Kitchen, FullCommand)
         {
             FileName = @"..\..\..\Commands.csv";
         }
@@ -31,7 +32,7 @@ namespace CommandsModule.Commands
                 {
                     if (readLine != "ExecuteFileCommands")
                     {
-                        Commands.Add(CommandBuilder.Build(Hall, Kitchen, readLine));
+                        Commands.Add(CommandBuilder.Build(Hall, Kitchen, readLine, records));
                     }
                 }
             }

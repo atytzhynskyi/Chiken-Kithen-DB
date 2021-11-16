@@ -59,7 +59,12 @@ namespace ChikenKithen
             }
             return customer;
         }
-        public void GiveFood(Kitchen kitchen, Customer customer)
+        public void GiveFood()
+        {
+            Console.WriteLine("Order was servered");
+        }
+
+        public void GiveFoodFromStorage(Kitchen kitchen, Customer customer)
         {
             foreach (Food food in kitchen.Storage.Recipes)
             {

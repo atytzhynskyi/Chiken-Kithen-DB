@@ -36,7 +36,8 @@ namespace ChikenKithen
                     Warehouse(kitchen);
                     string input = Console.ReadLine();
                     Command command = CommandBuilder.Build(hall, kitchen, input, recordsBase);
-                    command.ExecuteCommand(hall, kitchen);
+                    command.SetPermision(jsonRead.ReadFromJson<bool>(@"..\..\..\config.json"));
+                    command.ExecuteCommand();
                     Console.WriteLine($"{command.FullCommand} -> {command.Result}");
                     applicationContext.SaveAll(storage.Ingredients, storage.IngredientsAmount, storage.IngredientsPrice, kitchen.Storage.Recipes, hall.Customers, kitchen.Budget);
                 }
@@ -54,6 +55,11 @@ namespace ChikenKithen
                 Console.Write($"{food.Key.Name} {food.Value}, ");
             }
             Console.Write('\n');
+        }
+        
+        static void AddFoodInWarehouse(Food food, Kitchen kitchen)
+        {
+            kitchen.Cook(food);
         }
     }
 }

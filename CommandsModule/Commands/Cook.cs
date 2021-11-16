@@ -18,6 +18,8 @@ namespace CommandsModule
         }
         public override void ExecuteCommand()
         {
+            int cookedAmount = 0;
+
             if (!IsAllowed)
             {
                 Result = "Command not allowed";
@@ -25,16 +27,25 @@ namespace CommandsModule
             }
 
             SetResultIfIssues();
-            if(object.Equals(Result, null))
+            if(!object.Equals(Result, null))
             {
                 return;
             }
 
             for (int i = 0; i < Amount; i++)
             {
-                Kitchen.Cook(Food);
+                if (Kitchen.Cook(Food))
+                {
+                    cookedAmount++;
+                    Result = "success";
+                }
+                else
+                {
+                    Result = "Failed to cook food";
+                    break;
+                }
             }
-            Result = "success";
+            Kitchen.Storage.AddFood(Food.Name, cookedAmount);
         }
         private void SetResultIfIssues()
         {

@@ -21,6 +21,7 @@ namespace ChikenKithen
         public Dictionary<Food, int> FoodAmount { get; set; } = new Dictionary<Food, int>();
 
         private readonly int maxIngredientType;
+        private readonly int maxFoodType;
         private readonly int totalMax;
         const string fileName = @"..\..\..\WarehouseSize.json";
 
@@ -29,6 +30,7 @@ namespace ChikenKithen
             Dictionary<string, int> read = jsonRead.ReadFromJson<int>(fileName);
             totalMax = read.Where(x => x.Key == "total maximum").FirstOrDefault().Value;
             maxIngredientType = read.Where(x => x.Key == "max ingredient type").FirstOrDefault().Value;
+            maxFoodType = read.Where(x => x.Key == "max dish type").FirstOrDefault().Value;
 
             Ingredients = _Ingredients;
             IngredientsAmount = _IngredientsAmount;
@@ -40,6 +42,7 @@ namespace ChikenKithen
             Dictionary<string, int> read = jsonRead.ReadFromJson<int>(fileName);
             totalMax = read.Where(x => x.Key == "total maximum").FirstOrDefault().Value;
             maxIngredientType = read.Where(x => x.Key == "max ingredient type").FirstOrDefault().Value;
+            maxFoodType = read.Where(x => x.Key == "max dish type").FirstOrDefault().Value;
 
             Ingredients = _Ingredients;
             IngredientsAmount = _IngredientsAmount;
@@ -49,10 +52,11 @@ namespace ChikenKithen
             Dictionary<string, int> read = jsonRead.ReadFromJson<int>(fileName);
             totalMax = read.Where(x => x.Key == "total maximum").FirstOrDefault().Value;
             maxIngredientType = read.Where(x => x.Key == "max ingredient type").FirstOrDefault().Value;
+            maxFoodType = read.Where(x => x.Key == "max dish type").FirstOrDefault().Value;
 
             Ingredients = _Ingredients;
         }
-        public bool AddIngredient(string ingredientName, int amount)
+        public void AddIngredient(string ingredientName, int amount)
         {
             var ingredient = Ingredients.Where(x => x.Name == ingredientName).FirstOrDefault();
             int newTotalAmount = GetTotalAmount() + amount;
@@ -63,19 +67,42 @@ namespace ChikenKithen
             {
                 wasted = newTotalAmount - totalMax;
                 amount -= wasted;
-                if (ingredientAmount + amount> maxIngredientType)
-                {
-                    wasted += ingredientAmount + amount - maxIngredientType;
+            }
+            if (ingredientAmount + amount > maxIngredientType)
+            {
+                wasted += ingredientAmount + amount - maxIngredientType;
+                amount -= wasted;
+            }
+            if(wasted != 0)
+            {
+                Console.WriteLine($"Wasted: {ingredientName}, amount: {wasted}");
+            }
+            IngredientsAmount[ingredient] += amount;
+        }
+        public void AddFood(string foodName, int amount)
+        {
+            var food = Recipes.Where(x => x.Name == foodName).FirstOrDefault();
+            int newTotalAmount = GetTotalAmount() + amount;
+            int foodAmount = FoodAmount[food];
+            int wasted = 0;
 
-                    Console.WriteLine($"Wasted: {ingredientName}, amount: {IngredientsAmount[ingredient] + amount - maxIngredientType}");
-                }
-                IngredientsAmount[ingredient] += maxIngredientType; 
+            if (newTotalAmount > totalMax)
+            {
+                wasted = newTotalAmount - totalMax;
+                amount -= wasted;
+            }
+            if (foodAmount + amount > maxFoodType)
+            {
+                wasted += foodAmount + amount - maxFoodType;
+                amount -= wasted;
+            }
+            if(wasted != 0)
+            {
+                Console.WriteLine($"Wasted: {foodName}, amount: {wasted}");
             }
 
-            IngredientsAmount[ingredient] += amount;
-            return true;
+            FoodAmount[food] += amount;
         }
-
         private int GetTotalAmount()
         {
             return IngredientsAmount.Values.Sum() + FoodAmount.Values.Sum();

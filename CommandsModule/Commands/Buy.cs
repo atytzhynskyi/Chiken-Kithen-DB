@@ -46,11 +46,15 @@ namespace CommandsModule
                 return;
             }
 
-            if (Kitchen.Storage.FoodAmount[Customer.Order] <= 0)
+            if (Kitchen.Storage.FoodAmount[Customer.Order] >= 1)
+            {
+                Hall.GiveFoodFromStorage(Kitchen, Customer);
+            }
+            else
             {
                 Kitchen.Cook(Customer.Order);
+                Hall.GiveFood();
             }
-            Hall.GiveFood(Kitchen, Customer);
 
             if (Customer.isAllergic(Kitchen.Storage.Recipes, Customer.Order).Item1)
             {
@@ -58,6 +62,7 @@ namespace CommandsModule
                 Result = $"Can't eat: allergic to: {Customer.isAllergic(Kitchen.Storage.Recipes, Customer.Order).Item2.Name}";
                 return;
             }
+
             Customer.VisitsCount++;
             Hall.GetPaid(Kitchen, Customer);
             Result = "success";

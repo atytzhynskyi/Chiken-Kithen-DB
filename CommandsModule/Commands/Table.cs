@@ -10,10 +10,8 @@ namespace CommandsModule
     public class Table : Command
     {
         public List<Buy> Buys = new List<Buy>();
-        public Table(Hall _Hall, Kitchen _Kitchen, string _FullCommand) : base(_FullCommand)
+        public Table(Hall _Hall, Kitchen _Kitchen, string FullCommand) : base(_Hall, _Kitchen, FullCommand)
         {
-            Kitchen = _Kitchen;
-            Hall = _Hall;
             Buys = FormBuysFromCommand();
         }
         public override void ExecuteCommand()

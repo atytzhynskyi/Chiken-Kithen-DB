@@ -2,7 +2,7 @@
   "Audit": true,
   "Budget": false,
   "Buy": true,
-  "Cook": false,
+  "Cook": true,
   "Order": true,
   "Table": true
 }

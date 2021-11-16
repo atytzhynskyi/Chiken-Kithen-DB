@@ -37,7 +37,7 @@ namespace CommandsModule
                     command = new Customers(hall, kitchen, commandString);
                     break;
                 case ("ExecuteFileCommands"):
-                    command = new ExecuteFileCommands(hall, kitchen, commandString);
+                    command = new ExecuteFileCommands(hall, kitchen, commandString, RecordsBase);
                     break;
                 case ("Budget"):
                     command = new Budget(hall, kitchen, commandString);
