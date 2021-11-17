@@ -11,9 +11,10 @@ namespace CommandsModule.Commands
         readonly string FileName;
         RecordsBase records;
         List<Command> Commands = new List<Command>();
-        public ExecuteFileCommands(Hall Hall, Kitchen Kitchen, string FullCommand, RecordsBase records) : base(Hall, Kitchen, FullCommand)
+        public ExecuteFileCommands(Hall Hall, Kitchen Kitchen, string FullCommand, RecordsBase _records) : base(Hall, Kitchen, FullCommand)
         {
             FileName = @"..\..\..\Commands.csv";
+            records = _records;
         }
         public override void ExecuteCommand()
         {
