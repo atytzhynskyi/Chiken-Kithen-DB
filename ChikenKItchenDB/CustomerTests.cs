@@ -18,7 +18,7 @@ namespace BaseClasses.Tests
             Dictionary<Ingredient, int> dict = new Dictionary<Ingredient, int> { };
             dict.Add(water, 10);
             dict.Add(salt, 10);
-            Storage storage = new Storage(new List<Ingredient> { water, salt}, dict);
+            Storage storage = new Storage(new List<Ingredient> { water, salt}, dict, 20, 20);
             Customer customer = new Customer("SugarMan", water);
             Food ice = new Food("Ice", water);
             Food saltWater = new Food("Salt water", salt, water);

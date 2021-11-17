@@ -7,7 +7,7 @@ using System.Linq;
 using AdvanceClasses;
 using CommandsModule;
 using jsonReadModule;
-
+using ConfigurationModule;
 namespace ChikenKithen
 {
     class Program
@@ -16,8 +16,10 @@ namespace ChikenKithen
         {
             using (ApplicationContext applicationContext = new ApplicationContext())
             {
+                ConfigurationModule.ConfigurationService.Init(@"..\..\..\config.json");
+
                 //applicationContext.Database.EnsureDeleted();
-                
+                /*
                 applicationContext.InitializeFromFiles();
                 applicationContext.SetPropertiesIngredientsId();
 
@@ -36,7 +38,7 @@ namespace ChikenKithen
                     Warehouse(kitchen);
                     string input = Console.ReadLine();
                     Command command = CommandBuilder.Build(hall, kitchen, input, recordsBase);
-                    command.SetPermision(jsonRead.ReadFromJson<bool>(@"..\..\..\config.json"));
+                    command.SetPermision(JsonRead.ReadFromJson<bool>(@"..\..\..\config.json"));
                     command.ExecuteCommand();
                     Console.WriteLine($"{command.FullCommand} -> {command.Result}");
                     applicationContext.SaveAll(storage.Ingredients, storage.IngredientsAmount, storage.IngredientsPrice, kitchen.Storage.Recipes, hall.Customers, kitchen.Budget);

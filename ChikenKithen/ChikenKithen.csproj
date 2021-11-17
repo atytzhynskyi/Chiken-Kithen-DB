@@ -20,6 +20,7 @@
     <ProjectReference Include="..\BaseClasses\BaseClasses.csproj" />
     <ProjectReference Include="..\ChikenKitchenDataBase\ChikenKitchenDataBase.csproj" />
     <ProjectReference Include="..\CommandsModule\CommandsModule.csproj" />
+    <ProjectReference Include="..\ConfigurationModule\ConfigurationModule.csproj" />
     <ProjectReference Include="..\jsonReadModule\jsonReadModule.csproj" />
   </ItemGroup>
 

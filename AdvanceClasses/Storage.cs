@@ -24,10 +24,64 @@ namespace ChikenKithen
         private readonly int maxFoodType;
         private readonly int totalMax;
         const string fileName = @"..\..\..\WarehouseSize.json";
+        public Storage(List<Food> _Foods, List<Ingredient> _Ingredients, 
+            Dictionary<Ingredient, int> _IngredientsAmount, Dictionary<Ingredient, int> _IngredientsPrice, 
+            int _maxIngredientType, int _maxFoodType, int _totalMax)
+        {
+            totalMax = _totalMax;
+            maxIngredientType = _maxIngredientType;
+            maxFoodType = _maxFoodType;
+
+            Ingredients = _Ingredients;
+            IngredientsAmount = _IngredientsAmount;
+            IngredientsPrice = _IngredientsPrice;
+            Recipes = _Foods;
+
+            FillDictionaryByZero<Food>(Recipes, FoodAmount);
+        }
+
+        public Storage(List<Food> _Foods, List<Ingredient> _Ingredients, 
+            int _maxIngredientType, int _maxFoodType, int _totalMax)
+        {
+            totalMax = _totalMax;
+            maxIngredientType = _maxIngredientType;
+            maxFoodType = _maxFoodType;
+
+            Ingredients = _Ingredients;
+            Recipes = _Foods;
+
+            FillDictionaryByZero<Food>(Recipes, FoodAmount);
+            FillDictionaryByZero<Ingredient>(Ingredients, IngredientsPrice);
+            FillDictionaryByZero<Ingredient>(Ingredients, IngredientsAmount);
+        }
+
+        public Storage(List<Ingredient> _Ingredients, Dictionary<Ingredient, int> _IngredientsAmount, int _maxIngredientType, int _totalMax)
+        {
+            totalMax = _totalMax;
+            maxIngredientType = _maxIngredientType;
+            maxFoodType = int.MaxValue;
+
+            Ingredients = _Ingredients;
+            Recipes = new List<Food>();
+            IngredientsAmount = _IngredientsAmount;
+            FillDictionaryByZero<Ingredient>(Ingredients, IngredientsPrice);
+        }
+
+        public Storage(List<Ingredient> _Ingredients, int _maxIngredientType, int _totalMax)
+        {
+            totalMax = _totalMax;
+            maxIngredientType = _maxIngredientType;
+            maxFoodType = int.MaxValue;
+
+            Ingredients = _Ingredients;
+            Recipes = new List<Food>();
+            FillDictionaryByZero<Ingredient>(Ingredients, IngredientsPrice);
+            FillDictionaryByZero<Ingredient>(Ingredients, IngredientsAmount);
+        }
 
         public Storage(List<Food> _Foods, List<Ingredient> _Ingredients, Dictionary<Ingredient, int> _IngredientsAmount, Dictionary<Ingredient, int> _IngredientsPrice)
         {
-            Dictionary<string, int> read = jsonRead.ReadFromJson<int>(fileName);
+            Dictionary<string, int> read = JsonRead.ReadFromJson<int>(fileName);
             totalMax = read.Where(x => x.Key == "total maximum").FirstOrDefault().Value;
             maxIngredientType = read.Where(x => x.Key == "max ingredient type").FirstOrDefault().Value;
             maxFoodType = read.Where(x => x.Key == "max dish type").FirstOrDefault().Value;
@@ -36,35 +90,58 @@ namespace ChikenKithen
             IngredientsAmount = _IngredientsAmount;
             IngredientsPrice = _IngredientsPrice;
             Recipes = _Foods;
+
+            FillDictionaryByZero<Food>(Recipes, FoodAmount);
         }
+       
         public Storage(List<Ingredient> _Ingredients, Dictionary<Ingredient, int> _IngredientsAmount)
         {
-            Dictionary<string, int> read = jsonRead.ReadFromJson<int>(fileName);
+            Dictionary<string, int> read = JsonRead.ReadFromJson<int>(fileName);
             totalMax = read.Where(x => x.Key == "total maximum").FirstOrDefault().Value;
             maxIngredientType = read.Where(x => x.Key == "max ingredient type").FirstOrDefault().Value;
             maxFoodType = read.Where(x => x.Key == "max dish type").FirstOrDefault().Value;
 
             Ingredients = _Ingredients;
+            Recipes = new List<Food>();
             IngredientsAmount = _IngredientsAmount;
+            FillDictionaryByZero<Ingredient>(Ingredients, IngredientsPrice);
         }
+
         public Storage(List<Ingredient> _Ingredients)
         {
-            Dictionary<string, int> read = jsonRead.ReadFromJson<int>(fileName);
+            Dictionary<string, int> read = JsonRead.ReadFromJson<int>(fileName);
             totalMax = read.Where(x => x.Key == "total maximum").FirstOrDefault().Value;
             maxIngredientType = read.Where(x => x.Key == "max ingredient type").FirstOrDefault().Value;
             maxFoodType = read.Where(x => x.Key == "max dish type").FirstOrDefault().Value;
 
             Ingredients = _Ingredients;
+            Recipes = new List<Food>();
+            FillDictionaryByZero<Ingredient>(Ingredients, IngredientsPrice);
+            FillDictionaryByZero<Ingredient>(Ingredients, IngredientsAmount);
         }
+
         public Storage(List<Food> food, List<Ingredient> _Ingredients)
         {
-            Dictionary<string, int> read = jsonRead.ReadFromJson<int>(fileName);
+            Dictionary<string, int> read = JsonRead.ReadFromJson<int>(fileName);
             totalMax = read.Where(x => x.Key == "total maximum").FirstOrDefault().Value;
             maxIngredientType = read.Where(x => x.Key == "max ingredient type").FirstOrDefault().Value;
             maxFoodType = read.Where(x => x.Key == "max dish type").FirstOrDefault().Value;
 
             Ingredients = _Ingredients;
             Recipes = food;
+            FillDictionaryByZero<Ingredient>(Ingredients, IngredientsPrice);
+            FillDictionaryByZero<Ingredient>(Ingredients, IngredientsAmount);
+
+            FillDictionaryByZero<Food>(Recipes, FoodAmount);
+        }
+
+
+        private void FillDictionaryByZero<T>(List<T> list, Dictionary<T, int> dict)
+        {
+            foreach(var item in list)
+            {
+                dict.Add(item,0);
+            }
         }
         public void AddIngredient(string ingredientName, int amount)
         {

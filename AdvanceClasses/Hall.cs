@@ -117,7 +117,7 @@ namespace ChikenKithen
 
         private double GetDiscount()
         {
-            return jsonRead.ReadFromJson<int>(@"..\..\..\discount.json").Values.First()/100;
+            return JsonRead.ReadFromJson<int>(@"..\..\..\discount.json").Values.First()/100;
         }
 
         private bool IsDiscountAppliable(Customer customer)

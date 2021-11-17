@@ -19,7 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdvanceClasses", "AdvanceCl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "jsonReadModule", "jsonReadModule\jsonReadModule.csproj", "{6CAAEE26-4392-477D-99A9-4EB168D26696}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandsModule", "CommandsModule\CommandsModule.csproj", "{DEEBD8DC-538E-4FEE-A0B7-3116CD00E307}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommandsModule", "CommandsModule\CommandsModule.csproj", "{DEEBD8DC-538E-4FEE-A0B7-3116CD00E307}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigurationModule", "ConfigurationModule\ConfigurationModule.csproj", "{E614BE70-D8FA-4E37-9B51-B62CB9D2B748}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,10 @@ Global
 		{DEEBD8DC-538E-4FEE-A0B7-3116CD00E307}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DEEBD8DC-538E-4FEE-A0B7-3116CD00E307}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DEEBD8DC-538E-4FEE-A0B7-3116CD00E307}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E614BE70-D8FA-4E37-9B51-B62CB9D2B748}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E614BE70-D8FA-4E37-9B51-B62CB9D2B748}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E614BE70-D8FA-4E37-9B51-B62CB9D2B748}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E614BE70-D8FA-4E37-9B51-B62CB9D2B748}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
