@@ -23,7 +23,21 @@ namespace ChikenKithen
         private readonly int maxIngredientType;
         private readonly int maxFoodType;
         private readonly int totalMax;
-        const string fileName = @"..\..\..\WarehouseSize.json";
+
+        public Storage(List<Food> _Foods, List<Ingredient> _Ingredients, Dictionary<Food, int> _FoodAmount,
+            Dictionary<Ingredient, int> _IngredientsAmount, Dictionary<Ingredient, int> _IngredientsPrice,
+            int _maxIngredientType, int _maxFoodType, int _totalMax)
+        {
+            totalMax = _totalMax;
+            maxIngredientType = _maxIngredientType;
+            maxFoodType = _maxFoodType;
+
+            Ingredients = _Ingredients;
+            IngredientsAmount = _IngredientsAmount;
+            IngredientsPrice = _IngredientsPrice;
+            Recipes = _Foods;
+            FoodAmount = _FoodAmount;
+        }
         public Storage(List<Food> _Foods, List<Ingredient> _Ingredients, 
             Dictionary<Ingredient, int> _IngredientsAmount, Dictionary<Ingredient, int> _IngredientsPrice, 
             int _maxIngredientType, int _maxFoodType, int _totalMax)
@@ -79,40 +93,11 @@ namespace ChikenKithen
             FillDictionaryByZero<Ingredient>(Ingredients, IngredientsAmount);
         }
 
-        public Storage(List<Food> _Foods, List<Ingredient> _Ingredients, Dictionary<Ingredient, int> _IngredientsAmount, Dictionary<Ingredient, int> _IngredientsPrice)
-        {
-            Dictionary<string, int> read = JsonRead.ReadFromJson<int>(fileName);
-            totalMax = read.Where(x => x.Key == "total maximum").FirstOrDefault().Value;
-            maxIngredientType = read.Where(x => x.Key == "max ingredient type").FirstOrDefault().Value;
-            maxFoodType = read.Where(x => x.Key == "max dish type").FirstOrDefault().Value;
-
-            Ingredients = _Ingredients;
-            IngredientsAmount = _IngredientsAmount;
-            IngredientsPrice = _IngredientsPrice;
-            Recipes = _Foods;
-
-            FillDictionaryByZero<Food>(Recipes, FoodAmount);
-        }
-       
-        public Storage(List<Ingredient> _Ingredients, Dictionary<Ingredient, int> _IngredientsAmount)
-        {
-            Dictionary<string, int> read = JsonRead.ReadFromJson<int>(fileName);
-            totalMax = read.Where(x => x.Key == "total maximum").FirstOrDefault().Value;
-            maxIngredientType = read.Where(x => x.Key == "max ingredient type").FirstOrDefault().Value;
-            maxFoodType = read.Where(x => x.Key == "max dish type").FirstOrDefault().Value;
-
-            Ingredients = _Ingredients;
-            Recipes = new List<Food>();
-            IngredientsAmount = _IngredientsAmount;
-            FillDictionaryByZero<Ingredient>(Ingredients, IngredientsPrice);
-        }
-
         public Storage(List<Ingredient> _Ingredients)
         {
-            Dictionary<string, int> read = JsonRead.ReadFromJson<int>(fileName);
-            totalMax = read.Where(x => x.Key == "total maximum").FirstOrDefault().Value;
-            maxIngredientType = read.Where(x => x.Key == "max ingredient type").FirstOrDefault().Value;
-            maxFoodType = read.Where(x => x.Key == "max dish type").FirstOrDefault().Value;
+            totalMax = int.MaxValue;
+            maxIngredientType = int.MaxValue;
+            maxFoodType = int.MaxValue;
 
             Ingredients = _Ingredients;
             Recipes = new List<Food>();
@@ -122,10 +107,9 @@ namespace ChikenKithen
 
         public Storage(List<Food> food, List<Ingredient> _Ingredients)
         {
-            Dictionary<string, int> read = JsonRead.ReadFromJson<int>(fileName);
-            totalMax = read.Where(x => x.Key == "total maximum").FirstOrDefault().Value;
-            maxIngredientType = read.Where(x => x.Key == "max ingredient type").FirstOrDefault().Value;
-            maxFoodType = read.Where(x => x.Key == "max dish type").FirstOrDefault().Value;
+            totalMax = int.MaxValue;
+            maxIngredientType = int.MaxValue;
+            maxFoodType = int.MaxValue;
 
             Ingredients = _Ingredients;
             Recipes = food;
