@@ -16,16 +16,20 @@ namespace ChikenKithen
         {
             using (ApplicationContext applicationContext = new ApplicationContext())
             {
-                ConfigurationModule.ConfigurationService.Init(@"..\..\..\config.json");
-
                 //applicationContext.Database.EnsureDeleted();
-                /*
+                
                 applicationContext.InitializeFromFiles();
                 applicationContext.SetPropertiesIngredientsId();
 
-                Storage storage = new Storage(
-                    applicationContext.GetFoods(), applicationContext.Ingredients.ToList(), 
-                    applicationContext.GetIngredientsAmount(), applicationContext.GetIngredientsPrice());
+                var WarehouseSize = JsonRead.ReadFromJson<int>(@"..\..\..\WarehouseSize.json");
+                
+                Storage storage = new Storage(applicationContext.GetFoods(),
+                                              applicationContext.Ingredients.ToList(),
+                                              applicationContext.GetIngredientsAmount(),
+                                              applicationContext.GetIngredientsPrice(),
+                                              WarehouseSize.Where(k => k.Key == "max ingredient type").First().Value,
+                                              WarehouseSize.Where(k => k.Key == "max dish type").First().Value,
+                                              WarehouseSize.Where(k => k.Key == "total maximum").First().Value);
                 
                 Kitchen kitchen = new Kitchen(storage, applicationContext.GetBudget());
                 Hall hall = new Hall(applicationContext.GetCustomers(), kitchen.Storage.Recipes);
@@ -57,11 +61,6 @@ namespace ChikenKithen
                 Console.Write($"{food.Key.Name} {food.Value}, ");
             }
             Console.Write('\n');
-        }
-        
-        static void AddFoodInWarehouse(Food food, Kitchen kitchen)
-        {
-            kitchen.Cook(food);
         }
     }
 }

@@ -17,7 +17,7 @@ namespace jsonReadModule
             {
                 json = sr.ReadToEnd();
             }
-            // Dictionary<string, T> ret = JsonSerializer.Deserialize<Dictionary<string, T>>(json);
+
             Dictionary<string, T> ret = JsonConvert.DeserializeObject<Dictionary<string, T>>(json);
             return ret;
         }

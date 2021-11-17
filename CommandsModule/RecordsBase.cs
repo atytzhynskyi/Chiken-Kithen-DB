@@ -16,7 +16,7 @@ namespace CommandsModule
         }
         public void AddRecordIfSomeChange(Command command)
         {
-            if (!IsSomethingChanged(command.Kitchen))
+            if (!IsSomethingChanged(command.kitchen))
             {
                 return;
             }

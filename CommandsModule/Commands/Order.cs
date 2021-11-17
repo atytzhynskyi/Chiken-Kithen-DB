@@ -23,13 +23,13 @@ namespace CommandsModule
                 return;
             }
 
-            int price = Kitchen.Storage.IngredientsPrice[Ingredient] * Amount;
-            if (Kitchen.Budget <= price)
+            int price = kitchen.Storage.IngredientsPrice[Ingredient] * Amount;
+            if (kitchen.Budget <= price)
             {
                 Result = "Dont have enought money";
             }
-            Kitchen.UseMoney(price);
-            Kitchen.Storage.AddIngredient(Ingredient.Name, Amount);
+            kitchen.UseMoney(price);
+            kitchen.Storage.AddIngredient(Ingredient.Name, Amount);
             Result = "success";
         }
     }

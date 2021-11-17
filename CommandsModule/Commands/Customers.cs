@@ -13,7 +13,7 @@ namespace CommandsModule.Commands
 
         public override void ExecuteCommand()
         {
-            foreach (Customer customer in Hall.Customers)
+            foreach (Customer customer in hall.Customers)
             {
                 Console.WriteLine("Name: {0}", customer.Name);
                 Console.WriteLine("Budget: {0}", customer.budget);

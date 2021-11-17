@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Text;
 using ChikenKItchenDB;
 using BaseClasses;
-using ChikenKithen;
 
 namespace ChikenKithen.Tests
 {
@@ -22,23 +21,27 @@ namespace ChikenKithen.Tests
         public void SetupContext()
         {
             water = new Ingredient("water");
-            storage = new Storage(new List<Ingredient> { water });
-            storage.IngredientsAmount.Add(water, 4);
             ice = new Food("Ice", water);
             iceWithWater = new Food("Ice with water", new List<Ingredient> { water }, new List<Food> { ice });
-            recipeBook = new List<Food>(new List<Food> { ice, iceWithWater });
+
+            recipeBook = new List<Food> { ice, iceWithWater };
+
+            storage = new Storage(recipeBook, new List<Ingredient> { water });
+
+            storage.IngredientsAmount[water] = 4;
+
             kitchen = new Kitchen(storage, 500);
-            kitchen.Cook(iceWithWater);
         }
             [TestMethod()]
-        public void CookTestFinalFoodCount()
+        public void CookTestTrue()
         {
-            Assert.AreEqual(1, kitchen.Storage.FoodAmount[iceWithWater], "final food count doesn't right");
+            Assert.IsTrue(kitchen.Cook(iceWithWater), "cook doesnt done");
         }
 
         [TestMethod()]
         public void CookTestBaseIngredientCount()
         {
+            kitchen.Cook(iceWithWater);
             Assert.AreEqual(2, storage.IngredientsAmount[water], "base ingredient count doesn't right");
         }
 
@@ -58,7 +61,16 @@ namespace ChikenKithen.Tests
         public void isEnoughIngredientsTestFalse()
         {
             kitchen.Cook(iceWithWater);
+            kitchen.Cook(iceWithWater);
             Assert.IsFalse(kitchen.IsEnoughIngredients(iceWithWater));
+        }
+        [TestMethod()]
+        public void isEnoughIngredientsWithFoodTest()
+        {
+            storage.FoodAmount[ice] = 1;
+            storage.IngredientsAmount[water] = 1;
+
+            Assert.IsTrue(kitchen.IsEnoughIngredients(iceWithWater));
         }
     }
 }

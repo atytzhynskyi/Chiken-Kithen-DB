@@ -33,7 +33,7 @@ namespace CommandsModule.Commands
                 {
                     if (readLine != "ExecuteFileCommands")
                     {
-                        Commands.Add(CommandBuilder.Build(Hall, Kitchen, readLine, records));
+                        Commands.Add(CommandBuilder.Build(hall, kitchen, readLine, records));
                     }
                 }
             }

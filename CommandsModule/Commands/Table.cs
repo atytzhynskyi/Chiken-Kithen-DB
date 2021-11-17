@@ -37,7 +37,6 @@ namespace CommandsModule
         {
             List<Buy> buys = new List<Buy>();
 
-            List<string> commandSplit = new List<string>(FullCommand.Split(", "));
             List<string> customersName = GetCustomersFromCommand();
             List<string> foodsName = GetFoodsFromCommand();
 
@@ -48,20 +47,20 @@ namespace CommandsModule
 
             for(int i = 0; i < customersName.Count; i++)
             {
-                buys.Add(new Buy(Hall, Kitchen, $"Buy, {customersName[i]}, {foodsName[i]}"));
+                buys.Add(new Buy(hall, kitchen, $"Buy, {customersName[i]}, {foodsName[i]}"));
             }
             return buys;
         }
         private List<string> GetCustomersFromCommand()
         {
             List<string> commandSplit = new List<string>(FullCommand.Split(", "));
-            List<string> customersName = (List<string>)commandSplit.Where(s => Hall.GetCustomer(s).Name != "NULL");
+            List<string> customersName = (List<string>)commandSplit.Where(s => hall.GetCustomer(s).Name != "NULL");
             return customersName;
         }
         private List<string> GetFoodsFromCommand()
         {
             List<string> commandSplit = new List<string>(FullCommand.Split(", "));
-            List<string> foodsName = (List<string>)commandSplit.Where(s => Kitchen.Storage.GetRecipeByName(s).Name != "NULL");
+            List<string> foodsName = (List<string>)commandSplit.Where(s => kitchen.Storage.GetRecipeByName(s).Name != "NULL");
             return foodsName;
         }
         private void SetResultIfIssues()
@@ -86,6 +85,21 @@ namespace CommandsModule
                 Result = "ERROR. One person cant be by one table twice. So, whole table fails.";
                 return;
             }
+            if (!IsEnoughIngredients())
+            {
+
+            }
+        }
+
+        private bool IsEnoughIngredients()
+        {
+            List<string> foodsName = GetFoodsFromCommand();
+            foreach(var foodName in foodsName)
+            {
+
+            }
+
+            return true;
         }
     }
 }

@@ -11,8 +11,8 @@ namespace CommandsModule
         public readonly string FullCommand;
         public readonly string CommandType;
 
-        public readonly Kitchen Kitchen;
-        public readonly Hall Hall;
+        public readonly Kitchen kitchen;
+        public readonly Hall hall;
 
         public string Result { get; protected set; }
         public bool IsAllowed { get; protected set; }
@@ -22,8 +22,8 @@ namespace CommandsModule
             CommandType = commandString.Split(", ")[0];
             IsAllowed = false;
 
-            Kitchen = kitchen;
-            Hall = hall;
+            this.kitchen = kitchen;
+            this.hall = hall;
 
             SetPermision(permisions);
         }
@@ -33,8 +33,8 @@ namespace CommandsModule
             CommandType = commandString.Split(", ")[0];
             IsAllowed = false;
 
-            Kitchen = kitchen;
-            Hall = hall;
+            this.kitchen = kitchen;
+            this.hall = hall;
         }
         public Command(string commandString)
         {

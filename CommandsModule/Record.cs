@@ -18,9 +18,9 @@ namespace CommandsModule
         public Record(Command command)
         {
             Command = command;
-            FoodsAmount = command.Kitchen.Storage.FoodAmount.ToDictionary(x => x.Key, x => x.Value);
-            IngredientsAmount = command.Kitchen.Storage.IngredientsAmount.ToDictionary(x => x.Key, x => x.Value);
-            Budget = command.Kitchen.Budget;
+            FoodsAmount = command.kitchen.Storage.FoodAmount.ToDictionary(x => x.Key, x => x.Value);
+            IngredientsAmount = command.kitchen.Storage.IngredientsAmount.ToDictionary(x => x.Key, x => x.Value);
+            Budget = command.kitchen.Budget;
         }
         public Record(Kitchen kitchen)
         {

@@ -34,37 +34,37 @@ namespace CommandsModule
                 return;
             }
             Customer.Order = Food;
-            if (Customer.budget < Kitchen.CalculateFoodMenuPrice(Customer.Order))
+            if (Customer.budget < kitchen.CalculateFoodMenuPrice(Customer.Order))
             {
                 Result = "Can't order: customer dont have enough money";
                 return;
             }
 
-            if (!Kitchen.IsEnoughIngredients(Customer.Order))
+            if (!kitchen.IsEnoughIngredients(Customer.Order))
             {
                 Result = "Can't order: dont have enough ingredients";
                 return;
             }
 
-            if (Kitchen.Storage.FoodAmount[Customer.Order] >= 1)
+            if (kitchen.Storage.FoodAmount[Customer.Order] >= 1)
             {
-                Hall.GiveFoodFromStorage(Kitchen, Customer);
+                hall.GiveFoodFromStorage(kitchen, Customer);
             }
             else
             {
-                Kitchen.Cook(Customer.Order);
-                Hall.GiveFood();
+                kitchen.Cook(Customer.Order);
+                hall.GiveFood();
             }
 
-            if (Customer.isAllergic(Kitchen.Storage.Recipes, Customer.Order).Item1)
+            if (Customer.isAllergic(kitchen.Storage.Recipes, Customer.Order).Item1)
             {
 
-                Result = $"Can't eat: allergic to: {Customer.isAllergic(Kitchen.Storage.Recipes, Customer.Order).Item2.Name}";
+                Result = $"Can't eat: allergic to: {Customer.isAllergic(kitchen.Storage.Recipes, Customer.Order).Item2.Name}";
                 return;
             }
 
             Customer.VisitsCount++;
-            Hall.GetPaid(Kitchen, Customer);
+            hall.GetPaid(kitchen, Customer);
             Result = "success";
         }
     }

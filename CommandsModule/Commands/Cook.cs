@@ -34,7 +34,7 @@ namespace CommandsModule
 
             for (int i = 0; i < Amount; i++)
             {
-                if (Kitchen.Cook(Food))
+                if (kitchen.Cook(Food))
                 {
                     cookedAmount++;
                     Result = "success";
@@ -45,7 +45,7 @@ namespace CommandsModule
                     break;
                 }
             }
-            Kitchen.Storage.AddFood(Food.Name, cookedAmount);
+            kitchen.Storage.AddFood(Food.Name, cookedAmount);
         }
         private void SetResultIfIssues()
         {
@@ -57,7 +57,7 @@ namespace CommandsModule
             {
                 Result = "Amount incorrect";
             }
-            if (!Kitchen.IsEnoughIngredients(Food))
+            if (!kitchen.IsEnoughIngredients(Food))
             {
                 Result = "Dont have enough ingredients";
             }

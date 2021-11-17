@@ -18,19 +18,19 @@ namespace CommandsModule
         {
             if(Sign == "=")
             {
-                Kitchen.SetMoney(Amount);
+                kitchen.SetMoney(Amount);
                 Result = "success";
                 return;
             }
             if(Sign == "-")
             {
-                Kitchen.UseMoney(Amount);
+                kitchen.UseMoney(Amount);
                 Result = "success";
                 return;
             }
             if(Sign == "+")
             {
-                Kitchen.AddMoney(Amount);
+                kitchen.AddMoney(Amount);
                 Result = "success";
                 return;
             }

@@ -14,10 +14,6 @@ namespace ChikenKithen
         public Kitchen(Storage _Storage, int _Budget)
         {
             Storage = _Storage;
-            foreach (Food food in Storage.Recipes)
-            {
-                Storage.FoodAmount.Add(food, 0);
-            }
             Budget = _Budget;
         }
         public int CalculateFoodCostPrice(Food food)
@@ -57,7 +53,7 @@ namespace ChikenKithen
                                        where ingredient.Name == ingredientRecipe.Name
                                        select ingredient)
             {
-                Storage.IngredientsAmount[ingredient] -= 1;
+                Storage.IngredientsAmount[ingredient]--;
             }
 
             foreach (var food in from Food food in Storage.Recipes
@@ -74,6 +70,17 @@ namespace ChikenKithen
         public bool IsEnoughIngredients(Food food)
         {
             var ingredients = GetBaseIngredientRecipe(food);
+
+            foreach(Food foodRecipe in food.RecipeFoods)
+            {
+                if (Storage.FoodAmount[Storage.GetRecipeByName(foodRecipe.Name)] > 0)
+                {
+                    foreach(Ingredient ingredient in foodRecipe.RecipeIngredients)
+                    {
+                        ingredients.Remove(ingredient);
+                    }
+                }
+            }
 
             var usedIngredientsAmount = ingredients.GroupBy(x => x);
 

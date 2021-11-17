@@ -81,17 +81,6 @@ namespace ChikenKithen
             }
             Console.WriteLine("Order doesnt exist in Food List");
         }
-        public List<Ingredient> AskAllergiesIngredients()
-        {
-            List<Ingredient> allergicIngredients = new List<Ingredient>();
-            Console.WriteLine("Do you have any allergies? (please use ',' between allergic food)");
-            string[] allergicFoodName = Console.ReadLine().Split(", ");
-            foreach (string ingredientName in allergicFoodName)
-            {
-                allergicIngredients.Add(new Ingredient(ingredientName));
-            }
-            return allergicIngredients;
-        }
         
         private string GetFullNameByNick(string nickName, Customer customer)
         {
