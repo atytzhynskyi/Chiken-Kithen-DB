@@ -15,7 +15,7 @@ namespace CommandsModule
         {
             RecordsBase = _RecordsBase;
         }
-        public void ExecuteCommand()
+        public override void ExecuteCommand()
         {
             if (!IsAllowed)
             {
