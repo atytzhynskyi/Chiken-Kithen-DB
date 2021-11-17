@@ -92,19 +92,6 @@ namespace ChikenKithen
             FillDictionaryByZero<Ingredient>(Ingredients, IngredientsPrice);
             FillDictionaryByZero<Ingredient>(Ingredients, IngredientsAmount);
         }
-
-        public Storage(List<Ingredient> _Ingredients)
-        {
-            totalMax = int.MaxValue;
-            maxIngredientType = int.MaxValue;
-            maxFoodType = int.MaxValue;
-
-            Ingredients = _Ingredients;
-            Recipes = new List<Food>();
-            FillDictionaryByZero<Ingredient>(Ingredients, IngredientsPrice);
-            FillDictionaryByZero<Ingredient>(Ingredients, IngredientsAmount);
-        }
-
         public Storage(List<Food> food, List<Ingredient> _Ingredients)
         {
             totalMax = int.MaxValue;
@@ -118,6 +105,19 @@ namespace ChikenKithen
 
             FillDictionaryByZero<Food>(Recipes, FoodAmount);
         }
+
+        public Storage(List<Ingredient> _Ingredients)
+        {
+            totalMax = int.MaxValue;
+            maxIngredientType = int.MaxValue;
+            maxFoodType = int.MaxValue;
+
+            Ingredients = _Ingredients;
+            Recipes = new List<Food>();
+            FillDictionaryByZero<Ingredient>(Ingredients, IngredientsPrice);
+            FillDictionaryByZero<Ingredient>(Ingredients, IngredientsAmount);
+        }
+
 
 
         private void FillDictionaryByZero<T>(List<T> list, Dictionary<T, int> dict)
