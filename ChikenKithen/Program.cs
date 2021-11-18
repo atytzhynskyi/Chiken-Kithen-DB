@@ -17,7 +17,7 @@ namespace ChikenKithen
             using (ApplicationContext applicationContext = new ApplicationContext())
             {
                 //applicationContext.Database.EnsureDeleted();
-                
+                /*
                 applicationContext.InitializeFromFiles();
                 applicationContext.SetPropertiesIngredientsId();
 
@@ -31,10 +31,10 @@ namespace ChikenKithen
                                               WarehouseSize.Where(k => k.Key == "max dish type").First().Value,
                                               WarehouseSize.Where(k => k.Key == "total maximum").First().Value);
                 
-                Kitchen kitchen = new Kitchen(storage, applicationContext.GetBudget());
+                Kitchen kitchen = new Kitchen(storage, 0);
                 Hall hall = new Hall(applicationContext.GetCustomers(), kitchen.Storage.Recipes);
-
-                RecordsBase recordsBase = new RecordsBase(kitchen);
+                Accounting accounting = new Accounting(applicationContext.GetBudget());
+                RecordsBase recordsBase = new RecordsBase(accounting, kitchen);
 
                 while (2 + 2 != 5)
                 {

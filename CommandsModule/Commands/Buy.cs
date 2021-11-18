@@ -1,21 +1,38 @@
-﻿using BaseClasses;
-using ChikenKithen;
+﻿using AdvanceClasses;
+using BaseClasses;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace CommandsModule
 {
-    public class Buy : Command
+    public class Buy : ICommand
     {
+        public string Result { get; private set; }
+        public string FullCommand { get; private set; }
+        public string CommandType { get; private set; }
+        public bool IsAllowed { get; private set; }
+
+
+        private Accounting accounting { get; set; }
+        private Kitchen kitchen { get; set; }
+        private Hall hall { get; set; }
+
         public Customer Customer = new Customer();
         public Food Food = new Food();
-        public Buy(Hall hall, Kitchen kitchen, string commandString) : base(hall, kitchen, commandString)
+        public Buy(Accounting Accounting, Hall Hall, Kitchen Kitchen, string _FullCommand)
         {
-            Customer = hall.GetCustomer(commandString.Split(", ")[1]);
-            Food = kitchen.Storage.GetRecipeByName(commandString.Split(", ")[2]);
+            accounting = Accounting;
+            hall = Hall;
+            kitchen = Kitchen;
+
+            FullCommand = _FullCommand;
+            CommandType = FullCommand.Split(", ")[0];
+
+            Customer = hall.GetCustomer(_FullCommand.Split(", ")[1]);
+            Food = kitchen.Storage.GetRecipeByName(_FullCommand.Split(", ")[2]);
         }
-        public override void ExecuteCommand()
+        public void ExecuteCommand()
         {
             if (!IsAllowed)
             {
@@ -34,7 +51,8 @@ namespace CommandsModule
                 return;
             }
             Customer.Order = Food;
-            if (Customer.budget < kitchen.CalculateFoodMenuPrice(Customer.Order))
+            if (Customer.budget < accounting.CalculateFoodMenuPrice(
+                                                kitchen.Storage.Recipes, kitchen.Storage.IngredientsPrice, Customer.Order))
             {
                 Result = "Can't order: customer dont have enough money";
                 return;
@@ -64,7 +82,7 @@ namespace CommandsModule
             }
 
             Customer.VisitsCount++;
-            hall.GetPaid(kitchen, Customer);
+            hall.GetPaid(accounting, kitchen.Storage.IngredientsPrice, kitchen.Storage.Recipes, Customer);
             Result = "success";
         }
     }

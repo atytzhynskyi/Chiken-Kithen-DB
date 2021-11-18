@@ -1,5 +1,5 @@
-﻿using BaseClasses;
-using ChikenKithen;
+﻿using AdvanceClasses;
+using BaseClasses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,11 +7,17 @@ using System.Text;
 
 namespace CommandsModule.Commands
 {
-    class Customers : Command
+    class Customers : ICommand
     {
-        public Customers(Hall Hall, Kitchen Kitchen, string _FullCommand) : base (Hall, Kitchen, _FullCommand) { }
+        public string FullCommand { get; private set; }
+        public string CommandType { get; private set; }
+        public string Result { get; private set; }
 
-        public override void ExecuteCommand()
+        public bool IsAllowed { get; set; }
+        private Hall hall { get; set; }
+        public Customers(Hall Hall, string _FullCommand) { }
+
+        public void ExecuteCommand()
         {
             foreach (Customer customer in hall.Customers)
             {

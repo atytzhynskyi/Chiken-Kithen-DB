@@ -3,19 +3,26 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using AdvanceClasses;
 using BaseClasses;
-using ChikenKithen;
 
 namespace CommandsModule
 {
-    public class Audit : Command
+    public class Audit : ICommand
     {
+        public string FullCommand { get; private set; }
+        public string CommandType { get; private set; }
+        public string Result { get; private set; }
+        public bool IsAllowed { get; set; }
         RecordsBase RecordsBase;
-        public Audit(Hall hall, Kitchen kitchen, string commandString, RecordsBase _RecordsBase) : base(hall, kitchen, commandString)
+        public Audit(string _FullCommand, RecordsBase _RecordsBase)
         {
+            FullCommand = _FullCommand;
+            CommandType = FullCommand.Split(", ")[0];
+
             RecordsBase = _RecordsBase;
         }
-        public override void ExecuteCommand()
+        public void ExecuteCommand()
         {
             if (!IsAllowed)
             {

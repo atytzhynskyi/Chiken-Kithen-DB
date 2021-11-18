@@ -1,4 +1,4 @@
-﻿using ChikenKithen;
+﻿using AdvanceClasses;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,20 +6,36 @@ using System.Text;
 
 namespace CommandsModule.Commands
 {
-    public class ExecuteFileCommands : Command
+    public class ExecuteFileCommands : ICommand
     {
+        public string FullCommand { get; private set; }
+        public string CommandType { get; private set; }
+        public string Result { get; private set; }
+        public bool IsAllowed { get; set; }
+
+        private Accounting accounting { get; set; }
+        private Kitchen kitchen { get; set; }
+        private Hall hall { get; set; }
+
         readonly string FileName;
         RecordsBase records;
-        List<Command> Commands = new List<Command>();
-        public ExecuteFileCommands(Hall Hall, Kitchen Kitchen, string FullCommand, RecordsBase _records) : base(Hall, Kitchen, FullCommand)
+        List<ICommand> Commands = new List<ICommand>();
+        public ExecuteFileCommands(Accounting Accounting, Hall Hall, Kitchen Kitchen, string _FullCommand, RecordsBase _records)
         {
+            accounting = Accounting;
+            hall = Hall;
+            kitchen = Kitchen;
+
+            FullCommand = _FullCommand;
+            CommandType = FullCommand.Split(", ")[0];
+
             FileName = @"..\..\..\Commands.csv";
             records = _records;
         }
-        public override void ExecuteCommand()
+        public void ExecuteCommand()
         {
             ReadCommandFromFile();
-            foreach(Command command in Commands)
+            foreach(ICommand command in Commands)
             {
                 command.ExecuteCommand();
             }
@@ -33,7 +49,7 @@ namespace CommandsModule.Commands
                 {
                     if (readLine != "ExecuteFileCommands")
                     {
-                        Commands.Add(CommandBuilder.Build(hall, kitchen, readLine, records));
+                        Commands.Add(CommandBuilder.Build(accounting, hall, kitchen, readLine, records));
                     }
                 }
             }

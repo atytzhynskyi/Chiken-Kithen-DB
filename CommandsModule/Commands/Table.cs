@@ -1,5 +1,5 @@
-﻿using BaseClasses;
-using ChikenKithen;
+﻿using AdvanceClasses;
+using BaseClasses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,16 +7,29 @@ using System.Text;
 
 namespace CommandsModule
 {
-    public class Table : Command
+    public class Table : ICommand
     {
+        public string FullCommand { get; private set; }
+        public string CommandType { get; private set; }
+        public string Result { get; private set; }
+        public bool IsAllowed { get; set; }
+
+        private Accounting accounting { get; set; }
+        private Kitchen kitchen { get; set; }
+        private Hall hall { get; set; }
+
         public List<Buy> Buys = new List<Buy>();
 
         List<Customer> _Customers = new List<Customer>();
         List<Food> _Orders = new List<Food>();
 
-        public Table(Hall _Hall, Kitchen _Kitchen, string FullCommand) : base(_Hall, _Kitchen, FullCommand)
+        public Table(Accounting accounting, Hall hall, Kitchen kitchen, string _FullCommand)
         {
-            foreach(var foodName in GetFoodsFromCommand())
+            FullCommand = _FullCommand;
+            CommandType = FullCommand.Split(", ")[0];
+            IsAllowed = false;
+
+            foreach (var foodName in GetFoodsFromCommand())
             {
                 Food searchFood = kitchen.Storage.GetRecipeByName(foodName);
                 if(searchFood.Name != "NULL") _Orders.Add(searchFood);
@@ -28,7 +41,7 @@ namespace CommandsModule
                 if (searchCustomer.Name != "NULL") _Customers.Add(searchCustomer);
             }
         }
-        public override void ExecuteCommand()
+        public void ExecuteCommand()
         {
             if(!IsAllowed)
             {
@@ -42,7 +55,7 @@ namespace CommandsModule
             if(!object.Equals(Result, null))
             {
                 Buys = FormBuysFromCommand();
-                foreach (Command buy in Buys)
+                foreach (ICommand buy in Buys)
                 {
                     buy.ExecuteCommand();
                 }
@@ -76,7 +89,7 @@ namespace CommandsModule
 
             for(int i = 0; i < _Customers.Count; i++)
             {
-                buys.Add(new Buy(hall, kitchen, $"Buy, {_Customers[i].Name}, {_Orders[i].Name}"));
+                buys.Add(new Buy(accounting, hall, kitchen, $"Buy, {_Customers[i].Name}, {_Orders[i].Name}"));
             }
             return buys;
         }
@@ -118,7 +131,8 @@ namespace CommandsModule
                 return;
             }
 
-            if(_Customers.Any(c=>c.budget < kitchen.CalculateFoodMenuPrice(c.Order)))
+            if(_Customers.Any(c=>c.budget < accounting.CalculateFoodMenuPrice(
+                                                        kitchen.Storage.Recipes, kitchen.Storage.IngredientsPrice, c.Order)))
             {
                 Result = "FAIL. One or more persons dont have enough money";
                 return;

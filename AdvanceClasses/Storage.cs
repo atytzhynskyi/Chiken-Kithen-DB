@@ -8,7 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace ChikenKithen
+namespace AdvanceClasses
 {
     public class Storage
     {

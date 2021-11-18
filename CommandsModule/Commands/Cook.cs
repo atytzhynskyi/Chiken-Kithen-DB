@@ -1,5 +1,5 @@
-﻿using BaseClasses;
-using ChikenKithen;
+﻿using AdvanceClasses;
+using BaseClasses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,16 +7,26 @@ using System.Text;
 
 namespace CommandsModule
 {
-    public class Cook : Command
+    public class Cook : ICommand
     {
+        public string FullCommand { get; private set; }
+        public string CommandType { get; private set; }
+        public string Result { get; private set; }
+        public bool IsAllowed { get; set; }
+        private Kitchen kitchen { get; set; }
         readonly Food Food;
         readonly int Amount;
-        public Cook(Hall hall, Kitchen kitchen, string _FullCommand) : base(hall, kitchen, _FullCommand)
+        public Cook(Kitchen Kitchen, string _FullCommand)
         {
+            kitchen = Kitchen;
+
+            FullCommand = _FullCommand;
+            CommandType = FullCommand.Split(", ")[0];
+
             Food = kitchen.Storage.GetRecipeByName(_FullCommand.Split(", ")[1]);
             int.TryParse(_FullCommand.Split(", ")[2], out Amount);
         }
-        public override void ExecuteCommand()
+        public void ExecuteCommand()
         {
             int cookedAmount = 0;
 

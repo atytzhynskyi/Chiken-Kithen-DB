@@ -5,7 +5,7 @@ using BaseClasses;
 using System.Linq;
 using jsonReadModule;
 
-namespace ChikenKithen
+namespace AdvanceClasses
 {
     public class Hall
     {
@@ -91,9 +91,9 @@ namespace ChikenKithen
             return "NULL";
         }
 
-        public void GetPaid(Kitchen kitchen, Customer customer)
+        public void GetPaid(Accounting accounting, Dictionary<Ingredient, int> ingredientPrice, List<Food> Recipes, Customer customer)
         {
-            int price = kitchen.CalculateFoodMenuPrice(customer.Order);
+            int price = accounting.CalculateFoodMenuPrice(Recipes, ingredientPrice, customer.Order);
             customer.VisitsCount++;
 
             if (IsDiscountAppliable(customer))
@@ -101,7 +101,7 @@ namespace ChikenKithen
                 price -= Convert.ToInt32(GetDiscount() * price);
             }
             customer.budget -= price;
-            kitchen.AddMoney(price);
+            accounting.AddMoney(price);
         }
 
         private double GetDiscount()

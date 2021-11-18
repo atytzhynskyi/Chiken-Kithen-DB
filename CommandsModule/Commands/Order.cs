@@ -1,21 +1,33 @@
-﻿using BaseClasses;
-using ChikenKithen;
+﻿using AdvanceClasses;
+using BaseClasses;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace CommandsModule
 {
-    public class Order : Command
+    public class Order : ICommand
     {
+        public string FullCommand { get; private set; }
+        public string CommandType { get; private set; }
+        public string Result { get; private set; }
+        public bool IsAllowed { get; set; }
+
         public Ingredient Ingredient;
         public int Amount;
-        public Order(Hall hall, Kitchen kitchen, string _FullCommand) : base(hall, kitchen, _FullCommand)
+        private Accounting accounting { get; set; }
+        private Kitchen kitchen { get; set; }
+        private Hall hall { get; set; }
+        public Order(Accounting accounting, Kitchen kitchen, string _FullCommand)
         {
-            Ingredient = kitchen.Storage.GetIngredient(_FullCommand.Split(", ")[1]);
-            int.TryParse(_FullCommand.Split(", ")[2], out Amount);
+            FullCommand = _FullCommand;
+            CommandType = FullCommand.Split(", ")[0];
+            IsAllowed = false;
+
+            Ingredient = kitchen.Storage.GetIngredient(FullCommand.Split(", ")[1]);
+            int.TryParse(FullCommand.Split(", ")[2], out Amount);
         }
-        public override void ExecuteCommand()
+        public void ExecuteCommand()
         {
             if (!IsAllowed)
             {
@@ -28,7 +40,7 @@ namespace CommandsModule
             {
                 Result = "Dont have enought money";
             }
-            kitchen.UseMoney(price);
+            accounting.UseMoney(price);
             kitchen.Storage.AddIngredient(Ingredient.Name, Amount);
             Result = "success";
         }

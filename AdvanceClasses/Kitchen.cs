@@ -4,7 +4,7 @@ using System.Text;
 using System.Linq;
 using BaseClasses;
 
-namespace ChikenKithen
+namespace AdvanceClasses
 {
     public class Kitchen
     {
@@ -12,10 +12,10 @@ namespace ChikenKithen
         public int Budget { get; private set; }
 
         int CollectedTax = 0;
-        readonly double _TransactionTax;
-        readonly double _DailyTax;
-        readonly double _MarginProfit;
-        readonly int _StartBudget;
+        readonly double transactionTax;
+        readonly double dailyTax;
+        readonly double marginProfit;
+        readonly int startBudget;
 
         public Kitchen() { }
 
@@ -23,38 +23,19 @@ namespace ChikenKithen
         {
             Storage = _Storage;
             Budget = _Budget;
-            _TransactionTax = 10;
-            _DailyTax = 0;
-            _MarginProfit = 0;
-            _StartBudget = _Budget;
+            transactionTax = 10;
+            dailyTax = 0;
+            marginProfit = 0;
+            startBudget = _Budget;
         }
 
         public Kitchen(Storage _Storage, int _Budget, double TransactionTax,double MarginProfit)
         {
             Storage = _Storage;
             Budget = _Budget;
-            _TransactionTax = TransactionTax;
-            _MarginProfit = MarginProfit;
-            _StartBudget = _Budget;
-        }
-
-        public int CalculateFoodCostPrice(Food food)
-        {
-            int price = 0;
-            food = Storage.GetRecipeByName(food.Name);
-            foreach(Food foodRecipe in food.RecipeFoods)
-            {
-                price += CalculateFoodCostPrice(foodRecipe);
-            }
-            foreach(Ingredient ingredient in food.RecipeIngredients)
-            {
-                price += Storage.IngredientsPrice[Storage.Ingredients.Where(i => i.Name == ingredient.Name).First()];
-            }
-            return price;
-        }
-        public int CalculateFoodMenuPrice(Food food)
-        {
-            return Convert.ToInt32(CalculateFoodCostPrice(food) * _MarginProfit);
+            transactionTax = TransactionTax;
+            marginProfit = MarginProfit;
+            startBudget = _Budget;
         }
         public bool Cook(Food order)
         {
@@ -135,37 +116,6 @@ namespace ChikenKithen
                 fullRecipe.AddRange(GetBaseIngredientRecipe(recipeFood));
 
             return fullRecipe;
-        }
-        public int CalculateDailyTax()
-        {
-            int profit = Budget - _StartBudget - CollectedTax;
-            int dailyTax = Convert.ToInt32(profit * _DailyTax);
-
-            if (dailyTax < 0) return 0;
-
-            return dailyTax;
-        }
-        public void UseMoney(int amount)
-        {
-            Budget -= amount - Convert.ToInt32(amount * _TransactionTax);
-            CollectedTax += Convert.ToInt32(amount * _TransactionTax);
-        }
-        public void AddMoney(int amount)
-        {
-            Budget += amount - Convert.ToInt32(amount * _TransactionTax);
-            CollectedTax += Convert.ToInt32(amount * _TransactionTax);
-        }
-        public void AddMoneyWithoutTax(int amount)
-        {
-            Budget += amount;
-        }
-        public void UseMoneyWithoutTax(int amount)
-        {
-            Budget -= amount;
-        }
-        public void SetMoney(int amount)
-        {
-            Budget = amount;
         }
     }
 }

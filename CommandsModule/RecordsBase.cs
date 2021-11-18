@@ -1,5 +1,5 @@
-﻿using BaseClasses;
-using ChikenKithen;
+﻿using AdvanceClasses;
+using BaseClasses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,21 +10,21 @@ namespace CommandsModule
     public class RecordsBase
     {
         public List<Record> Records = new List<Record>();
-        public RecordsBase(Kitchen kitchen)
+        public RecordsBase(Accounting accounting, Kitchen kitchen)
         {
-            Records.Add(new Record(kitchen));
+            Records.Add(new Record(accounting, kitchen));
         }
-        public void AddRecordIfSomeChange(Command command)
+        public void AddRecordIfSomeChange(ICommand command, Kitchen kitchen, Accounting accounting)
         {
-            if (!IsSomethingChanged(command.kitchen))
+            if (!IsSomethingChanged(kitchen, accounting))
             {
                 return;
             }
-            Records.Add(new Record(command));
+            Records.Add(new Record(command, kitchen, accounting));
         }
-        public bool IsSomethingChanged(Kitchen kitchen)
+        public bool IsSomethingChanged(Kitchen kitchen, Accounting accounting)
         {
-            if (kitchen.Budget != Records.Last().Budget)
+            if (accounting.Budget != Records.Last().Budget)
             {
                 return true;
             }

@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using AdvanceClasses;
-using ChikenKithen;
 using jsonReadModule;
 using CommandsModule.Commands;
 
@@ -13,40 +12,39 @@ namespace CommandsModule
 {
     public static class CommandBuilder
     {
-        static public Command Build(Hall hall, Kitchen kitchen, string commandString, RecordsBase RecordsBase)
+        static public ICommand Build(Accounting accounting, Hall hall, Kitchen kitchen, string commandString, RecordsBase RecordsBase)
         {
-            Command command;
+            ICommand command = new Default();
 
             string commandType = commandString.Split(", ")[0];
 
-            switch (commandType)
+         switch (commandType)
             {
                 case ("Buy"):
-                    command = new Buy(hall, kitchen, commandString);
+                    command = new Buy(accounting, hall, kitchen, commandString);
                     break;
                 case ("Order"):
-                    command = new Order(hall, kitchen, commandString);
+                    command = new Order(accounting, kitchen, commandString);
                     break;
                 case ("Table"):
-                    command = new Table(hall, kitchen, commandString);
+                    command = new Table(accounting, hall, kitchen, commandString);
                     break;
                 case ("Cook"):
-                    command = new Cook(hall, kitchen, commandString);
+                    command = new Cook(kitchen, commandString);
                     break;
                 case ("Customers"):
-                    command = new Customers(hall, kitchen, commandString);
+                    command = new Customers(hall, commandString);
                     break;
                 case ("ExecuteFileCommands"):
-                    command = new ExecuteFileCommands(hall, kitchen, commandString, RecordsBase);
+                    command = new ExecuteFileCommands(accounting, hall, kitchen, commandString, RecordsBase);
                     break;
                 case ("Budget"):
-                    command = new Budget(hall, kitchen, commandString);
+                    command = new Budget(accounting, commandString);
                     break;
                 case ("Audit"):
-                    command = new Audit(hall, kitchen, commandString, RecordsBase);
+                    command = new Audit(commandString, RecordsBase);
                     break;
                 default:
-                    command = new Table(hall, kitchen, "Table, ");
                     break;
             }
             return command;
