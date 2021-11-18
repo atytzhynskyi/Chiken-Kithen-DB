@@ -17,12 +17,14 @@ namespace CommandsModule
         public int Amount;
         private Accounting accounting { get; set; }
         private Kitchen kitchen { get; set; }
-        private Hall hall { get; set; }
-        public Order(Accounting accounting, Kitchen kitchen, string _FullCommand)
+        public Order(Accounting Accounting, Kitchen Kitchen, string _FullCommand)
         {
             FullCommand = _FullCommand;
             CommandType = FullCommand.Split(", ")[0];
             IsAllowed = false;
+
+            kitchen = Kitchen;
+            accounting = Accounting;
 
             Ingredient = kitchen.Storage.GetIngredient(FullCommand.Split(", ")[1]);
             int.TryParse(FullCommand.Split(", ")[2], out Amount);
@@ -36,13 +38,13 @@ namespace CommandsModule
             }
 
             int price = kitchen.Storage.IngredientsPrice[Ingredient] * Amount;
-            if (kitchen.Budget <= price)
+            if (accounting.Budget <= price)
             {
                 Result = "Dont have enought money";
             }
             accounting.UseMoney(price);
             kitchen.Storage.AddIngredient(Ingredient.Name, Amount);
-            Result = "success";
+            Result = $"success; money used:{price + accounting.CalculateTransactionTax(price)}; tax:{accounting.CalculateTransactionTax(price)}";
         }
     }
 }

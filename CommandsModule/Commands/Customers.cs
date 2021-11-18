@@ -15,7 +15,11 @@ namespace CommandsModule.Commands
 
         public bool IsAllowed { get; set; }
         private Hall hall { get; set; }
-        public Customers(Hall Hall, string _FullCommand) { }
+        public Customers(Hall Hall, string _FullCommand) {
+            hall = Hall;
+            FullCommand = _FullCommand;
+            CommandType = FullCommand.Split(", ")[0];
+        }
 
         public void ExecuteCommand()
         {
@@ -24,11 +28,13 @@ namespace CommandsModule.Commands
                 Console.WriteLine("Name: {0}", customer.Name);
                 Console.WriteLine("Budget: {0}", customer.budget);
                 Console.Write("Allergies: ");
-                foreach (Ingredient ingredient in customer.Allergies.Distinct())
+                foreach (Ingredient ingredient in customer.Allergies)
                 {
                     Console.Write("{0}, ", ingredient.Name);
                 }
                 Console.Write("\n\n");
+
+                Result = "success";
             }
         }
     }

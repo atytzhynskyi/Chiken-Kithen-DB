@@ -162,7 +162,6 @@ namespace ChikenKitchenDataBase
         }
         public List<Customer> GetCustomers()
         {
-            SetCustomersAllergies();
             return Customers.ToList();
         }
         public void SetCustomersAllergies()

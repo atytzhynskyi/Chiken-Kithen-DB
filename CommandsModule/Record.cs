@@ -26,7 +26,7 @@ namespace CommandsModule
         {
             FoodsAmount = kitchen.Storage.FoodAmount.ToDictionary(x => x.Key, x => x.Value);
             IngredientsAmount = kitchen.Storage.IngredientsAmount.ToDictionary(x => x.Key, x => x.Value);
-            Budget = kitchen.Budget;
+            Budget = accounting.Budget;
         }
     }
 }

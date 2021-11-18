@@ -9,33 +9,13 @@ namespace AdvanceClasses
     public class Kitchen
     {
         public Storage Storage;
-        public int Budget { get; private set; }
 
-        int CollectedTax = 0;
-        readonly double transactionTax;
-        readonly double dailyTax;
-        readonly double marginProfit;
-        readonly int startBudget;
 
         public Kitchen() { }
 
-        public Kitchen(Storage _Storage, int _Budget)
+        public Kitchen(Storage _Storage)
         {
             Storage = _Storage;
-            Budget = _Budget;
-            transactionTax = 10;
-            dailyTax = 0;
-            marginProfit = 0;
-            startBudget = _Budget;
-        }
-
-        public Kitchen(Storage _Storage, int _Budget, double TransactionTax,double MarginProfit)
-        {
-            Storage = _Storage;
-            Budget = _Budget;
-            transactionTax = TransactionTax;
-            marginProfit = MarginProfit;
-            startBudget = _Budget;
         }
         public bool Cook(Food order)
         {

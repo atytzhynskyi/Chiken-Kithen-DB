@@ -19,7 +19,7 @@ namespace AdvanceClasses
         public Accounting(int _Budget)
         {
             Budget = _Budget;
-            transactionTax = 10;
+            transactionTax = 0.10;
             dailyTax = 0;
             marginProfit = 0;
             startBudget = _Budget;
@@ -49,7 +49,7 @@ namespace AdvanceClasses
         }
         public int CalculateFoodMenuPrice(List<Food> Recipes, Dictionary<Ingredient, int> ingredientsPrice, Food food)
         {
-            return Convert.ToInt32(CalculateFoodCostPrice(Recipes, ingredientsPrice, food) * marginProfit);
+            return Convert.ToInt32(CalculateFoodCostPrice(Recipes, ingredientsPrice, food) *(1 + marginProfit));
         }
         public int CalculateDailyTax()
         {
@@ -62,13 +62,13 @@ namespace AdvanceClasses
         }
         public void UseMoney(int amount)
         {
-            Budget -= amount - Convert.ToInt32(amount * transactionTax);
-            CollectedTax += Convert.ToInt32(amount * transactionTax);
+            Budget -= amount - CalculateTransactionTax(amount);
+            CollectedTax += CalculateTransactionTax(amount);
         }
         public void AddMoney(int amount)
         {
-            Budget += amount - Convert.ToInt32(amount * transactionTax);
-            CollectedTax += Convert.ToInt32(amount * transactionTax);
+            Budget += amount + CalculateTransactionTax(amount);
+            CollectedTax += CalculateTransactionTax(amount);
         }
         public void AddMoneyWithoutTax(int amount)
         {
@@ -81,6 +81,10 @@ namespace AdvanceClasses
         public void SetMoney(int amount)
         {
             Budget = amount;
+        }
+        public int CalculateTransactionTax(int amount)
+        {
+            return Convert.ToInt32(amount * transactionTax);
         }
     }
 }

@@ -11,7 +11,7 @@ namespace CommandsModule
         public string Result { get; private set; }
         public string FullCommand { get; private set; }
         public string CommandType { get; private set; }
-        public bool IsAllowed { get; private set; }
+        public bool IsAllowed { get; set; }
 
 
         private Accounting accounting { get; set; }

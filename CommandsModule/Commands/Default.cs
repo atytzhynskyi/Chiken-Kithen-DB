@@ -10,7 +10,7 @@ namespace CommandsModule
 
         public string CommandType { get; private set; }
 
-        public bool IsAllowed { get; private set; }
+        public bool IsAllowed { get; set; }
 
         public string Result { get; private set; }
         public Default() { }

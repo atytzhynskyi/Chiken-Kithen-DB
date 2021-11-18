@@ -17,7 +17,7 @@ namespace ChikenKithen
             using (ApplicationContext applicationContext = new ApplicationContext())
             {
                 //applicationContext.Database.EnsureDeleted();
-                /*
+                
                 applicationContext.InitializeFromFiles();
                 applicationContext.SetPropertiesIngredientsId();
 
@@ -31,21 +31,21 @@ namespace ChikenKithen
                                               WarehouseSize.Where(k => k.Key == "max dish type").First().Value,
                                               WarehouseSize.Where(k => k.Key == "total maximum").First().Value);
                 
-                Kitchen kitchen = new Kitchen(storage, 0);
+                Kitchen kitchen = new Kitchen(storage);
                 Hall hall = new Hall(applicationContext.GetCustomers(), kitchen.Storage.Recipes);
                 Accounting accounting = new Accounting(applicationContext.GetBudget());
                 RecordsBase recordsBase = new RecordsBase(accounting, kitchen);
 
                 while (2 + 2 != 5)
                 {
-                    Console.WriteLine("Restaurant budget: {0}", kitchen.Budget);
+                    Console.WriteLine("Restaurant budget: {0}", accounting.Budget);
                     Warehouse(kitchen);
                     string input = Console.ReadLine();
-                    Command command = CommandBuilder.Build(hall, kitchen, input, recordsBase);
-                    command.SetPermision(JsonRead.ReadFromJson<bool>(@"..\..\..\config.json"));
+                    ICommand command = CommandBuilder.Build(accounting, hall, kitchen, input, recordsBase);
+                    command.IsAllowed = true;
                     command.ExecuteCommand();
                     Console.WriteLine($"{command.FullCommand} -> {command.Result}");
-                    applicationContext.SaveAll(storage.Ingredients, storage.IngredientsAmount, storage.IngredientsPrice, kitchen.Storage.Recipes, hall.Customers, kitchen.Budget);
+                    applicationContext.SaveAll(storage.Ingredients, storage.IngredientsAmount, storage.IngredientsPrice, kitchen.Storage.Recipes, hall.Customers, accounting.Budget);
                 }
                 //*/
             }
