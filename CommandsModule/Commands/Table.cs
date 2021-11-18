@@ -35,9 +35,11 @@ namespace CommandsModule
                 Result = "Command not allowed";
                 return;
             }
+
             SetCustomersOrders();
             SetResultIfIssues();
-            if(object.Equals(Result, null))
+
+            if(!object.Equals(Result, null))
             {
                 Buys = FormBuysFromCommand();
                 foreach (Command buy in Buys)
