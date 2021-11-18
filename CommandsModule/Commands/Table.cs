@@ -54,7 +54,7 @@ namespace CommandsModule
         {
             if(_Customers.Count != _Orders.Count)
             {
-                //I dont set result with "FAIL" becouse this method must only set customers orders
+                //I dont set result to "FAIL" becouse this method must only set customers orders
                 return;
             }
             for(int i=0; i < _Customers.Count; i++)

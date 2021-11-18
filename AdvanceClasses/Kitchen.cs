@@ -10,12 +10,34 @@ namespace ChikenKithen
     {
         public Storage Storage;
         public int Budget { get; private set; }
+
+        int CollectedTax = 0;
+        readonly double _TransactionTax;
+        readonly double _DailyTax;
+        readonly double _MarginProfit;
+        readonly int _StartBudget;
+
         public Kitchen() { }
+
         public Kitchen(Storage _Storage, int _Budget)
         {
             Storage = _Storage;
             Budget = _Budget;
+            _TransactionTax = 10;
+            _DailyTax = 0;
+            _MarginProfit = 0;
+            _StartBudget = _Budget;
         }
+
+        public Kitchen(Storage _Storage, int _Budget, double TransactionTax,double MarginProfit)
+        {
+            Storage = _Storage;
+            Budget = _Budget;
+            _TransactionTax = TransactionTax;
+            _MarginProfit = MarginProfit;
+            _StartBudget = _Budget;
+        }
+
         public int CalculateFoodCostPrice(Food food)
         {
             int price = 0;
@@ -32,7 +54,7 @@ namespace ChikenKithen
         }
         public int CalculateFoodMenuPrice(Food food)
         {
-            return Convert.ToInt32(CalculateFoodCostPrice(food)*1.3);
+            return Convert.ToInt32(CalculateFoodCostPrice(food) * _MarginProfit);
         }
         public bool Cook(Food order)
         {
@@ -114,24 +136,32 @@ namespace ChikenKithen
 
             return fullRecipe;
         }
-        public void ShowAll()
+        public int CalculateDailyTax()
         {
-            foreach (Ingredient ingredient in Storage.Ingredients)
-            {
-                Console.WriteLine(ingredient.Name + " " + Storage.IngredientsAmount[ingredient]);
-            }
-            foreach (Food food in Storage.Recipes)
-            {
-                Console.WriteLine(food.Name);
-            }
+            int profit = Budget - _StartBudget - CollectedTax;
+            int dailyTax = Convert.ToInt32(profit * _DailyTax);
+
+            if (dailyTax < 0) return 0;
+
+            return dailyTax;
         }
         public void UseMoney(int amount)
         {
-            Budget -= amount;
+            Budget -= amount - Convert.ToInt32(amount * _TransactionTax);
+            CollectedTax += Convert.ToInt32(amount * _TransactionTax);
         }
         public void AddMoney(int amount)
         {
+            Budget += amount - Convert.ToInt32(amount * _TransactionTax);
+            CollectedTax += Convert.ToInt32(amount * _TransactionTax);
+        }
+        public void AddMoneyWithoutTax(int amount)
+        {
             Budget += amount;
+        }
+        public void UseMoneyWithoutTax(int amount)
+        {
+            Budget -= amount;
         }
         public void SetMoney(int amount)
         {
