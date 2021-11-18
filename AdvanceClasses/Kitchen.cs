@@ -69,27 +69,36 @@ namespace ChikenKithen
 
         public bool IsEnoughIngredients(Food food)
         {
-            var ingredients = GetBaseIngredientRecipe(food);
+            if(Storage.Recipes.Any(f=>f.Name == food.Name)){
+                food = Storage.Recipes.Find(f => f.Name == food.Name);
+            }
 
-            foreach(Food foodRecipe in food.RecipeFoods)
-            {
-                if (Storage.FoodAmount[Storage.GetRecipeByName(foodRecipe.Name)] > 0)
-                {
-                    foreach(Ingredient ingredient in foodRecipe.RecipeIngredients)
-                    {
-                        ingredients.Remove(ingredient);
-                    }
+
+            //group ingredient becouse recipe can contain several ingredients of one type
+            var groupIngredients = food.RecipeIngredients.GroupBy(x => x);
+            foreach (var item in groupIngredients){
+                if (Storage.IngredientsAmount[item.Key] < item.Count()){
+                    return false;
                 }
             }
 
-            var usedIngredientsAmount = ingredients.GroupBy(x => x);
+            //same for food
+            var groupFoods = food.RecipeFoods.GroupBy(x => x);
+            foreach (var item in groupFoods) {
+                if (Storage.FoodAmount[item.Key] < item.Count()){
+                    //if amout of foods in storage doesnt enough then form new recipe with lower-level food 
+                    // "Chicken with seasoning" => Chicken + season => Chicken + salt + peaper
+                    //its reason why recipe can contain several ingredients or foods of one type 
+                    List<Food> foodsForChecking = food.RecipeFoods.Where(x => true).ToList();
+                    List<Ingredient> ingredientsForChecking = food.RecipeIngredients.Where(x => true).ToList();
 
-            foreach(var item in usedIngredientsAmount)
-            {
-                if (Storage.IngredientsAmount[item.Key] >= item.Count())
-                    continue;
-                else
-                    return false;
+                    foodsForChecking.Remove(item.Key);
+                    foodsForChecking.AddRange(Storage.GetRecipeByName(item.Key.Name).RecipeFoods);
+
+                    ingredientsForChecking.AddRange(item.Key.RecipeIngredients);
+
+                    return IsEnoughIngredients(new Food("", ingredientsForChecking, foodsForChecking));
+                }
             }
 
             return true;
