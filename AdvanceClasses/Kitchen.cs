@@ -73,7 +73,6 @@ namespace ChikenKithen
                 food = Storage.Recipes.Find(f => f.Name == food.Name);
             }
 
-
             //group ingredient becouse recipe can contain several ingredients of one type
             var groupIngredients = food.RecipeIngredients.GroupBy(x => x);
             foreach (var item in groupIngredients){
