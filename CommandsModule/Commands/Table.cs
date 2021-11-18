@@ -10,9 +10,23 @@ namespace CommandsModule
     public class Table : Command
     {
         public List<Buy> Buys = new List<Buy>();
+
+        List<Customer> _Customers = new List<Customer>();
+        List<Food> _Orders = new List<Food>();
+
         public Table(Hall _Hall, Kitchen _Kitchen, string FullCommand) : base(_Hall, _Kitchen, FullCommand)
         {
-            Buys = FormBuysFromCommand();
+            foreach(var foodName in GetFoodsFromCommand())
+            {
+                Food searchFood = kitchen.Storage.GetRecipeByName(foodName);
+                if(searchFood.Name != "NULL") _Orders.Add(searchFood);
+            }
+
+            foreach(var customerName in GetCustomersFromCommand()) 
+            {
+                Customer searchCustomer = hall.GetCustomer(customerName);
+                if (searchCustomer.Name != "NULL") _Customers.Add(searchCustomer);
+            }
         }
         public override void ExecuteCommand()
         {
@@ -21,11 +35,12 @@ namespace CommandsModule
                 Result = "Command not allowed";
                 return;
             }
-
+            SetCustomersOrders();
             SetResultIfIssues();
             if(object.Equals(Result, null))
             {
-                foreach(Command buy in Buys)
+                Buys = FormBuysFromCommand();
+                foreach (Command buy in Buys)
                 {
                     buy.ExecuteCommand();
                 }
@@ -33,21 +48,33 @@ namespace CommandsModule
             }
         }
 
+        private void SetCustomersOrders()
+        {
+            if(_Customers.Count != _Orders.Count)
+            {
+                //I dont set result with "FAIL" becouse this method must only set customers orders
+                return;
+            }
+            for(int i=0; i < _Customers.Count; i++)
+            {
+                _Customers[i].Order = _Orders[i];
+            }
+        }
+
         private List<Buy> FormBuysFromCommand()
         {
             List<Buy> buys = new List<Buy>();
 
-            List<string> customersName = GetCustomersFromCommand();
-            List<string> foodsName = GetFoodsFromCommand();
 
-            if (customersName.Count != foodsName.Count)
+            if (_Customers.Count != _Orders.Count)
             {
+                Result = "Customers and Orders counts doesnt equal";
                 return buys;
             }
 
-            for(int i = 0; i < customersName.Count; i++)
+            for(int i = 0; i < _Customers.Count; i++)
             {
-                buys.Add(new Buy(hall, kitchen, $"Buy, {customersName[i]}, {foodsName[i]}"));
+                buys.Add(new Buy(hall, kitchen, $"Buy, {_Customers[i].Name}, {_Orders[i].Name}"));
             }
             return buys;
         }
@@ -65,38 +92,52 @@ namespace CommandsModule
         }
         private void SetResultIfIssues()
         {
-            List<string> customers = GetCustomersFromCommand();
-            List<string> foods = GetFoodsFromCommand();
-
-            if (customers.Count > foods.Count)
+            if (_Customers.Count > _Orders.Count)
             {
-                Result = "ERROR. Every person needs something to eat. So, whole table fails.";
+                Result = "FAIL. Every person needs something to eat. So, whole table fails.";
                 return;
             }
 
-            if (customers.Count < foods.Count)
+            if (_Customers.Count < _Orders.Count)
             {
-                Result = "ERROR. One person can have one type of food only. So, whole table fails";
+                Result = "FAIL. One person can have one type of food only. So, whole table fails";
                 return;
             }
 
-            if (customers.Count != customers.Distinct().Count())
+            if (_Customers.Count != _Customers.Distinct().Count())
             {
-                Result = "ERROR. One person cant be by one table twice. So, whole table fails.";
+                Result = "FAIL. One person cant be by one table twice. So, whole table fails.";
                 return;
             }
+
             if (!IsEnoughIngredients())
             {
+                Result = "FAIL. We dont have enough ingredients";
+                return;
+            }
 
+            if(_Customers.Any(c=>c.budget < kitchen.CalculateFoodMenuPrice(c.Order)))
+            {
+                Result = "FAIL. One or more persons dont have enough money";
+                return;
             }
         }
 
         private bool IsEnoughIngredients()
         {
             List<string> foodsName = GetFoodsFromCommand();
+
+            //form MEGAfood recipe which contain every recipes of foods in orders
+            Food megaFood = new Food("");
             foreach(var foodName in foodsName)
             {
+                Food searchFood = kitchen.Storage.GetRecipeByName(foodName); //Get Food by Name
+                megaFood.RecipeFoods.AddRange(
+                    searchFood.RecipeFoods.
+                    Where(x=>true)); //"Where" using to prevent linking to one list
 
+                megaFood.RecipeIngredients.AddRange(
+                    searchFood.RecipeIngredients.Where(x => true));
             }
 
             return true;
