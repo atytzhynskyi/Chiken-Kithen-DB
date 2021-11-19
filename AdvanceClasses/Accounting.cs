@@ -66,7 +66,7 @@ namespace AdvanceClasses
         }
         public void AddMoney(double amount)
         {
-            Budget += Math.Round(amount + CalculateTransactionTax(amount), 2);
+            Budget += Math.Round(amount - CalculateTransactionTax(amount), 2);
             CollectedTax += Math.Round(CalculateTransactionTax(amount), 2);
         }
         public void AddMoneyWithoutTax(double amount)
