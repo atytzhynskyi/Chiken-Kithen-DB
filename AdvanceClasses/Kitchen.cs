@@ -52,6 +52,11 @@ namespace AdvanceClasses
 
         public bool IsEnoughIngredients(Food food)
         {
+            if(object.Equals(food, null))
+            {
+                return false;
+            }
+
             if(Storage.Recipes.Any(f=>f.Name == food.Name)){
                 food = Storage.Recipes.Find(f => f.Name == food.Name);
             }

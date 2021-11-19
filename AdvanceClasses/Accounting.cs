@@ -8,15 +8,15 @@ namespace AdvanceClasses
 {
     public class Accounting
     {
-        public int Budget { get; private set; }
+        public double Budget { get; private set; }
 
-        int CollectedTax = 0;
-        readonly double transactionTax;
-        readonly double dailyTax;
-        readonly double marginProfit;
-        readonly int startBudget;
+        double CollectedTax = 0;
+        public readonly double transactionTax;
+        public readonly double dailyTax;
+        public readonly double marginProfit;
+        readonly double startBudget;
 
-        public Accounting(int _Budget)
+        public Accounting(double _Budget)
         {
             Budget = _Budget;
             transactionTax = 0.10;
@@ -25,18 +25,17 @@ namespace AdvanceClasses
             startBudget = _Budget;
         }
 
-        public Accounting(int _Budget, double _transactionTax, double _marginProfit)
+        public Accounting(double _Budget, double _transactionTax, double _marginProfit)
         {
-
             Budget = _Budget;
             transactionTax = _transactionTax;
             marginProfit = _marginProfit;
             startBudget = _Budget;
         }
 
-        public int CalculateFoodCostPrice(List<Food> Recipes, Dictionary<Ingredient, int> ingredientsPrice, Food food)
+        public double CalculateFoodCostPrice(List<Food> Recipes, Dictionary<Ingredient, int> ingredientsPrice, Food food)
         {
-            int price = 0;
+            double price = 0;
             foreach (Food foodRecipe in food.RecipeFoods)
             {
                 price += CalculateFoodCostPrice(Recipes, ingredientsPrice, foodRecipe);
@@ -45,46 +44,46 @@ namespace AdvanceClasses
             {
                 price += ingredientsPrice[ingredientsPrice.Keys.Where(i => i.Name == ingredient.Name).First()];
             }
-            return price;
+            return Math.Round(price,2);
         }
-        public int CalculateFoodMenuPrice(List<Food> Recipes, Dictionary<Ingredient, int> ingredientsPrice, Food food)
+        public double CalculateFoodMenuPrice(List<Food> Recipes, Dictionary<Ingredient, int> ingredientsPrice, Food food)
         {
-            return Convert.ToInt32(CalculateFoodCostPrice(Recipes, ingredientsPrice, food) *(1 + marginProfit));
+            return Math.Round(CalculateFoodCostPrice(Recipes, ingredientsPrice, food) * (1 + marginProfit), 2);
         }
-        public int CalculateDailyTax()
+        public double CalculateDailyTax()
         {
-            int profit = Budget - startBudget - CollectedTax;
-            int dailyTax = Convert.ToInt32(profit * this.dailyTax);
+            double profit = Budget - startBudget - CollectedTax;
+            double dailyTax = profit * this.dailyTax;
 
-            if (dailyTax < 0) return 0;
+            if (dailyTax <= 0) return 0;
 
-            return dailyTax;
+            return Math.Round(dailyTax, 2);
         }
-        public void UseMoney(int amount)
+        public void UseMoney(double amount)
         {
-            Budget -= amount - CalculateTransactionTax(amount);
-            CollectedTax += CalculateTransactionTax(amount);
+            Budget -= Math.Round(amount + CalculateTransactionTax(amount), 2);
+            CollectedTax += Math.Round(CalculateTransactionTax(amount), 2);
         }
-        public void AddMoney(int amount)
+        public void AddMoney(double amount)
         {
-            Budget += amount + CalculateTransactionTax(amount);
-            CollectedTax += CalculateTransactionTax(amount);
+            Budget += Math.Round(amount + CalculateTransactionTax(amount), 2);
+            CollectedTax += Math.Round(CalculateTransactionTax(amount), 2);
         }
-        public void AddMoneyWithoutTax(int amount)
+        public void AddMoneyWithoutTax(double amount)
         {
             Budget += amount;
         }
-        public void UseMoneyWithoutTax(int amount)
+        public void UseMoneyWithoutTax(double amount)
         {
             Budget -= amount;
         }
-        public void SetMoney(int amount)
+        public void SetMoney(double amount)
         {
             Budget = amount;
         }
-        public int CalculateTransactionTax(int amount)
+        public double CalculateTransactionTax(double amount)
         {
-            return Convert.ToInt32(amount * transactionTax);
+            return Math.Round(amount * transactionTax, 2);
         }
     }
 }

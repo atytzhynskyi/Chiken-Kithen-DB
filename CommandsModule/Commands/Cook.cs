@@ -62,14 +62,17 @@ namespace CommandsModule
             if (object.Equals(Food, null))
             {
                 Result = "Food 404";
+                return;
             }
-            if (object.Equals(Amount, null))
+            if (Amount <= 0)
             {
                 Result = "Amount incorrect";
+                return;
             }
             if (!kitchen.IsEnoughIngredients(Food))
             {
                 Result = "Dont have enough ingredients";
+                return;
             }
         }
     }

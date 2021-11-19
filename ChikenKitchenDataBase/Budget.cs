@@ -7,9 +7,9 @@ namespace ChikenKitchenDataBase
     public class Budget
     {
         public int Id { get; set; }
-        public int Balance { get; set; }
+        public double Balance { get; set; }
 
         public Budget() { }
-        public Budget(int _Balance) { Balance = _Balance; }
+        public Budget(double _Balance) { Balance = _Balance; }
     }
 }

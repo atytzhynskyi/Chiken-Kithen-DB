@@ -86,7 +86,7 @@ namespace ChikenKitchenDataBase
             }
             SaveChanges();
         }
-        public int GetBudget()
+        public double GetBudget()
         {
             return Budgets.First().Balance;
         }
@@ -200,7 +200,7 @@ namespace ChikenKitchenDataBase
             }
         }
 
-        public void SaveAll(List<Ingredient> _Ingredients, Dictionary<Ingredient, int> _IngredientsAmount, Dictionary<Ingredient, int> _IngredientsPrice, List<Food> _Recipes, List<Customer> _Customers, int _Budget)
+        public void SaveAll(List<Ingredient> _Ingredients, Dictionary<Ingredient, int> _IngredientsAmount, Dictionary<Ingredient, int> _IngredientsPrice, List<Food> _Recipes, List<Customer> _Customers, double _Budget)
         {
             SaveIngredients(_Ingredients);
             SaveIngredientsProperties(_IngredientsAmount, _IngredientsPrice);
@@ -219,7 +219,7 @@ namespace ChikenKitchenDataBase
             }
             SaveChanges();
         }
-        public void SaveBudget(int _Budget)
+        public void SaveBudget(double _Budget)
         {
             Budgets.First().Balance = _Budget;
             SaveChanges();

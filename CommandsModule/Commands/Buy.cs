@@ -83,7 +83,10 @@ namespace CommandsModule
 
             Customer.VisitsCount++;
             hall.GetPaid(accounting, kitchen.Storage.IngredientsPrice, kitchen.Storage.Recipes, Customer);
-            Result = "success";
+
+            double price = accounting.CalculateFoodMenuPrice(
+                                                kitchen.Storage.Recipes, kitchen.Storage.IngredientsPrice, Customer.Order);
+            Result = $"success; money amount: {price}; tax: {accounting.CalculateTransactionTax(price)};";
         }
     }
 }

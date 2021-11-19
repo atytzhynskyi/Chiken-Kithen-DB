@@ -13,7 +13,7 @@ namespace CommandsModule
 
         public Dictionary<Food, int> FoodsAmount = new Dictionary<Food, int>();
         public Dictionary<Ingredient, int> IngredientsAmount = new Dictionary<Ingredient, int>();
-        public int Budget;
+        public double Budget;
 
         public Record(ICommand command, Kitchen kitchen, Accounting accounting)
         {

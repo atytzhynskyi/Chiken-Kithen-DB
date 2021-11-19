@@ -15,7 +15,7 @@ namespace BaseClasses
         public int VisitsCount { get; set; }
         [NotMapped]
         public Food Order { get; set; }
-        public int budget { get; set; }
+        public double budget { get; set; }
         [NotMapped]
         public List<Ingredient> Allergies { get; set; } = new List<Ingredient>();
         public Customer() { }

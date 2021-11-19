@@ -59,10 +59,6 @@ namespace AdvanceClasses
             }
             return customer;
         }
-        public void GiveFood()
-        {
-            Console.WriteLine("Order was servered");
-        }
 
         public void GiveFoodFromStorage(Kitchen kitchen, Customer customer)
         {
@@ -81,7 +77,12 @@ namespace AdvanceClasses
             }
             Console.WriteLine("Order doesnt exist in Food List");
         }
-        
+
+        public void GiveFood()
+        {
+            //method to give just cooked food. Dont need implementation yet.
+        }
+
         private string GetFullNameByNick(string nickName, Customer customer)
         {
             if (customer.Name.Contains(nickName))
@@ -93,14 +94,13 @@ namespace AdvanceClasses
 
         public void GetPaid(Accounting accounting, Dictionary<Ingredient, int> ingredientPrice, List<Food> Recipes, Customer customer)
         {
-            int price = accounting.CalculateFoodMenuPrice(Recipes, ingredientPrice, customer.Order);
-            customer.VisitsCount++;
+            double price = accounting.CalculateFoodMenuPrice(Recipes, ingredientPrice, customer.Order);
 
             if (IsDiscountAppliable(customer))
             {
-                price -= Convert.ToInt32(GetDiscount() * price);
+                price -= GetDiscount() * price;
             }
-            customer.budget -= price;
+            customer.budget -= Math.Round(price, 2);
             accounting.AddMoney(price);
         }
 

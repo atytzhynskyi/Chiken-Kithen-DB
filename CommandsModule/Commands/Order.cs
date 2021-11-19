@@ -2,6 +2,7 @@
 using BaseClasses;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace CommandsModule
@@ -37,10 +38,17 @@ namespace CommandsModule
                 return;
             }
 
+            if(object.Equals(Ingredient, null))
+            {
+                Result = "Ingredient 404";
+                return;
+            }
+
             int price = kitchen.Storage.IngredientsPrice[Ingredient] * Amount;
             if (accounting.Budget <= price)
             {
                 Result = "Dont have enought money";
+                return;
             }
             accounting.UseMoney(price);
             kitchen.Storage.AddIngredient(Ingredient.Name, Amount);
