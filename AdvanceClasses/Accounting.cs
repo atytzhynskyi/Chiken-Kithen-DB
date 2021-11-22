@@ -56,7 +56,11 @@ namespace AdvanceClasses
         }
         public double CalculateFoodMenuPrice(List<Food> Recipes, Dictionary<Ingredient, int> ingredientsPrice, Food food)
         {
-            return Math.Round(CalculateFoodCostPrice(Recipes, ingredientsPrice, food) * (1 + marginProfit), 2);
+            return Math.Round(CalculateFoodCostPrice(Recipes, ingredientsPrice, food) * (1 + marginProfit) * (1 + transactionTax), 2);
+        }
+        public void PayDayTax()
+        {
+            Budget = Math.Round(Budget - CalculateDailyTax(),2);
         }
         public double CalculateDailyTax()
         {
@@ -75,8 +79,8 @@ namespace AdvanceClasses
         }
         public void AddMoney(double amount)
         {
-            Budget += Math.Round(amount - CalculateTransactionTax(amount), 2);
-            CollectedTax += Math.Round(CalculateTransactionTax(amount), 2);
+            Budget = Math.Round(Budget + amount - CalculateTransactionTax(amount), 2);
+            CollectedTax = Math.Round(CollectedTax + CalculateTransactionTax(amount), 2);
         }
         public void AddMoneyWithoutTax(double amount)
         {
@@ -94,6 +98,10 @@ namespace AdvanceClasses
         public double CalculateTransactionTax(double amount)
         {
             return Math.Round(amount * transactionTax, 2);
+        }
+        public double GetStartBudget()
+        {
+            return startBudget;
         }
     }
 }

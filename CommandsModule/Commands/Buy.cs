@@ -84,9 +84,14 @@ namespace CommandsModule
             Customer.VisitsCount++;
             hall.GetPaid(accounting, kitchen.Storage.IngredientsPrice, kitchen.Storage.Recipes, Customer);
 
-            double price = accounting.CalculateFoodMenuPrice(
-                                                kitchen.Storage.Recipes, kitchen.Storage.IngredientsPrice, Customer.Order);
-            Result = $"success; money amount: {price}; tax: {accounting.CalculateTransactionTax(price)};";
+            double price = Math.Round(accounting.CalculateFoodMenuPrice(
+                                                   kitchen.Storage.Recipes, kitchen.Storage.IngredientsPrice, Customer.Order), 2);
+            if (hall.IsDiscountAppliable(Customer))
+            {
+                price = Math.Round(price * hall.GetDiscount(), 2);
+            }
+            double tax = accounting.CalculateTransactionTax(price);
+            Result = $"{Customer.Name}, {Customer.budget}, {Customer.Order.Name}, {price} -> success; money amount: {price-tax}; tax: {tax};";
         }
     }
 }

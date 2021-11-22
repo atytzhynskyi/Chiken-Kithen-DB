@@ -45,7 +45,9 @@ namespace CommandsModule
                 fs.Write("INIT\n");
                 foreach (Record record in RecordsBase.Records)
                 {
-                    fs.WriteLine($"{record.Command.FullCommand} -> {record.Command.Result}");
+                    if(RecordsBase.Records.First() != record)
+                        fs.WriteLine($"{record.Command.FullCommand} -> {record.Command.Result}");
+
                     fs.WriteLine(GetWareHouse(record.IngredientsAmount, record.FoodsAmount));
                     fs.WriteLine($"Budget: {record.Budget}");
 
@@ -55,6 +57,7 @@ namespace CommandsModule
                         fs.WriteLine("START\n");
                     }
                 }
+                fs.WriteLine("\nEND");
             }
         }
         

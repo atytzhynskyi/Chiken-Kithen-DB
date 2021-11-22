@@ -14,7 +14,7 @@ namespace CommandsModule
     {
         static public ICommand Build(Accounting accounting, Hall hall, Kitchen kitchen, string commandString, RecordsBase RecordsBase)
         {
-            ICommand command = new Default();
+            ICommand command;
 
             string commandType = commandString.Split(", ")[0];
 
@@ -44,7 +44,11 @@ namespace CommandsModule
                 case ("Audit"):
                     command = new Audit(commandString, RecordsBase);
                     break;
+                case ("End Day"):
+                    command = new EndDay(commandString, accounting);
+                    break;
                 default:
+                    command = new Default();
                     break;
             }
             return command;

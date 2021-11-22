@@ -98,18 +98,18 @@ namespace AdvanceClasses
 
             if (IsDiscountAppliable(customer))
             {
-                price -= GetDiscount() * price;
+                price -=  GetDiscount() * price;
             }
-            customer.budget -= Math.Round(price, 2);
+            customer.budget = Math.Round(customer.budget - price, 2);
             accounting.AddMoney(price);
         }
 
-        private double GetDiscount()
+        public double GetDiscount()
         {
-            return JsonRead.ReadFromJson<int>(@"..\..\..\discount.json").Values.First()/100;
+            return (float)JsonRead.ReadFromJson<int>(@"..\..\..\Configs\discount.json").Values.First()/100;
         }
 
-        private bool IsDiscountAppliable(Customer customer)
+        public bool IsDiscountAppliable(Customer customer)
         {
             if (customer.VisitsCount % 3 == 0)
             {

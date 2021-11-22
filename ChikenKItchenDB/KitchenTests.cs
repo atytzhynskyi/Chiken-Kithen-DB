@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using ChikenKItchenDB;
 using BaseClasses;
+using AdvanceClasses;
 
 namespace ChikenKithen.Tests
 {
@@ -30,7 +31,7 @@ namespace ChikenKithen.Tests
 
             storage.IngredientsAmount[water] = 4;
 
-            kitchen = new Kitchen(storage, 500);
+            kitchen = new Kitchen(storage);
         }
             [TestMethod()]
         public void CookTestTrue()
