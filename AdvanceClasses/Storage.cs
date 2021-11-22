@@ -142,7 +142,7 @@ namespace AdvanceClasses
             if (ingredientAmount + amount > maxIngredientType)
             {
                 wasted += ingredientAmount + amount - maxIngredientType;
-                amount -= wasted;
+                amount -= ingredientAmount + amount - maxIngredientType;
             }
             if(wasted != 0)
             {
