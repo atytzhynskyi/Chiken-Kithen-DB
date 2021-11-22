@@ -21,8 +21,13 @@ namespace ChikenKithen
                 applicationContext.InitializeFromFiles();
                 applicationContext.SetPropertiesIngredientsId();
 
-                var WarehouseSize = JsonRead.ReadFromJson<int>(@"..\..\..\WarehouseSize.json");
-                
+                var TaxConfigs = JsonRead.ReadFromJson<int>(@"..\..\..\Configs\TaxConfigs.json");
+                Accounting accounting = new Accounting(applicationContext.GetBudget(),
+                                                        TaxConfigs.Where(k => k.Key == "transaction tax").First().Value,
+                                                        TaxConfigs.Where(k => k.Key == "profit margin").First().Value,
+                                                        TaxConfigs.Where(k => k.Key == "daily tax").First().Value);
+
+                var WarehouseSize = JsonRead.ReadFromJson<int>(@"..\..\..\Configs\WarehouseSize.json");
                 Storage storage = new Storage(applicationContext.GetFoods(),
                                               applicationContext.Ingredients.ToList(),
                                               applicationContext.GetIngredientsAmount(),
@@ -33,7 +38,6 @@ namespace ChikenKithen
                 
                 Kitchen kitchen = new Kitchen(storage);
                 Hall hall = new Hall(applicationContext.GetCustomers(), kitchen.Storage.Recipes);
-                Accounting accounting = new Accounting(applicationContext.GetBudget());
                 RecordsBase recordsBase = new RecordsBase(accounting, kitchen);
 
                 while (2 + 2 != 5)

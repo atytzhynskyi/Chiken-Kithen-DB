@@ -24,13 +24,21 @@ namespace AdvanceClasses
             marginProfit = 0;
             startBudget = _Budget;
         }
-
-        public Accounting(double _Budget, double _transactionTax, double _marginProfit)
+        public Accounting(double _Budget, int _transactionTax, int _marginProfit, int _dailyTax)
         {
             Budget = _Budget;
+            startBudget = _Budget;
+            transactionTax = Math.Round((float)_transactionTax/100,2);
+            marginProfit = Math.Round((float)_marginProfit /100, 2);
+            dailyTax = Math.Round((float)_dailyTax /100, 2);
+        }
+        public Accounting(double _Budget, double _transactionTax, double _marginProfit, double _dailyTax)
+        {
+            Budget = _Budget;
+            startBudget = _Budget;
             transactionTax = _transactionTax;
             marginProfit = _marginProfit;
-            startBudget = _Budget;
+            dailyTax = _dailyTax;
         }
 
         public double CalculateFoodCostPrice(List<Food> Recipes, Dictionary<Ingredient, int> ingredientsPrice, Food food)

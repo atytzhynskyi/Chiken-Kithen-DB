@@ -33,9 +33,9 @@ namespace CommandsModule
             string fileName = "";
             for (int i = 0; true; i++)
             {
-                if (!File.Exists($@"..\..\..\Audit{i}"))
+                if (!File.Exists($@"..\..\..\Audits\Audit{i}"))
                 {
-                    fileName = $@"..\..\..\Audit{i}";
+                    fileName = $@"..\..\..\Audits\Audit{i}";
                     break;
                 }
             }

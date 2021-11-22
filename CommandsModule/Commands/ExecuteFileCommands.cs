@@ -29,7 +29,7 @@ namespace CommandsModule.Commands
             FullCommand = _FullCommand;
             CommandType = FullCommand.Split(", ")[0];
 
-            FileName = @"..\..\..\Commands.csv";
+            FileName = @"..\..\..\Configs\Commands.csv";
             records = _records;
         }
         public void ExecuteCommand()

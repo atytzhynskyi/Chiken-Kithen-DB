@@ -24,4 +24,8 @@
     <ProjectReference Include="..\jsonReadModule\jsonReadModule.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Audits\" />
+  </ItemGroup>
+
 </Project>

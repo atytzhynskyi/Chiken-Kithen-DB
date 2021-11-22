@@ -13,7 +13,7 @@ namespace ChikenKitchenDataBase
     {
         static public List<Ingredient> GetIngredients()
         {
-            using var streamReader = File.OpenText(@"..\..\..\Ingredients.csv");
+            using var streamReader = File.OpenText(@"..\..\..\Configs\Ingredients.csv");
             using var csvReader = new CsvReader(streamReader, CultureInfo.CurrentCulture);
 
             List<Ingredient> ingredients = new List<Ingredient>();
@@ -34,7 +34,7 @@ namespace ChikenKitchenDataBase
         }
         static public List<IngredientProperties> GetIngredientsProperties(List<Ingredient> ingredients)
         {
-            using var streamReader = File.OpenText(@"..\..\..\Ingredients.csv");
+            using var streamReader = File.OpenText(@"..\..\..\Configs\Ingredients.csv");
             using var csvReader = new CsvReader(streamReader, CultureInfo.CurrentCulture);
 
             List<IngredientProperties> ingredientsProperties = new List<IngredientProperties>();
@@ -69,7 +69,7 @@ namespace ChikenKitchenDataBase
         {
             List<Food> foods = new List<Food>();
 
-            using var streamReader = File.OpenText(@"..\..\..\Foods.csv");
+            using var streamReader = File.OpenText(@"..\..\..\Configs\Foods.csv");
             using var csvReader = new CsvReader(streamReader, CultureInfo.CurrentCulture);
 
             string name;
@@ -86,7 +86,7 @@ namespace ChikenKitchenDataBase
         }
         static public List<Food> GetFoodsWithRecipes(List<Food> foods, List<Ingredient> ingredients)
         {
-            using var streamReader = File.OpenText(@"..\..\..\Foods.csv");
+            using var streamReader = File.OpenText(@"..\..\..\Configs\Foods.csv");
             using var csvReader = new CsvReader(streamReader, CultureInfo.CurrentCulture);
 
             string name;
@@ -122,7 +122,7 @@ namespace ChikenKitchenDataBase
         static public List<Customer> GetCustomers()
         {
             List<Customer> customers = new List<Customer>();
-            using var streamReader = File.OpenText(@"..\..\..\Customers.csv");
+            using var streamReader = File.OpenText(@"..\..\..\Configs\Customers.csv");
             using var csv = new CsvReader(streamReader, CultureInfo.CurrentCulture);
 
             while (csv.Read())
