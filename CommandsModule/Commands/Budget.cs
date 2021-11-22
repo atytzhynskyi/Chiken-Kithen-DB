@@ -13,7 +13,7 @@ namespace CommandsModule
         public bool IsAllowed { get; set; }
         private Accounting accounting { get; set; }
 
-        readonly int Amount;
+        readonly double Amount;
 
         readonly string Sign;
 
@@ -25,7 +25,7 @@ namespace CommandsModule
             CommandType = FullCommand.Split(", ")[0];
 
             Sign = _FullCommand.Split(", ")[1];
-            int.TryParse(_FullCommand.Split(", ")[2], out Amount);
+            double.TryParse(_FullCommand.Split(", ")[2], out Amount);
         }
         public void ExecuteCommand()
         {
@@ -37,13 +37,13 @@ namespace CommandsModule
             }
             if(Sign == "-")
             {
-                accounting.UseMoney(Amount);
+                accounting.UseMoneyWithoutTax(Amount);
                 Result = "success";
                 return;
             }
             if(Sign == "+")
             {
-                accounting.AddMoney(Amount);
+                accounting.AddMoneyWithoutTax(Amount);
                 Result = "success";
                 return;
             }

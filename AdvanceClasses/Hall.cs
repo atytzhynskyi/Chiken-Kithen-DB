@@ -78,7 +78,7 @@ namespace AdvanceClasses
             Console.WriteLine("Order doesnt exist in Food List");
         }
 
-        public void GiveFood()
+        public void GiveFood(string name)
         {
             //method to give just cooked food. Dont need implementation yet.
         }

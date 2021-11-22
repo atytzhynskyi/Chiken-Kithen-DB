@@ -71,7 +71,7 @@ namespace CommandsModule
             else
             {
                 kitchen.Cook(Customer.Order);
-                hall.GiveFood();
+                hall.GiveFood(Customer.Name);
             }
 
             if (Customer.isAllergic(kitchen.Storage.Recipes, Customer.Order).Item1)

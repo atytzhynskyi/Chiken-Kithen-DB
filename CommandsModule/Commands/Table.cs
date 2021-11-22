@@ -66,9 +66,9 @@ namespace CommandsModule
                 buy.ExecuteCommand();
             }
 
-            double moneyAmount = accounting.Budget - startBudget;
-            double tax = 0;
-            Result = $"success; money amount: {moneyAmount}; tax:{moneyAmount * accounting.transactionTax}\n"+'{';
+            double moneyAmount = Math.Round(accounting.Budget - startBudget, 2);
+            double tax = Math.Round(moneyAmount * accounting.transactionTax,2);
+            Result = $"success; money amount: {moneyAmount}; tax:{tax}\n"+'{';
 
             Buys.ForEach(x => Result += $"\n\t{x.FullCommand} -> {x.Result}");
             Result += "\n}";
