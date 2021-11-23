@@ -165,7 +165,7 @@ namespace AdvanceClasses
             if (foodAmount + amount > maxFoodType)
             {
                 wasted += foodAmount + amount - maxFoodType;
-                amount -= wasted;
+                amount -= foodAmount + amount - maxFoodType;
             }
             if(wasted != 0)
             {
