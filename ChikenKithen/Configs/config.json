@@ -1,7 +1,7 @@
 {
   "Audit": true,
   "Budget": false,
-  "Buy": true,
+  "Buy": false,
   "Cook": true,
   "Order": true,
   "Table": true

@@ -34,35 +34,12 @@ namespace CommandsModule
         }
         public void ExecuteCommand()
         {
-            if (!IsAllowed)
-            {
-                Result = "Command not allowed";
-                return;
-            }
+            SetResultIfIssues();
 
-            if (Customer.Name == "NULL")
-            {
-                Result = "Customer 404";
-                return;
-            }
-            if (Food.Name == "NULL")
-            {
-                Result = "Food 404";
-                return;
-            }
+            if (!object.Equals(Result, null)) return;
+
             Customer.Order = Food;
-            if (Customer.budget < accounting.CalculateFoodMenuPrice(
-                                                kitchen.Storage.Recipes, kitchen.Storage.IngredientsPrice, Customer.Order))
-            {
-                Result = "Can't order: customer dont have enough money";
-                return;
-            }
-
-            if (!kitchen.IsEnoughIngredients(Customer.Order))
-            {
-                Result = "Can't order: dont have enough ingredients";
-                return;
-            }
+            
 
             if (kitchen.Storage.FoodAmount[Customer.Order] >= 1)
             {
@@ -72,13 +49,6 @@ namespace CommandsModule
             {
                 kitchen.Cook(Customer.Order);
                 hall.GiveFood(Customer.Name);
-            }
-
-            if (Customer.isAllergic(kitchen.Storage.Recipes, Customer.Order).Item1)
-            {
-
-                Result = $"Can't eat: allergic to: {Customer.isAllergic(kitchen.Storage.Recipes, Customer.Order).Item2.Name}";
-                return;
             }
 
             Customer.VisitsCount++;
@@ -92,6 +62,57 @@ namespace CommandsModule
             }
             double tax = accounting.CalculateTransactionTax(price);
             Result = $"{Customer.Name}, {Customer.budget}, {Customer.Order.Name}, {price} -> success; money amount: {price-tax}; tax: {tax};";
+        }
+
+        private void SetResultIfIssues()
+        {
+            if (!IsAllowed)
+            {
+                Result = "Command not allowed";
+                return;
+            }
+
+            if (accounting.Budget < 0)
+            {
+                Result = "RESTAURANT BANKRUPT";
+            }
+
+            if (Customer.Name == "NULL")
+            {
+                Result = "Customer 404";
+                return;
+            }
+            if (Food.Name == "NULL")
+            {
+                Result = "Food 404";
+                return;
+            }
+            if (Customer.budget < accounting.CalculateFoodMenuPrice(
+                                                kitchen.Storage.Recipes, kitchen.Storage.IngredientsPrice, Food))
+            {
+                Result = "Can't order: customer dont have enough money";
+                return;
+            }
+
+            if (Customer.budget < accounting.CalculateFoodMenuPrice(
+                                                kitchen.Storage.Recipes, kitchen.Storage.IngredientsPrice, Food))
+            {
+                Result = "Can't order: customer dont have enough money";
+                return;
+            }
+
+            if (!kitchen.IsEnoughIngredients(Food))
+            {
+                Result = "Can't order: dont have enough ingredients";
+                return;
+            }
+
+            if (Customer.isAllergic(kitchen.Storage.Recipes, Food).Item1)
+            {
+
+                Result = $"Can't eat: allergic to: {Customer.isAllergic(kitchen.Storage.Recipes, Customer.Order).Item2.Name}";
+                return;
+            }
         }
     }
 }

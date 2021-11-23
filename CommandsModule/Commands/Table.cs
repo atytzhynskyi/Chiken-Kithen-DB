@@ -70,7 +70,7 @@ namespace CommandsModule
             double tax = Math.Round(moneyAmount * accounting.transactionTax,2);
             Result = $"success; money amount: {moneyAmount}; tax:{tax}\n"+'{';
 
-            Buys.ForEach(x => Result += $"\n\t{x.FullCommand} -> {x.Result}");
+            Buys.ForEach(b => Result += $"\n\t{b.FullCommand} -> {b.Result}");
             Result += "\n}";
         }
 
@@ -119,6 +119,11 @@ namespace CommandsModule
         }
         private void SetResultIfIssues()
         {
+            if (accounting.Budget < 0)
+            {
+                Result = "RESTAURANT BANKRUPT";
+                return;
+            }
             if (_Customers.Count > _Orders.Count)
             {
                 Result = "FAIL. Every person needs something to eat. So, whole table fails.";

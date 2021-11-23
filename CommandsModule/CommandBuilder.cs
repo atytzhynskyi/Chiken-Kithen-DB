@@ -17,6 +17,7 @@ namespace CommandsModule
             ICommand command;
 
             string commandType = commandString.Split(", ")[0];
+            
 
          switch (commandType)
             {
@@ -48,7 +49,7 @@ namespace CommandsModule
                     command = new EndDay(commandString, accounting);
                     break;
                 default:
-                    command = new Default();
+                    command = new Default("Command not found");
                     break;
             }
             return command;

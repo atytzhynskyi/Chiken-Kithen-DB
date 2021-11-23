@@ -12,11 +12,11 @@ namespace CommandsModule
 
         public bool IsAllowed { get; set; }
 
-        public string Result { get; private set; }
+        public string Result { get; set; }
         public Default() { }
+        public Default(string result) { Result = result; }
         public void ExecuteCommand()
         {
-            Result = "Command not found";
         }
     }
 }
