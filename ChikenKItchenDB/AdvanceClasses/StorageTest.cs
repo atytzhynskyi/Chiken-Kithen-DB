@@ -10,7 +10,7 @@ using System.Linq;
 namespace BaseClasses.Tests
 {
     [TestClass()]
-    public class Testtest
+    public class StorageTest
     {
         [TestMethod()]
         public void AddIngredientWhenIngredientsAmountIsMoreThenMaxIngredientTypeAndTotalMax()

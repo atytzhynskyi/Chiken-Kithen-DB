@@ -13,6 +13,7 @@ namespace CommandsModule
         public string CommandType { get; private set; }
         public bool IsAllowed { get; set; }
 
+        private string _allergicConfig;
 
         private Accounting accounting { get; set; }
         private Kitchen kitchen { get; set; }
@@ -39,8 +40,67 @@ namespace CommandsModule
             if (!object.Equals(Result, null)) return;
 
             Customer.Order = Food;
-            
 
+            Customer.VisitsCount++;
+
+            GiveCustomersOrder();
+
+            double price = Math.Round(accounting.CalculateFoodMenuPrice(
+                                                   kitchen.Storage.Recipes, kitchen.Storage.IngredientsPrice, Customer.Order), 2);
+            if (hall.IsDiscountAppliable(Customer))
+            {
+                price = Math.Round(price * hall.GetDiscount(), 2);
+            }
+            double tax = accounting.CalculateTransactionTax(price);
+
+            if (Customer.isAllergic(kitchen.Storage.Recipes, Food).Item1)
+            {
+                ExecuteAllergicBuy(price);
+                return;
+            }
+            hall.GetPaid(accounting, kitchen.Storage.IngredientsPrice, kitchen.Storage.Recipes, Customer);
+            Result = $"{Customer.Name}, {Customer.budget}, {Customer.Order.Name}, {price} -> success; money amount: {price - tax}; tax: {tax};";
+        }
+
+        private void ExecuteAllergicBuy(double price)
+        {
+            //If a number is set in the config, then we determine whether to keep or waste the dish
+            if (int.TryParse(_allergicConfig, out int keepPrice))
+            {
+                if (keepPrice >= price)
+                {
+                    _allergicConfig = "keep";
+                }
+                else _allergicConfig = "waste";
+            }
+
+
+            string allergicResult;
+            switch (_allergicConfig)
+            {
+                case ("keep"):
+                    KeepAlergicOrder();
+                    allergicResult = "dish keeped";
+                    break;
+
+                case ("waste"): //If in a config something else to consider that it is "waste"
+                default:
+                    allergicResult = "dish wasted";
+                    break;
+            }
+            Result = $"Can't eat: allergic to: {Customer.isAllergic(kitchen.Storage.Recipes, Customer.Order).Item2.Name}; {allergicResult}";
+            return;
+        }
+
+        private void KeepAlergicOrder()
+        {
+            kitchen.Storage.FoodAmount[Food]++;
+            double costPrice = accounting.CalculateFoodCostPrice(kitchen.Storage.Recipes, kitchen.Storage.IngredientsPrice, Food);
+            accounting.UseMoneyWithoutTax(costPrice / 25);
+        }
+
+        private void GiveCustomersOrder()
+        {
             if (kitchen.Storage.FoodAmount[Customer.Order] >= 1)
             {
                 hall.GiveFoodFromStorage(kitchen, Customer);
@@ -50,18 +110,6 @@ namespace CommandsModule
                 kitchen.Cook(Customer.Order);
                 hall.GiveFood(Customer.Name);
             }
-
-            Customer.VisitsCount++;
-            hall.GetPaid(accounting, kitchen.Storage.IngredientsPrice, kitchen.Storage.Recipes, Customer);
-
-            double price = Math.Round(accounting.CalculateFoodMenuPrice(
-                                                   kitchen.Storage.Recipes, kitchen.Storage.IngredientsPrice, Customer.Order), 2);
-            if (hall.IsDiscountAppliable(Customer))
-            {
-                price = Math.Round(price * hall.GetDiscount(), 2);
-            }
-            double tax = accounting.CalculateTransactionTax(price);
-            Result = $"{Customer.Name}, {Customer.budget}, {Customer.Order.Name}, {price} -> success; money amount: {price-tax}; tax: {tax};";
         }
 
         private void SetResultIfIssues()
@@ -104,13 +152,6 @@ namespace CommandsModule
             if (!kitchen.IsEnoughIngredients(Food))
             {
                 Result = "Can't order: dont have enough ingredients";
-                return;
-            }
-
-            if (Customer.isAllergic(kitchen.Storage.Recipes, Food).Item1)
-            {
-
-                Result = $"Can't eat: allergic to: {Customer.isAllergic(kitchen.Storage.Recipes, Customer.Order).Item2.Name}";
                 return;
             }
         }
