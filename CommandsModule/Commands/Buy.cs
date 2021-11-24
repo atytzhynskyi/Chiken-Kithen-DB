@@ -13,7 +13,7 @@ namespace CommandsModule
         public string CommandType { get; private set; }
         public bool IsAllowed { get; set; }
 
-        private string _allergicConfig;
+        private string _allergicConfig { get; set; }
 
         private Accounting accounting { get; set; }
         private Kitchen kitchen { get; set; }
