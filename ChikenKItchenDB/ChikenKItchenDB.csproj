@@ -14,8 +14,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AdvanceClasses\AdvanceClasses.csproj" />
     <ProjectReference Include="..\BaseClasses\BaseClasses.csproj" />
     <ProjectReference Include="..\ChikenKithen\ChikenKithen.csproj" />
+    <ProjectReference Include="..\CommandsModule\CommandsModule.csproj" />
   </ItemGroup>
 
 </Project>

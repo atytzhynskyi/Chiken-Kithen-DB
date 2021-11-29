@@ -25,7 +25,9 @@ namespace CommandsModule
                     command = new Buy(accounting, hall, kitchen, commandString);
                     break;
                 case ("Order"):
-                    command = new Order(accounting, kitchen, commandString);
+                    Order order = new Order(accounting, kitchen, commandString);
+                    order.SetOrderOption(jsonReadModule.JsonRead.ReadFromJson<string>(@"..\..\..\Configs\OrderConfig.json").First().Value);
+                    command = order;
                     break;
                 case ("Table"):
                     command = new Table(accounting, hall, kitchen, commandString);

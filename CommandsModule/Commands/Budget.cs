@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CommandsModule
 {
-    class Budget : ICommand
+    public class Budget : ICommand
     {
         public string Result { get; private set; }
         public string FullCommand { get; private set; }

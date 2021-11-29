@@ -7,7 +7,7 @@ using ChikenKithen;
 using AdvanceClasses;
 using System.Linq;
 
-namespace BaseClasses.Tests
+namespace AdvanceClasses.Tests
 {
     [TestClass()]
     public class StorageTest

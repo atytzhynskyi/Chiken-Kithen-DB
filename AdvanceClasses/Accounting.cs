@@ -10,7 +10,7 @@ namespace AdvanceClasses
     {
         public double Budget { get; private set; }
 
-        double CollectedTax = 0;
+        public double CollectedTax { get; private set; } = 0;
         public readonly double transactionTax;
         public readonly double dailyTax;
         public readonly double marginProfit;
@@ -43,6 +43,7 @@ namespace AdvanceClasses
 
         public double CalculateFoodCostPrice(List<Food> Recipes, Dictionary<Ingredient, int> ingredientsPrice, Food food)
         {
+
             double price = 0;
             foreach (Food foodRecipe in food.RecipeFoods)
             {

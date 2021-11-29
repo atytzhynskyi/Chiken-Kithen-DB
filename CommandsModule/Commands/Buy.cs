@@ -13,7 +13,7 @@ namespace CommandsModule
         public string CommandType { get; private set; }
         public bool IsAllowed { get; set; }
 
-        private string _allergicConfig { get; set; }
+        public string AllergicConfig { get; set; }
 
         private Accounting accounting { get; set; }
         private Kitchen kitchen { get; set; }
@@ -59,24 +59,24 @@ namespace CommandsModule
                 return;
             }
             hall.GetPaid(accounting, kitchen.Storage.IngredientsPrice, kitchen.Storage.Recipes, Customer);
-            Result = $"{Customer.Name}, {Customer.budget}, {Customer.Order.Name}, {price} -> success; money amount: {price - tax}; tax: {tax};";
+            Result = $"{Customer.Name}, {Customer.budget + price}, {Customer.Order.Name}, {price} -> success; money amount: {price - tax}; tax: {tax};";
         }
 
         private void ExecuteAllergicBuy(double price)
         {
             //If a number is set in the config, then we determine whether to keep or waste the dish
-            if (int.TryParse(_allergicConfig, out int keepPrice))
+            if (int.TryParse(AllergicConfig, out int keepPrice))
             {
                 if (keepPrice >= price)
                 {
-                    _allergicConfig = "keep";
+                    AllergicConfig = "keep";
                 }
-                else _allergicConfig = "waste";
+                else AllergicConfig = "waste";
             }
 
 
             string allergicResult;
-            switch (_allergicConfig)
+            switch (AllergicConfig)
             {
                 case ("keep"):
                     KeepAlergicOrder();
@@ -130,7 +130,7 @@ namespace CommandsModule
                 Result = "Customer 404";
                 return;
             }
-            if (Food.Name == "NULL")
+            if (object.Equals(Food, null))
             {
                 Result = "Food 404";
                 return;
