@@ -80,7 +80,7 @@ namespace AdvanceClasses
                     List<Ingredient> ingredientsForChecking = food.RecipeIngredients.Where(x => true).ToList();
 
                     foodsForChecking.Remove(item.Key);
-                    foodsForChecking.AddRange(Storage.GetRecipeByName(item.Key.Name).RecipeFoods);
+                    foodsForChecking.AddRange(Storage.GetRecipe(item.Key.Name).RecipeFoods);
 
                     ingredientsForChecking.AddRange(item.Key.RecipeIngredients);
 

@@ -31,7 +31,7 @@ namespace CommandsModule
             CommandType = FullCommand.Split(", ")[0];
 
             Customer = hall.GetCustomer(_FullCommand.Split(", ")[1]);
-            Food = kitchen.Storage.GetRecipeByName(_FullCommand.Split(", ")[2]);
+            Food = kitchen.Storage.GetRecipe(_FullCommand.Split(", ")[2]);
         }
         public void ExecuteCommand()
         {
@@ -125,7 +125,7 @@ namespace CommandsModule
                 Result = "RESTAURANT BANKRUPT";
             }
 
-            if (Customer.Name == "NULL")
+            if (string.IsNullOrEmpty(Customer.Name))
             {
                 Result = "Customer 404";
                 return;

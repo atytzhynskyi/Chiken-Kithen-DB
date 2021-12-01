@@ -33,31 +33,7 @@ namespace AdvanceClasses
         }
         public Customer GetCustomer(string Name)
         {
-            Customer customer = new Customer("NULL");
-            bool isFound = false;
-            foreach (Customer customerSearch in Customers)
-            {
-                if (customerSearch.Name == Name)
-                {
-                    customer = customerSearch;
-                    break;
-                }
-                if (GetFullNameByNick(Name, customerSearch) == "NULL")
-                {
-                    continue;
-                }
-                else
-                {
-                    customer = customerSearch;
-                    if (isFound)
-                    {
-                        Console.WriteLine("Sorry, can't do, " + Name + " is unidentified");
-                        return new Customer("NULL");
-                    }
-                    isFound = true;
-                }
-            }
-            return customer;
+            return Customers.Find(c=>c.Name == Name);
         }
 
         public void GiveFoodFromStorage(Kitchen kitchen, Customer customer)

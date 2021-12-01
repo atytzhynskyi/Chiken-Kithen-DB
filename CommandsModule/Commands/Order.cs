@@ -83,9 +83,9 @@ namespace CommandsModule
                     Ingredients.Add(kitchen.Storage.GetIngredient(order.Key));
                     continue;
                 }
-                if (!object.Equals(kitchen.Storage.GetRecipeByName(order.Key), null))
+                if (!object.Equals(kitchen.Storage.GetRecipe(order.Key), null))
                 {
-                    Foods.Add(kitchen.Storage.GetRecipeByName(order.Key));
+                    Foods.Add(kitchen.Storage.GetRecipe(order.Key));
                     continue;
                 }
                 Result = "Ingredient or Food not found";

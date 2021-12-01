@@ -117,7 +117,7 @@ namespace AdvanceClasses
             return IngredientsAmount.Values.Sum() + FoodAmount.Values.Sum();
         }
 
-        public Food GetRecipeByName(string Name)
+        public Food GetRecipe(string Name)
         {
             return Recipes.Find(r => r.Name == Name);
         }

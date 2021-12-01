@@ -23,7 +23,7 @@ namespace CommandsModule
             FullCommand = _FullCommand;
             CommandType = FullCommand.Split(", ")[0];
 
-            Food = kitchen.Storage.GetRecipeByName(_FullCommand.Split(", ")[1]);
+            Food = kitchen.Storage.GetRecipe(_FullCommand.Split(", ")[1]);
             int.TryParse(_FullCommand.Split(", ")[2], out Amount);
         }
         public void ExecuteCommand()

@@ -35,7 +35,7 @@ namespace CommandsModule
 
             foreach (var foodName in GetFoodsFromCommand())
             {
-                Food searchFood = kitchen.Storage.GetRecipeByName(foodName);
+                Food searchFood = kitchen.Storage.GetRecipe(foodName);
                 if (!object.Equals(searchFood, null)) _Orders.Add(searchFood);
             }
 
@@ -114,7 +114,7 @@ namespace CommandsModule
         private List<string> GetFoodsFromCommand()
         {
             List<string> commandSplit = new List<string>(FullCommand.Split(", "));
-            List<string> foodsName = commandSplit.Where(s => !object.Equals(kitchen.Storage.GetRecipeByName(s), null)).ToList();
+            List<string> foodsName = commandSplit.Where(s => !object.Equals(kitchen.Storage.GetRecipe(s), null)).ToList();
             return foodsName;
         }
         private void SetResultIfIssues()
@@ -164,7 +164,7 @@ namespace CommandsModule
             Food megaFood = new Food("");
             foreach (var foodName in foodsName)
             {
-                Food searchFood = kitchen.Storage.GetRecipeByName(foodName); //Get Food by Name
+                Food searchFood = kitchen.Storage.GetRecipe(foodName); //Get Food by Name
                 megaFood.RecipeFoods.AddRange(
                     searchFood.RecipeFoods.
                     Where(x => true)); //"Where" using to prevent linking to one list
