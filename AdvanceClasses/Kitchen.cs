@@ -90,17 +90,5 @@ namespace AdvanceClasses
 
             return true;
         }
-
-        public List<Ingredient> GetBaseIngredientRecipe(Food food)
-        {
-            List<Ingredient> fullRecipe = new List<Ingredient>();
-
-            fullRecipe.AddRange(food.RecipeIngredients);
-            
-            foreach (Food recipeFood in food.RecipeFoods)
-                fullRecipe.AddRange(GetBaseIngredientRecipe(recipeFood));
-
-            return fullRecipe;
-        }
     }
 }
