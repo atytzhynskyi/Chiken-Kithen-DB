@@ -31,7 +31,7 @@ namespace AdvanceClasses.Tests
 
 
             // When
-            storage.AddIngredient("salt", 50);
+            storage.AddIngredientAmount("salt", 50);
             Dictionary<Ingredient, int> actual = storage.IngredientsAmount;
 
 

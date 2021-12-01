@@ -37,7 +37,7 @@ namespace CommandsModule
             }
 
             SetResultIfIssues();
-            if(!object.Equals(Result, null))
+            if (!object.Equals(Result, null))
             {
                 return;
             }
@@ -51,11 +51,11 @@ namespace CommandsModule
                 }
                 else
                 {
-                    Result = "Failed to cook food";
+                    Result = $"Failed to cook food {Amount - i} times";
                     break;
                 }
             }
-            kitchen.Storage.AddFood(Food.Name, cookedAmount);
+            kitchen.Storage.AddFoodAmount(Food.Name, cookedAmount);
         }
         private void SetResultIfIssues()
         {

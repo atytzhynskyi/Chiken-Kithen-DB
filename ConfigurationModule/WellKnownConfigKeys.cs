@@ -6,7 +6,10 @@ namespace ConfigurationModule
 {
     public class WellKnownConfigKeys
     {
-        public const string AuditConfigKey = "Audit";
-        public const string BudgetConfigKey = "Budget";
+        public const string Discount = "Discount";
+        public const string CommandsAllows = "CommandsAllow";
+        public const string Tax = "TaxConfig";
+        public const string WarehouseSize = "WarehouseSize";
+        public const string Order = "OrderConfig";
     }
 }

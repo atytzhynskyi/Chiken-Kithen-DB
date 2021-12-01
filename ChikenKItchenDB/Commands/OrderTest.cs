@@ -14,6 +14,10 @@ namespace ChikenKItchenDB.CommandsModule
     {
         Ingredient salt = new Ingredient("Salt");
         List<Ingredient> ingredients;
+
+        Food saltWater = new Food("Salt water");
+        List<Food> foods;
+
         Storage storage;
         Accounting accounting = new Accounting(500, 0.5, 0, 0);
         Kitchen kitchen;
@@ -24,10 +28,11 @@ namespace ChikenKItchenDB.CommandsModule
         public void SetupContext()
         {
             accounting = new Accounting(500, 0.5, 0, 0);
+            accounting.IngredientsPrice[salt] = 10;
 
             ingredients = new List<Ingredient> { salt };
-            storage = new Storage(ingredients);
-            accounting.IngredientsPrice[salt] = 10;
+            foods = new List<Food> { saltWater };
+            storage = new Storage(foods, ingredients);
             
             kitchen = new Kitchen(storage);
         }
@@ -72,7 +77,7 @@ namespace ChikenKItchenDB.CommandsModule
         [TestMethod]
         public void OrderNotNumberCount()
         {
-            command = new Order(accounting, kitchen, "Order, Salt, 2ww", "All");
+            command = new Order(accounting, kitchen, "Order, Salt, ww", "All");
             command.IsAllowed = true;
 
             command.ExecuteCommand();
@@ -83,12 +88,12 @@ namespace ChikenKItchenDB.CommandsModule
         [TestMethod]
         public void OrderIngredientsAndFoods()
         {
-            command = new Order(accounting, kitchen, "Order, Water, 20, Salt water, 10", "All");
+            command = new Order(accounting, kitchen, "Order, Salt, 20, Salt water, 10", "All");
             command.IsAllowed = true;
 
             command.ExecuteCommand();
 
-            Assert.AreEqual(command.Result, "Ingredient or Food not found");
+            Assert.AreEqual(command.Result, "success; money used:15; tax:5");
         }
     }
 }

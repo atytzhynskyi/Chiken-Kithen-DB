@@ -6,7 +6,7 @@ using System.Text;
 using AdvanceClasses;
 using BaseClasses;
 
-namespace CommandsModule.Tests
+namespace ChikenKItchenDB.CommandsModule
 {
     [TestClass()]
     public class CookTests
@@ -29,13 +29,14 @@ namespace CommandsModule.Tests
             ingredients = new List<Ingredient> { salt, water };
             saltWater = new Food("Salt water", ingredients.ToArray());
             Recipes = new List<Food> { saltWater };
-            storage = new Storage(Recipes, ingredients, 10, 10, 25);
+            storage = new Storage(Recipes, ingredients, new Dictionary<Food, int>(), new Dictionary<Ingredient, int>(), 10, 10, 25);
 
-            accounting.IngredientsPrice[salt] = 10;
-            accounting.IngredientsPrice[water] = 10;
+            accounting.IngredientsPrice.Add(salt, 10);
+            accounting.IngredientsPrice.Add(water, 10);
 
-            storage.IngredientsAmount[salt] = 10;
-            storage.IngredientsAmount[water] = 10;
+            storage.IngredientsAmount.Add(salt, 10);
+            storage.IngredientsAmount.Add(water, 10);
+            storage.FoodAmount.Add(saltWater, 0);
 
             kitchen = new Kitchen(storage);
         }
@@ -70,8 +71,19 @@ namespace CommandsModule.Tests
 
             command.ExecuteCommand();
 
-            Assert.AreEqual("Failed to cook food", command.Result);
+            Assert.AreEqual("Failed to cook food 5 times", command.Result);
             Assert.AreEqual(10, storage.FoodAmount[saltWater], "dish count incorrect");
+        }
+        [TestMethod()]
+        public void TestCookNotExistFood()
+        {
+            command = new Cook(kitchen, "Cook, Rocksugar, 15");
+            command.IsAllowed = true;
+
+            command.ExecuteCommand();
+
+            Assert.AreEqual("Food 404", command.Result);
+            Assert.AreEqual(0, storage.FoodAmount[saltWater], "dish count incorrect");
         }
     }
 }

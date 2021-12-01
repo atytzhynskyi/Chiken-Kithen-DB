@@ -99,11 +99,6 @@ namespace CommandsModule
                 Result = "Command not allowed";
                 return;
             }
-            if(!(Ingredients.Count == 0 || Foods.Count == 0))
-            {
-                Result = "Ingredients or Foods not found";
-                return;
-            }
             if (orders.Values.Any(a => a < 0))
             {
                 Result = "Amount can't be negative";
@@ -161,7 +156,7 @@ namespace CommandsModule
 
             foreach (Ingredient ingredient in Ingredients)
             {
-                kitchen.Storage.AddIngredient(ingredient.Name, orders[ingredient.Name]);
+                kitchen.Storage.AddIngredientAmount(ingredient.Name, orders[ingredient.Name]);
             }
             Result = $"success; money used:{finalPrice}; tax:{Math.Round(finalPrice-pricesSum, 2)}";
         }
@@ -185,7 +180,7 @@ namespace CommandsModule
 
             foreach (Food food in Foods)
             {
-                kitchen.Storage.AddFood(food.Name, orders[food.Name]);
+                kitchen.Storage.AddFoodAmount(food.Name, orders[food.Name]);
             }
 
             Result = $"success; money used:{finalPrice}; tax:{Math.Round(finalPrice - pricesSum, 2)}";
