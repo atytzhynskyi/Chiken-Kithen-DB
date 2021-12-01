@@ -134,17 +134,17 @@ namespace ChickenKitchenTests
         }                                 // public bool IsEnoughIngredients(Food food)
 
         [Test]
-        public void GetIngredientsAmountIfIFoodsIsNotEnough()
+        public void GetIngredientsAmountIfIFoodsIsNotEnough()                                 // public bool IsEnoughIngredients(Food food)
         {
             // Given
-            cappuccino.RecipeFoods = new List<Food> { americano, americano, americano };
+            cappuccino.RecipeFoods = new List<Food> { americano, americano, americano, americano, americano };
 
             // When
             bool actual = kitchen.IsEnoughIngredients(cappuccino);
 
             // Then
-            Assert.IsFalse(actual, "test string");                                                        // запитати Толіка як працює метод
-        }                              // public bool IsEnoughIngredients(Food food)
+            Assert.IsFalse(actual, "test string");
+        }
 
         [Test]
         public void GetListOfIngredientsForFoodThatConsistOfIngredientsOnly()                 // public List<Ingredient> GetBaseIngredientRecipe(Food food)
@@ -201,7 +201,7 @@ namespace ChickenKitchenTests
             string[] actualIngredients = actual.Select(i => i.Name).ToArray();
             string[] expectedIngredients = expected.Select(i => i.Name).ToArray();
 
-            CollectionAssert.AreEqual(expectedIngredients, actualIngredients);
+            CollectionAssert.AreEqual(expectedIngredients, actualIngredients);               // identical ingredients do not skip
         }
 
         [Test]

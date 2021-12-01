@@ -88,7 +88,7 @@ namespace ChickenKitchenTests
         public void CheckCustomerNameIsNull()                                     // public bool isNewCustomer(string Name)
         {
             // Given
-            string name_given = "John Doe";
+            string name_given = null;
             string name_expected = null;
 
             Hall hall = new Hall();
