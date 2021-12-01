@@ -15,8 +15,6 @@ namespace AdvanceClasses
         public List<Ingredient> Ingredients { get; set; }
         public Dictionary<Ingredient, int> IngredientsAmount { get; set; } = new Dictionary<Ingredient, int>();
 
-        public Dictionary<Ingredient, int> IngredientsPrice { get; set; } = new Dictionary<Ingredient, int>();
-
         public List<Food> Recipes;
         public Dictionary<Food, int> FoodAmount { get; set; } = new Dictionary<Food, int>();
 
@@ -25,8 +23,7 @@ namespace AdvanceClasses
         private readonly int totalMax;
 
         public Storage(List<Food> _Foods, List<Ingredient> _Ingredients, Dictionary<Food, int> _FoodAmount,
-            Dictionary<Ingredient, int> _IngredientsAmount, Dictionary<Ingredient, int> _IngredientsPrice,
-            int _maxIngredientType, int _maxFoodType, int _totalMax)
+            Dictionary<Ingredient, int> _IngredientsAmount, int _maxIngredientType, int _maxFoodType, int _totalMax)
         {
             totalMax = _totalMax;
             maxIngredientType = _maxIngredientType;
@@ -34,25 +31,9 @@ namespace AdvanceClasses
 
             Ingredients = _Ingredients;
             IngredientsAmount = _IngredientsAmount;
-            IngredientsPrice = _IngredientsPrice;
             Recipes = _Foods;
             FoodAmount = _FoodAmount;
         }
-        public Storage(List<Food> _Foods, List<Ingredient> _Ingredients, 
-            Dictionary<Ingredient, int> _IngredientsAmount, Dictionary<Ingredient, int> _IngredientsPrice, 
-            int _maxIngredientType, int _maxFoodType, int _totalMax)
-        {
-            totalMax = _totalMax;
-            maxIngredientType = _maxIngredientType;
-            maxFoodType = _maxFoodType;
-
-            Ingredients = _Ingredients;
-            IngredientsAmount = _IngredientsAmount;
-            IngredientsPrice = _IngredientsPrice;
-            Recipes = _Foods;
-
-            FillDictionaryByZero<Food>(Recipes, FoodAmount);
-        }
 
         public Storage(List<Food> _Foods, List<Ingredient> _Ingredients, 
             int _maxIngredientType, int _maxFoodType, int _totalMax)
@@ -65,20 +46,7 @@ namespace AdvanceClasses
             Recipes = _Foods;
 
             FillDictionaryByZero<Food>(Recipes, FoodAmount);
-            FillDictionaryByZero<Ingredient>(Ingredients, IngredientsPrice);
             FillDictionaryByZero<Ingredient>(Ingredients, IngredientsAmount);
-        }
-
-        public Storage(List<Ingredient> _Ingredients, Dictionary<Ingredient, int> _IngredientsAmount, int _maxIngredientType, int _totalMax)
-        {
-            totalMax = _totalMax;
-            maxIngredientType = _maxIngredientType;
-            maxFoodType = int.MaxValue;
-
-            Ingredients = _Ingredients;
-            Recipes = new List<Food>();
-            IngredientsAmount = _IngredientsAmount;
-            FillDictionaryByZero<Ingredient>(Ingredients, IngredientsPrice);
         }
 
         public Storage(List<Ingredient> _Ingredients, int _maxIngredientType, int _totalMax)
@@ -89,18 +57,16 @@ namespace AdvanceClasses
 
             Ingredients = _Ingredients;
             Recipes = new List<Food>();
-            FillDictionaryByZero<Ingredient>(Ingredients, IngredientsPrice);
             FillDictionaryByZero<Ingredient>(Ingredients, IngredientsAmount);
         }
-        public Storage(List<Food> food, List<Ingredient> _Ingredients)
+        public Storage(List<Food> recipes, List<Ingredient> _Ingredients)
         {
             totalMax = int.MaxValue;
             maxIngredientType = int.MaxValue;
             maxFoodType = int.MaxValue;
 
             Ingredients = _Ingredients;
-            Recipes = food;
-            FillDictionaryByZero<Ingredient>(Ingredients, IngredientsPrice);
+            Recipes = recipes;
             FillDictionaryByZero<Ingredient>(Ingredients, IngredientsAmount);
 
             FillDictionaryByZero<Food>(Recipes, FoodAmount);
@@ -114,7 +80,6 @@ namespace AdvanceClasses
 
             Ingredients = _Ingredients;
             Recipes = new List<Food>();
-            FillDictionaryByZero<Ingredient>(Ingredients, IngredientsPrice);
             FillDictionaryByZero<Ingredient>(Ingredients, IngredientsAmount);
         }
 
@@ -231,20 +196,11 @@ namespace AdvanceClasses
         public void ShowIngredients()
         {
             Console.WriteLine("Ingredients List:");
-            foreach (Ingredient ingredient in Ingredients.ToList())
+            foreach (Ingredient ingredient in IngredientsAmount.Keys)
             {
-                try
-                {
-                    _ = IngredientsAmount[ingredient];
-                }
-                catch (System.Collections.Generic.KeyNotFoundException)
-                {
-                    continue;
-                }
                 if (IngredientsAmount[ingredient] == 0) continue;
                 Console.Write(ingredient.Name + " ");
-                Console.Write(IngredientsAmount[ingredient] + " ");
-                Console.Write(IngredientsPrice[ingredient] + "\n");
+                Console.Write(IngredientsAmount[ingredient] + "\n");
             }
         }
         public void Clear()

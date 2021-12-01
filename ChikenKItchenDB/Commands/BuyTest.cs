@@ -34,8 +34,8 @@ namespace ChikenKItchenDB.CommandsModule
             Recipes = new List<Food> { saltWater };
             storage = new Storage(Recipes, ingredients);
 
-            storage.IngredientsPrice[salt] = 10;
-            storage.IngredientsPrice[water] = 10;
+            accounting.IngredientsPrice[salt] = 10;
+            accounting.IngredientsPrice[water] = 10;
 
             storage.IngredientsAmount[salt] = 10;
             storage.IngredientsAmount[water] = 10;
@@ -60,7 +60,7 @@ namespace ChikenKItchenDB.CommandsModule
         {
             command = new Buy(accounting, hall, kitchen, "Buy, Den, Salt water");
             command.IsAllowed = true;
-            double price = Math.Round(accounting.CalculateFoodMenuPrice(Recipes, kitchen.Storage.IngredientsPrice, saltWater), 2);
+            double price = Math.Round(accounting.CalculateFoodMenuPrice(Recipes, saltWater), 2);
             double tax = Math.Round(accounting.CalculateTransactionTax(price), 2);
             string expectResult = $"{den.Name}, {den.budget}, Salt water, {price} -> success; money amount: {price - tax}; tax: {tax};";
 
@@ -90,7 +90,7 @@ namespace ChikenKItchenDB.CommandsModule
             command.IsAllowed = true;
             command.AllergicConfig = "keep";
 
-            double expectBudget = Math.Round(accounting.Budget - (accounting.CalculateFoodCostPrice(Recipes, kitchen.Storage.IngredientsPrice, saltWater)/25), 2);
+            double expectBudget = Math.Round(accounting.Budget - (accounting.CalculateFoodCostPrice(Recipes, saltWater)/25), 2);
 
             command.ExecuteCommand();
 
@@ -108,7 +108,7 @@ namespace ChikenKItchenDB.CommandsModule
             command.IsAllowed = true;
             command.AllergicConfig = "100";
 
-            double expectBudget = Math.Round(accounting.Budget - (accounting.CalculateFoodCostPrice(Recipes, kitchen.Storage.IngredientsPrice, saltWater) / 25), 2);
+            double expectBudget = Math.Round(accounting.Budget - (accounting.CalculateFoodCostPrice(Recipes, saltWater) / 25), 2);
 
             command.ExecuteCommand();
 
@@ -187,7 +187,7 @@ namespace ChikenKItchenDB.CommandsModule
             command.IsAllowed = true;
             storage.FoodAmount[saltWater] = 2;
 
-            double price = Math.Round(accounting.CalculateFoodMenuPrice(Recipes, kitchen.Storage.IngredientsPrice, saltWater), 2);
+            double price = Math.Round(accounting.CalculateFoodMenuPrice(Recipes, saltWater), 2);
             double tax = Math.Round(accounting.CalculateTransactionTax(price), 2);
             string expectResult = $"{den.Name}, {den.budget}, Salt water, {price} -> success; money amount: {price - tax}; tax: {tax};";
 

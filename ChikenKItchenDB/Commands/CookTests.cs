@@ -31,8 +31,8 @@ namespace CommandsModule.Tests
             Recipes = new List<Food> { saltWater };
             storage = new Storage(Recipes, ingredients, 10, 10, 25);
 
-            storage.IngredientsPrice[salt] = 10;
-            storage.IngredientsPrice[water] = 10;
+            accounting.IngredientsPrice[salt] = 10;
+            accounting.IngredientsPrice[water] = 10;
 
             storage.IngredientsAmount[salt] = 10;
             storage.IngredientsAmount[water] = 10;
@@ -62,7 +62,7 @@ namespace CommandsModule.Tests
             Assert.AreEqual(command.Result, "success");
             Assert.AreEqual(storage.FoodAmount[saltWater], 3, "dish count incorrect");
         }
-        /*[TestMethod()]
+        [TestMethod()]
         public void TestCookLimitWaste()
         {
             command = new Cook(kitchen, "Cook, Salt water, 15");
@@ -73,6 +73,5 @@ namespace CommandsModule.Tests
             Assert.AreEqual("Failed to cook food", command.Result);
             Assert.AreEqual(10, storage.FoodAmount[saltWater], "dish count incorrect");
         }
-        */
     }
 }

@@ -77,6 +77,14 @@ namespace ChikenKitchenDataBase
 
             SaveChanges();
         }
+
+        public Dictionary<Food, int> GetFoodsAmount()
+        {
+            Dictionary<Food, int> foodsAmount = new Dictionary<Food, int>();
+            Foods.ToList().ForEach(f=>foodsAmount.Add(f,0));
+            return foodsAmount;
+        }
+
         public void SetPropertiesIngredientsId()
         {
             foreach (IngredientProperties ingredientProperties in IngredientProperties)
@@ -174,28 +182,6 @@ namespace ChikenKitchenDataBase
                 foreach (var value in item)
                 {
                     Customers.Where(c => c.Id == item.Key).First().Allergies.AddRange(Ingredients.Where(i => i.Id == value.IngredientId));
-                }
-            }
-        }
-        public void RemoveZeroIngredientProperties()
-        {
-            foreach (IngredientProperties ingredientProperties in IngredientProperties)
-            {
-                if (ingredientProperties.IngredientId == 0)
-                {
-                    IngredientProperties.Remove(ingredientProperties);
-                }
-            }
-            SaveChanges();
-        }
-
-        public void DeleteNullIdIngredientProperties()
-        {
-            foreach (var count in IngredientProperties)
-            {
-                if (count.IngredientId == 0)
-                {
-                    IngredientProperties.Remove(count);
                 }
             }
         }

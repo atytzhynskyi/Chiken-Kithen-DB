@@ -15,6 +15,7 @@ namespace AdvanceClasses
         public readonly double dailyTax;
         public readonly double marginProfit;
         readonly double startBudget;
+        public Dictionary<Ingredient, int> IngredientsPrice { get; set; } = new Dictionary<Ingredient, int>();
 
         public Accounting(double _Budget)
         {
@@ -41,23 +42,26 @@ namespace AdvanceClasses
             dailyTax = _dailyTax;
         }
 
-        public double CalculateFoodCostPrice(List<Food> Recipes, Dictionary<Ingredient, int> ingredientsPrice, Food food)
+        public double CalculateFoodCostPrice(List<Food> Recipes, Food food)
         {
-
+            if(Recipes.Any(r=>r.Name == food.Name))
+            {
+                food = Recipes.Find(r => r.Name == food.Name);
+            }
             double price = 0;
             foreach (Food foodRecipe in food.RecipeFoods)
             {
-                price += CalculateFoodCostPrice(Recipes, ingredientsPrice, foodRecipe);
+                price += CalculateFoodCostPrice(Recipes, foodRecipe);
             }
             foreach (Ingredient ingredient in food.RecipeIngredients)
             {
-                price += ingredientsPrice[ingredientsPrice.Keys.Where(i => i.Name == ingredient.Name).First()];
+                price += IngredientsPrice[IngredientsPrice.Keys.Where(i => i.Name == ingredient.Name).First()];
             }
             return Math.Round(price,2);
         }
-        public double CalculateFoodMenuPrice(List<Food> Recipes, Dictionary<Ingredient, int> ingredientsPrice, Food food)
+        public double CalculateFoodMenuPrice(List<Food> Recipes, Food food)
         {
-            return Math.Round(CalculateFoodCostPrice(Recipes, ingredientsPrice, food) * (1 + marginProfit) * (1 + transactionTax), 2);
+            return Math.Round(CalculateFoodCostPrice(Recipes, food) * (1 + marginProfit) * (1 + transactionTax), 2);
         }
         public void PayDayTax()
         {

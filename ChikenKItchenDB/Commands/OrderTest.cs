@@ -27,15 +27,15 @@ namespace ChikenKItchenDB.CommandsModule
 
             ingredients = new List<Ingredient> { salt };
             storage = new Storage(ingredients);
-            storage.IngredientsPrice[salt] = 10;
+            accounting.IngredientsPrice[salt] = 10;
             
             kitchen = new Kitchen(storage);
         }
         [TestMethod]
-        public void TestOrderNotAllowed()
+        public void OrderNotAllowed()
         {
             _FullCommand = "Order, Salt, 10";
-            command = new Order(accounting, kitchen, _FullCommand);
+            command = new Order(accounting, kitchen, _FullCommand, "All");
 
             command.ExecuteCommand();
 
@@ -43,10 +43,10 @@ namespace ChikenKItchenDB.CommandsModule
             Assert.AreEqual(accounting.Budget, 500, "Budget reduced");
         }
         [TestMethod]
-        public void TestOrderSuccess()
+        public void OrderSuccess()
         {
             _FullCommand = "Order, Salt, 10";
-            Order order = new Order(accounting, kitchen, _FullCommand);
+            Order order = new Order(accounting, kitchen, _FullCommand, "All");
             order.SetOrderOption("All");
             command = order;
 
@@ -59,9 +59,9 @@ namespace ChikenKItchenDB.CommandsModule
             Assert.AreEqual(350, accounting.Budget, "Wrong budget reduce");
         }
         [TestMethod]
-        public void TestOrderIngredientDoesntInStorage()
+        public void OrderIngredientDoesntInStorage()
         {
-            command = new Order(accounting, kitchen, "Order, Water, 20");
+            command = new Order(accounting, kitchen, "Order, Water, 20", "All");
             command.IsAllowed = true;
 
             command.ExecuteCommand();
@@ -70,15 +70,25 @@ namespace ChikenKItchenDB.CommandsModule
         }
 
         [TestMethod]
-        public void TestOrderNotNumberCount()
+        public void OrderNotNumberCount()
         {
-            command = new Order(accounting, kitchen, "Order, Salt, 2ww");
+            command = new Order(accounting, kitchen, "Order, Salt, 2ww", "All");
             command.IsAllowed = true;
 
             command.ExecuteCommand();
 
             Assert.AreEqual(0, storage.IngredientsAmount[salt], "Ingredient amount doesnt right");
             Assert.AreEqual(500, accounting.Budget, "Wrong budget reduce");
+        }
+        [TestMethod]
+        public void OrderIngredientsAndFoods()
+        {
+            command = new Order(accounting, kitchen, "Order, Water, 20, Salt water, 10", "All");
+            command.IsAllowed = true;
+
+            command.ExecuteCommand();
+
+            Assert.AreEqual(command.Result, "Ingredient or Food not found");
         }
     }
 }

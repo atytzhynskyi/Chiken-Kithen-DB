@@ -92,9 +92,9 @@ namespace AdvanceClasses
             return "NULL";
         }
 
-        public void GetPaid(Accounting accounting, Dictionary<Ingredient, int> ingredientPrice, List<Food> Recipes, Customer customer)
+        public void GetPaid(Accounting accounting, List<Food> Recipes, Customer customer)
         {
-            double price = accounting.CalculateFoodMenuPrice(Recipes, ingredientPrice, customer.Order);
+            double price = accounting.CalculateFoodMenuPrice(Recipes, customer.Order);
 
             if (IsDiscountAppliable(customer))
             {
@@ -106,7 +106,7 @@ namespace AdvanceClasses
 
         public double GetDiscount()
         {
-            return (float)JsonRead.ReadFromJson<int>(@"..\..\..\Configs\discount.json").Values.First()/100;
+            return (float)JsonRead.ReadFromJson<int>(@"..\..\..\Configs\Discount.json").Values.First()/100;
         }
 
         public bool IsDiscountAppliable(Customer customer)

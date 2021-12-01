@@ -149,7 +149,7 @@ namespace CommandsModule
             }
 
             if (_Customers.Any(c => c.budget < accounting.CalculateFoodMenuPrice(
-                                                         kitchen.Storage.Recipes, kitchen.Storage.IngredientsPrice, c.Order)))
+                                                         kitchen.Storage.Recipes, c.Order)))
             {
                 Result = "FAIL. One or more persons dont have enough money";
                 return;

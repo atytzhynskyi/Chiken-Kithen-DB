@@ -16,15 +16,14 @@ namespace BaseClasses.Tests
         {
             Ingredient water = new Ingredient("Water");
             Ingredient salt = new Ingredient("Salt");
-            Dictionary<Ingredient, int> dict = new Dictionary<Ingredient, int> { };
-            dict.Add(water, 10);
-            dict.Add(salt, 10);
-            Storage storage = new Storage(new List<Ingredient> { water, salt}, dict, 20, 20);
+
             Customer customer = new Customer("SugarMan", water);
+
             Food ice = new Food("Ice", water);
             Food saltWater = new Food("Salt water", salt, water);
             Food saltwaterIce = new Food("Salt water ice", new List<Food>{ saltWater, ice}.ToArray());
             Food saltRock = new Food("Salt rock", salt);
+
             List<Food> recipeBook = new List<Food> { ice, saltWater, saltwaterIce, saltRock };
 
             Assert.IsTrue(customer.isAllergic(recipeBook, saltwaterIce).Item1);

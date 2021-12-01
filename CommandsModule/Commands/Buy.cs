@@ -46,7 +46,7 @@ namespace CommandsModule
             GiveCustomersOrder();
 
             double price = Math.Round(accounting.CalculateFoodMenuPrice(
-                                                   kitchen.Storage.Recipes, kitchen.Storage.IngredientsPrice, Customer.Order), 2);
+                                                   kitchen.Storage.Recipes, Customer.Order), 2);
             if (hall.IsDiscountAppliable(Customer))
             {
                 price = Math.Round(price * hall.GetDiscount(), 2);
@@ -58,7 +58,7 @@ namespace CommandsModule
                 ExecuteAllergicBuy(price);
                 return;
             }
-            hall.GetPaid(accounting, kitchen.Storage.IngredientsPrice, kitchen.Storage.Recipes, Customer);
+            hall.GetPaid(accounting, kitchen.Storage.Recipes, Customer);
             Result = $"{Customer.Name}, {Customer.budget + price}, {Customer.Order.Name}, {price} -> success; money amount: {price - tax}; tax: {tax};";
         }
 
@@ -95,7 +95,7 @@ namespace CommandsModule
         private void KeepAlergicOrder()
         {
             kitchen.Storage.FoodAmount[Food]++;
-            double costPrice = accounting.CalculateFoodCostPrice(kitchen.Storage.Recipes, kitchen.Storage.IngredientsPrice, Food);
+            double costPrice = accounting.CalculateFoodCostPrice(kitchen.Storage.Recipes, Food);
             accounting.UseMoneyWithoutTax(costPrice / 25);
         }
 
@@ -136,14 +136,14 @@ namespace CommandsModule
                 return;
             }
             if (Customer.budget < accounting.CalculateFoodMenuPrice(
-                                                kitchen.Storage.Recipes, kitchen.Storage.IngredientsPrice, Food))
+                                                kitchen.Storage.Recipes, Food))
             {
                 Result = "Can't order: customer dont have enough money";
                 return;
             }
 
             if (Customer.budget < accounting.CalculateFoodMenuPrice(
-                                                kitchen.Storage.Recipes, kitchen.Storage.IngredientsPrice, Food))
+                                                kitchen.Storage.Recipes, Food))
             {
                 Result = "Can't order: customer dont have enough money";
                 return;

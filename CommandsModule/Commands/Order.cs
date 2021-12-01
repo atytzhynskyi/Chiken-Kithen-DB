@@ -33,12 +33,12 @@ namespace CommandsModule
 
         private Accounting accounting { get; set; }
         private Kitchen kitchen { get; set; }
-        public Order(Accounting Accounting, Kitchen Kitchen, string _FullCommand)
+        public Order(Accounting Accounting, Kitchen Kitchen, string _FullCommand, string _orderOption)
         {
             FullCommand = _FullCommand;
             CommandType = FullCommand.Split(", ")[0];
             IsAllowed = false;
-
+            orderOption = _orderOption;
             kitchen = Kitchen;
             accounting = Accounting;
 
@@ -125,10 +125,9 @@ namespace CommandsModule
 
             double pricesSum = 0;
             Foods.ForEach(f => pricesSum += orders[f.Name] * accounting.CalculateFoodMenuPrice(
-                                                                       kitchen.Storage.Recipes,
-                                                                       kitchen.Storage.IngredientsPrice, f));
+                                                                       kitchen.Storage.Recipes, f));
 
-            Ingredients.ForEach(i => pricesSum += kitchen.Storage.IngredientsPrice[i]);
+            Ingredients.ForEach(i => pricesSum += accounting.IngredientsPrice[i]);
 
             double finalPrice = pricesSum + accounting.CalculateTransactionTax(pricesSum);
 
@@ -148,7 +147,7 @@ namespace CommandsModule
         private void OrderIngredients()
         {
             double pricesSum = 0;
-            Ingredients.ForEach(i => pricesSum += kitchen.Storage.IngredientsPrice[i]*orders[i.Name]);
+            Ingredients.ForEach(i => pricesSum += accounting.IngredientsPrice[i]*orders[i.Name]);
 
             double finalPrice = pricesSum + accounting.CalculateTransactionTax(pricesSum);
 
@@ -171,10 +170,11 @@ namespace CommandsModule
         {
             double pricesSum = 0;
             Foods.ForEach(f=>pricesSum += accounting.CalculateFoodMenuPrice(
-                                                                       kitchen.Storage.Recipes, 
-                                                                       kitchen.Storage.IngredientsPrice, f));
+                                                                       kitchen.Storage.Recipes, f));
+
             double finalPrice = pricesSum + accounting.CalculateTransactionTax(pricesSum);
             
+
             if(finalPrice > accounting.Budget)
             {
                 Result = "Not enough money";

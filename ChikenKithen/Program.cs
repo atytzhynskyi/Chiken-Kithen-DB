@@ -30,8 +30,8 @@ namespace ChikenKithen
                 var WarehouseSize = JsonRead.ReadFromJson<int>(@"..\..\..\Configs\WarehouseSize.json");
                 Storage storage = new Storage(applicationContext.GetFoods(),
                                               applicationContext.Ingredients.ToList(),
+                                              applicationContext.GetFoodsAmount(),
                                               applicationContext.GetIngredientsAmount(),
-                                              applicationContext.GetIngredientsPrice(),
                                               WarehouseSize.Where(k => k.Key == "max ingredient type").First().Value,
                                               WarehouseSize.Where(k => k.Key == "max dish type").First().Value,
                                               WarehouseSize.Where(k => k.Key == "total maximum").First().Value);
@@ -43,19 +43,25 @@ namespace ChikenKithen
                 while (2 + 2 != 5)
                 {
                     Console.WriteLine("Restaurant budget: {0}", accounting.Budget);
-                    Warehouse(kitchen);
+                    ShowWarehouse(kitchen);
+
                     string input = Console.ReadLine();
+
                     ICommand command = CommandBuilder.Build(accounting, hall, kitchen, input, recordsBase);
                     command.IsAllowed = true;
+
                     command.ExecuteCommand();
+
                     Console.WriteLine($"{command.FullCommand} -> {command.Result}");
-                    applicationContext.SaveAll(storage.Ingredients, storage.IngredientsAmount, storage.IngredientsPrice, kitchen.Storage.Recipes, hall.Customers, accounting.Budget);
+
+
+                    applicationContext.SaveAll(storage.Ingredients, storage.IngredientsAmount, accounting.IngredientsPrice, kitchen.Storage.Recipes, hall.Customers, accounting.Budget);
                     recordsBase.AddRecordIfSomeChange(command,kitchen, accounting);
                 }
                 //*/
             }
         }
-        static void Warehouse(Kitchen kitchen)
+        static void ShowWarehouse(Kitchen kitchen)
         {
             foreach(var ingredient in kitchen.Storage.IngredientsAmount.Where(i => i.Value != 0))
             {
