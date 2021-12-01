@@ -82,7 +82,7 @@ namespace ChickenKitchenTests
         }
         
         [Test]
-        public void GetIngredientsAmountIfIngredientsIsEnough()
+        public void GetIngredientsAmountIfIngredientsIsEnough()                                // public bool IsEnoughIngredients(Food food)
         {
             // Given
             cappuccino.RecipeIngredients = cappuccinoIngredients;
@@ -95,7 +95,7 @@ namespace ChickenKitchenTests
         }
 
         [Test]
-        public void GetIngredientsAmountIsEqualToStorageIngredients()
+        public void GetIngredientsAmountIsEqualToStorageIngredients()                         // public bool IsEnoughIngredients(Food food)
         {
             // Given
             cappuccino.RecipeIngredients = new List<Ingredient> { coffee, milk, milk, sugar };
@@ -118,7 +118,7 @@ namespace ChickenKitchenTests
 
             // Then
             Assert.IsFalse(actual);
-        }
+        }                         // public bool IsEnoughIngredients(Food food)
 
         [Test]
         public void GetIngredientsAmountIfIFoodsIsEnough()
@@ -131,7 +131,7 @@ namespace ChickenKitchenTests
 
             // Then
             Assert.IsTrue(actual);
-        }
+        }                                 // public bool IsEnoughIngredients(Food food)
 
         [Test]
         public void GetIngredientsAmountIfIFoodsIsNotEnough()
@@ -144,133 +144,10 @@ namespace ChickenKitchenTests
 
             // Then
             Assert.IsFalse(actual, "test string");                                                        // запитати Толіка як працює метод
-        }
-
-
-        /*
-        [Test]
-        public void TestIsEnoughIngredients()
-        {
-            // Given
-            Ingredient coffee = new Ingredient("coffee");
-            Ingredient milk = new Ingredient("milk");
-            Ingredient water = new Ingredient("water");
-            Ingredient sugar = new Ingredient("sugar");
-
-            List<Ingredient> ingredientsList = new List<Ingredient> { coffee, milk, water, sugar };
-
-            Dictionary<Ingredient, int> ingredientsAmount = new Dictionary<Ingredient, int>
-            {
-                { coffee, 20 },
-                { milk, 10 },
-                { water, 20 },
-                { sugar, 30 }
-            };
-
-            Dictionary<Ingredient, int> ingredientsPrice = new Dictionary<Ingredient, int>
-            {
-                { coffee, 20 },
-                { milk, 10 },
-                { water, 5 },
-                { sugar, 8 }
-            };
-
-            Ingredient[] americanoIngredients = new Ingredient[] { coffee, water };
-            Food americano = new Food("americano", americanoIngredients);
-
-            List<Ingredient> cappuccinoIngredients = new List<Ingredient> { coffee, milk, sugar };
-            List<Food> cappuccinoFoods = new List<Food> { americano };
-
-            Food cappuccino = new Food("cappuccino", cappuccinoIngredients, cappuccinoFoods);
-
-            List<Food> foodsList = new List<Food> { cappuccino, americano };
-
-            Dictionary<Food, int> foodsAmount = new Dictionary<Food, int>
-            {
-                { cappuccino, 5 },
-                { americano, 3 }
-            };
-
-            int maxIngredentType = 10;
-            int maxFoodType = 5;
-            int totalMax = 20;
-
-            Storage storage = new Storage(foodsList, ingredientsList, foodsAmount, ingredientsAmount, ingredientsPrice, maxIngredentType, maxFoodType, totalMax);
-
-            Kitchen kitchen = new Kitchen(storage);
-
-            // When
-
-            bool actual = kitchen.IsEnoughIngredients(cappuccino);
-
-            // Then
-
-            Assert.IsTrue(actual);
-        }
-        
-        [Test]
-        public void TestIsEnoughFoods()
-        {
-            // Given
-            Ingredient coffee = new Ingredient("coffee");
-            Ingredient milk = new Ingredient("milk");
-            Ingredient water = new Ingredient("water");
-            Ingredient sugar = new Ingredient("sugar");
-
-            List<Ingredient> ingredientsList = new List<Ingredient> { coffee, milk, water, sugar };
-
-            Dictionary<Ingredient, int> ingredientsAmount = new Dictionary<Ingredient, int>
-            {
-                { coffee, 2 },
-                { milk, 10 },
-                { water, 20 },
-                { sugar, 30 }
-            };
-
-            Dictionary<Ingredient, int> ingredientsPrice = new Dictionary<Ingredient, int>
-            {
-                { coffee, 2 },
-                { milk, 10 },
-                { water, 5 },
-                { sugar, 8 }
-            };
-
-            Ingredient[] americanoIngredients = new Ingredient[] { coffee, water };
-            Food americano = new Food("americano", americanoIngredients);
-
-            List<Ingredient> cappuccinoIngredients = new List<Ingredient> { coffee, coffee, coffee, milk, sugar };
-            List<Food> cappuccinoFoods = new List<Food> { americano };
-
-            Food cappuccino = new Food("cappuccino", cappuccinoIngredients, cappuccinoFoods);
-
-            List<Food> foodsList = new List<Food> { cappuccino, americano };
-
-            Dictionary<Food, int> foodsAmount = new Dictionary<Food, int>
-            {
-                { cappuccino, 5 },
-                { americano, 3 }
-            };
-
-            int maxIngredentType = 10;
-            int maxFoodType = 5;
-            int totalMax = 20;
-
-            Storage storage = new Storage(foodsList, ingredientsList, foodsAmount, ingredientsAmount, ingredientsPrice, maxIngredentType, maxFoodType, totalMax);
-
-            Kitchen kitchen = new Kitchen(storage);
-
-            // When
-
-            bool actual = kitchen.IsEnoughIngredients(cappuccino);
-
-            // Then
-
-            Assert.IsTrue(actual);
-        }
-        */
+        }                              // public bool IsEnoughIngredients(Food food)
 
         [Test]
-        public void GetListOfIngredientsForFoodThatConsistOfIngredientsOnly()               // public List<Ingredient> GetBaseIngredientRecipe(Food food)
+        public void GetListOfIngredientsForFoodThatConsistOfIngredientsOnly()                 // public List<Ingredient> GetBaseIngredientRecipe(Food food)
         {
             // Given
             cappuccino.RecipeIngredients = cappuccinoIngredients;
@@ -289,7 +166,7 @@ namespace ChickenKitchenTests
         }
 
         [Test]
-        public void GetListOfIngredientsForFoodThatConsistOfFoodsOnly()                     // public List<Ingredient> GetBaseIngredientRecipe(Food food)
+        public void GetListOfIngredientsForFoodThatConsistOfFoodsOnly()                       // public List<Ingredient> GetBaseIngredientRecipe(Food food)
         {
             // Given
             cappuccino.RecipeFoods = cappuccinoFoods;

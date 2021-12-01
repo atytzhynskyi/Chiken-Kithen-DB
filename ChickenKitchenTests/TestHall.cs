@@ -14,7 +14,6 @@ namespace ChickenKitchenTests
 {
     class TestHall
     {
-        /*
         List<Customer> customers;
         List<Food> menu;
 
@@ -30,10 +29,9 @@ namespace ChickenKitchenTests
 
             Hall hall = new Hall(customers, menu);
         }
-        */
 
         [Test]
-        public void IsCustomerNewTest()                                            // public bool isNewCustomer(string Name)
+        public void CheckNewCustomer()                                            // public bool isNewCustomer(string Name)
         {
             // Given
             string name_given = "John Doe";
@@ -51,7 +49,7 @@ namespace ChickenKitchenTests
         }
 
         [Test]
-        public void IsCustomerExistingTest()                                       // public bool isNewCustomer(string Name)
+        public void CheckExistingCustomer()                                       // public bool isNewCustomer(string Name)
         {
             // Given
             string name_given = "John Doe";
@@ -69,7 +67,7 @@ namespace ChickenKitchenTests
         }
 
         [Test]
-        public void IsEmptyStringTest()                                            // public bool isNewCustomer(string Name)
+        public void CheckCustomerNamrIsEmptyString()                              // public bool isNewCustomer(string Name)
         {
             // Given
             string name_given = "John Doe";
@@ -87,7 +85,7 @@ namespace ChickenKitchenTests
         }
 
         [Test]
-        public void IsNullTest()                                                  // public bool isNewCustomer(string Name)
+        public void CheckCustomerNameIsNull()                                     // public bool isNewCustomer(string Name)
         {
             // Given
             string name_given = "John Doe";
@@ -105,7 +103,7 @@ namespace ChickenKitchenTests
         }
 
         [Test]
-        public void AddNewCustomerTest()                                // public void AddNewCustomer(Customer customer)
+        public void AddNewCustomer()                                              // public void AddNewCustomer(Customer customer)
         {
             // Given
             Hall hall = new Hall();
@@ -127,7 +125,29 @@ namespace ChickenKitchenTests
         }
 
         [Test]
-        public void AddNewCustomerNullTest()                                // public void AddNewCustomer(Customer customer)
+        public void AddExistingCustomer()                                         // public void AddNewCustomer(Customer customer)
+        {
+            // Given
+            Hall hall = new Hall();
+            hall.Customers = new List<Customer> { new Customer("John Doe") };
+
+            Customer JaneDoe = new Customer("John Doe");
+
+            // When
+            hall.AddNewCustomer(JaneDoe);
+            var actual = hall.Customers;
+
+            // Expected
+            List<Customer> expected = new List<Customer> { new Customer("John Doe"), new Customer("John Doe") };
+            string[] actualCustomers = actual.Select(i => i.Name).ToArray();
+            string[] expectedCustomers = expected.Select(i => i.Name).ToArray();
+
+            // Then
+            CollectionAssert.AreEqual(actualCustomers, expectedCustomers);
+        }
+
+        [Test]
+        public void AddNewCustomerNull()                                          // public void AddNewCustomer(Customer customer)
         {
             // Given
             Hall hall = new Hall();
@@ -149,7 +169,7 @@ namespace ChickenKitchenTests
         }
 
         [Test]
-        public void GetExistingCustomerTest()                               // public Customer GetCustomer(string Name)
+        public void GetExistingCustomer()                                         // public Customer GetCustomer(string Name)
         {
             // Given
             Hall hall = new Hall();
@@ -166,7 +186,7 @@ namespace ChickenKitchenTests
         }
 
         [Test]
-        public void GetNonExistingCustomerTest()                            // public Customer GetCustomer(string Name)
+        public void GetNonExistingCustomer()                                      // public Customer GetCustomer(string Name)
         {
             // Given
             Hall hall = new Hall();
@@ -183,7 +203,7 @@ namespace ChickenKitchenTests
         }
 
         [Test]
-        public void GetExistingCustomerByNickNameTest()                 // public Customer GetCustomer(string Name)
+        public void GetExistingCustomerByNickName()                               // public Customer GetCustomer(string Name)
         {
             // Given
             Hall hall = new Hall();
@@ -199,9 +219,8 @@ namespace ChickenKitchenTests
             Assert.AreEqual(expected.Name, actual.Name);
         }
 
-
         [Test]
-        public void GiveFoodFromStorageTest()                            // public void GiveFoodFromStorage(Kitchen kitchen, Customer customer)
+        public void GiveExistingFoodFromStorage()                                 // public void GiveFoodFromStorage(Kitchen kitchen, Customer customer)
         {
             // Given
             Hall hall = new Hall();
@@ -230,10 +249,8 @@ namespace ChickenKitchenTests
             Assert.AreEqual(1, actual);
         }
 
-
-
         [Test]
-        public void GetPaidTest()
+        public void GetPaidFoodThatConsistOfIngredientsOnly()                     // public void GetPaid(Accounting accounting, Dictionary<Ingredient, int> ingredientPrice, List<Food> Recipes, Customer customer)
         {
             // Given
             Hall hall = new Hall();
@@ -261,7 +278,7 @@ namespace ChickenKitchenTests
         }
 
         [Test]
-        public void GetPaidTest1()
+        public void GetPaidFoodThatConsistOfFoodsAndIngredients()
         {
             // Given
             Hall hall = new Hall();
@@ -292,41 +309,6 @@ namespace ChickenKitchenTests
             // Then
             Assert.AreEqual(36, customer.budget);
             //Assert.AreEqual(114, accounting.Budget);
-
-        }
-
-        [Test]
-        public void GetPaidTest2()
-        {
-            // Given
-            Hall hall = new Hall();
-
-            Ingredient coffee = new Ingredient("coffee");
-            Ingredient water = new Ingredient("water");
-            Ingredient milk = new Ingredient("milk");
-            Ingredient sugar = new Ingredient("sugar");
-            Dictionary<Ingredient, int> ingredientsPrice = new Dictionary<Ingredient, int> { { coffee, 5 }, { water, 2 }, { milk, 4 }, { sugar, 3 } };
-
-            Food americano = new Food("americano", new Ingredient[] { coffee, water });
-            Food cappuccino = new Food("cappuccino");
-            cappuccino.RecipeIngredients = new List<Ingredient> { milk, sugar };
-            cappuccino.RecipeFoods = new List<Food> { americano };
-
-            List<Food> recipes = new List<Food> { cappuccino, americano };
-
-            Accounting accounting = new Accounting(100);
-
-            Customer customer = new Customer("John Doe");
-            customer.Order = cappuccino;
-            customer.VisitsCount = 1;
-            customer.budget = 10;
-
-            // When
-            hall.GetPaid(accounting, ingredientsPrice, recipes, customer);
-            double actual = customer.budget;
-
-            // Then
-            Assert.AreEqual(36, actual);
-        }
+        }             // public void GetPaid(Accounting accounting, Dictionary<Ingredient, int> ingredientPrice, List<Food> Recipes, Customer customer)
     }
 }

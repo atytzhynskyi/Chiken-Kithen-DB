@@ -75,7 +75,7 @@ namespace ChickenKitchenTests
         }
 
         [Test]
-        public void CheckFoodCostPriceForFoodIsNull()             // public double CalculateFoodCostPrice(List<Food> Recipes, Dictionary<Ingredient, int> ingredientsPrice, Food food)
+        public void CheckFoodCostPriceForFoodIsNull()              // public double CalculateFoodCostPrice(List<Food> Recipes, Dictionary<Ingredient, int> ingredientsPrice, Food food)
         {
             // Given
             Accounting accounting = new Accounting(budget, tax, profit);
@@ -88,7 +88,7 @@ namespace ChickenKitchenTests
         }
 
         [Test]
-        public void CheckFoodPriceInMenu()                        // public double CalculateFoodMenuPrice(List<Food> Recipes, Dictionary<Ingredient, int> ingredientsPrice, Food food)
+        public void CheckFoodPriceInMenu()                         // public double CalculateFoodMenuPrice(List<Food> Recipes, Dictionary<Ingredient, int> ingredientsPrice, Food food)
         {
             // Given
             Accounting accounting = new Accounting(budget, tax, profit);
@@ -101,7 +101,7 @@ namespace ChickenKitchenTests
         }
 
         [Test]
-        public void CheckFoodPriceInMenuForFoodIsNull()             // public double CalculateFoodMenuPrice(List<Food> Recipes, Dictionary<Ingredient, int> ingredientsPrice, Food food)
+        public void CheckFoodPriceInMenuForFoodIsNull()            // public double CalculateFoodMenuPrice(List<Food> Recipes, Dictionary<Ingredient, int> ingredientsPrice, Food food)
         {
             // Given
             Accounting accounting = new Accounting(budget, tax, profit);
@@ -114,7 +114,7 @@ namespace ChickenKitchenTests
         }
 
         [Test]
-        public void CalculateDailyTaxTest()                         // public double CalculateDailyTax()
+        public void CalculateDailyTaxTest()                        // public double CalculateDailyTax()
         {
             // Given
             Accounting accounting = new Accounting(budget, tax, profit);
@@ -129,7 +129,7 @@ namespace ChickenKitchenTests
         }
 
         [Test]
-        public void UseMoneyTest()
+        public void CheckUseMoney()
         {
             // Given
             Accounting accounting = new Accounting(budget, tax, profit);
@@ -140,36 +140,10 @@ namespace ChickenKitchenTests
             // Then
             Assert.AreEqual(45, accounting.Budget);
             Assert.AreEqual(5, accounting.CollectedTax);
-        }
+        }                             // public void UseMoney(double amount)
 
         [Test]
-        public void UseMoneyTest2()
-        {
-            // Given
-            Accounting accounting = new Accounting(budget, tax, profit);
-
-            // When
-            accounting.UseMoney(150);
-
-            // Then
-            Assert.AreEqual(0, accounting.Budget);
-        }
-
-        [Test]
-        public void UseMoneyTest3()
-        {
-            // Given
-            Accounting accounting = new Accounting(budget, tax, profit);
-
-            // When
-            accounting.UseMoney(100);
-
-            // Then
-            Assert.AreEqual(0, accounting.Budget);
-        }
-
-        [Test]
-        public void AddMoneyTest()
+        public void CheckAddMoney()
         {
             // Given
             Accounting accounting = new Accounting(budget, tax, profit);
@@ -180,10 +154,10 @@ namespace ChickenKitchenTests
             // Then
             Assert.AreEqual(145, accounting.Budget);
             // Assert.AreEqual(10, accounting.CollectedTax);
-        }
+        }                             // public void AddMoney(double amount)
 
         [Test]
-        public void AddMoneyWithoutTaxTest()
+        public void CheckAddMoneyWithoutTax()
         {
             // Given
             Accounting accounting = new Accounting(budget, tax, profit);
@@ -193,10 +167,10 @@ namespace ChickenKitchenTests
 
             // Then
             Assert.AreEqual(150, accounting.Budget);
-        }
+        }                   // public void AddMoneyWithoutTax(double amount)
 
         [Test]
-        public void UseMoneyWithoutTaxTest()
+        public void CheckUseMoneyWithoutTax()
         {
             // Given
             Accounting accounting = new Accounting(budget, tax, profit);
@@ -206,10 +180,10 @@ namespace ChickenKitchenTests
 
             // Then
             Assert.AreEqual(50, accounting.Budget);
-        }
+        }                   // public void UseMoneyWithoutTax(double amount)
 
         [Test]
-        public void SetMoneyTest()
+        public void CheckSetMoney()
         {
             // Given
             Accounting accounting = new Accounting(budget, tax, profit);
@@ -219,10 +193,10 @@ namespace ChickenKitchenTests
 
             // Then
             Assert.AreEqual(10, accounting.Budget);
-        }
+        }                             // public void SetMoney(double amount)
 
         [Test]
-        public void CalculateTransactionTaxTest()
+        public void CheckCalculateTransactionTax()
         {
             // Given
             Accounting accounting = new Accounting(budget, tax, profit);
@@ -231,7 +205,7 @@ namespace ChickenKitchenTests
             accounting.CalculateTransactionTax(10);
 
             // Then
-            Assert.AreEqual(0.1, accounting.transactionTax);         
-        }
+            Assert.AreEqual(0.1, accounting.transactionTax);
+        }              // public double CalculateTransactionTax(double amount)
     }
 }

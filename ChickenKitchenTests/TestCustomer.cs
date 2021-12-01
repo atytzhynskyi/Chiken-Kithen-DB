@@ -41,7 +41,7 @@ namespace ChickenKitchenTests
         public void CheckAllergyForUsedIngredient()
         {
             // Given
-            string name = "John Doe";
+            string name = "Jane Doe";
             Ingredient[] allergies = { new Ingredient("tomato") };
 
             Customer customer = new Customer(name, allergies);
@@ -58,7 +58,7 @@ namespace ChickenKitchenTests
         public void CheckAllergyForUsedIngredientFromFoods()
         {
             // Given
-            string name = "John Doe";
+            string name = "Jane Doe";
             Ingredient[] allergies = { new Ingredient("flour") };
 
             Customer customer = new Customer(name, allergies);
@@ -75,7 +75,7 @@ namespace ChickenKitchenTests
         public void CheckAllergyForNonUsedIngredient()
         {
             // Given
-            string name = "John Doe";
+            string name = "Jane Doe";
             Ingredient[] allergies = { new Ingredient("tuna") };
 
             Customer customer = new Customer(name, allergies);
@@ -92,7 +92,7 @@ namespace ChickenKitchenTests
         public void CheckAllergyForFoodIsEqualToNull()
         {
             // Given
-            string name = "John Doe";
+            string name = "Jane Doe";
             Ingredient[] allergies = { new Ingredient("tuna") };
 
             Customer customer = new Customer(name, allergies);

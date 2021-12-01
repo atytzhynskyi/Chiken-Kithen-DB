@@ -577,7 +577,7 @@ namespace ChickenKitchenTests
             };
 
             // When
-            Ingredient newIngredient = new Ingredient("milk");
+            Ingredient newIngredient = new Ingredient("tuna");
             int newAmount = 15;
 
             storage.AddNewIngredient(newIngredient, newAmount);
