@@ -25,7 +25,8 @@ namespace ChikenKithen
                 Accounting accounting = new Accounting(applicationContext.GetBudget(),
                                                         TaxConfigs.Where(k => k.Key == "transaction tax").First().Value,
                                                         TaxConfigs.Where(k => k.Key == "profit margin").First().Value,
-                                                        TaxConfigs.Where(k => k.Key == "daily tax").First().Value);
+                                                        TaxConfigs.Where(k => k.Key == "daily tax").First().Value,
+                                                        applicationContext.GetIngredientsPrice());
 
                 var WarehouseSize = JsonRead.ReadFromJson<int>(@"..\..\..\Configs\WarehouseSize.json");
                 Storage storage = new Storage(applicationContext.GetFoods(),

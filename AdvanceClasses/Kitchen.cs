@@ -10,13 +10,11 @@ namespace AdvanceClasses
     {
         public Storage Storage;
 
-
-        public Kitchen() { }
-
-        public Kitchen(Storage _Storage)
+        public Kitchen(Storage storage)
         {
-            Storage = _Storage;
+            this.Storage = storage;
         }
+
         public bool Cook(Food order)
         {
             if (!IsEnoughIngredients(order))
@@ -24,11 +22,13 @@ namespace AdvanceClasses
                 return false;
             }
 
+            //if recipe doesnt exist in recipes return false
             if(!Storage.Recipes.Any(r=>r.Name == order.Name))
             {
                 return false;
             }
 
+            //set order from recipes because orders recipe can be empty
             order = Storage.Recipes.Where(r => r.Name == order.Name).First();
             
             foreach (var ingredient in from Ingredient ingredient in Storage.Ingredients
@@ -39,12 +39,17 @@ namespace AdvanceClasses
                 Storage.IngredientsAmount[ingredient]--;
             }
 
-            foreach (var food in from Food food in Storage.Recipes
-                                 from Food RecipeFood in order.RecipeFoods
-                                 where food.Name == RecipeFood.Name
-                                 select food)
+            foreach(var recipeFood in order.RecipeFoods)
             {
-                Cook(food);
+                if (Storage.FoodAmount[recipeFood] > 0)
+                {
+                    Storage.FoodAmount[recipeFood]--;
+                    continue;
+                }
+
+                if (Cook(recipeFood)) continue;
+                else
+                    return false;
             }
 
             return true;
@@ -61,7 +66,7 @@ namespace AdvanceClasses
                 food = Storage.Recipes.Find(f => f.Name == food.Name);
             }
 
-            //group ingredient becouse recipe can contain several ingredients of one type
+            //group ingredient because recipe can contain several ingredients of one type
             var groupIngredients = food.RecipeIngredients.GroupBy(x => x);
             foreach (var item in groupIngredients){
                 if (Storage.IngredientsAmount[item.Key] < item.Count()){

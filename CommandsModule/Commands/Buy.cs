@@ -49,7 +49,7 @@ namespace CommandsModule
                                                    kitchen.Storage.Recipes, Customer.Order), 2);
             if (hall.IsDiscountAppliable(Customer))
             {
-                price = Math.Round(price * hall.GetDiscount(), 2);
+                price = Math.Round(price * hall.GetDiscountValueFromFile(), 2);
             }
             double tax = accounting.CalculateTransactionTax(price);
 
@@ -125,7 +125,7 @@ namespace CommandsModule
                 Result = "RESTAURANT BANKRUPT";
             }
 
-            if (string.IsNullOrEmpty(Customer.Name))
+            if (object.Equals(Customer, null))
             {
                 Result = "Customer 404";
                 return;

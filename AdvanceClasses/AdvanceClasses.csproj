@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BaseClasses\BaseClasses.csproj" />
+    <ProjectReference Include="..\ConfigurationModule\ConfigurationModule.csproj" />
     <ProjectReference Include="..\jsonReadModule\jsonReadModule.csproj" />
   </ItemGroup>
 

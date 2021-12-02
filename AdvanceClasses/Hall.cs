@@ -9,10 +9,11 @@ namespace AdvanceClasses
 {
     public class Hall
     {
+        const string DISCOUNT_CONFIG_FILE_PATH = @"..\..\..\Configs\Discount.json";
+
         public List<Customer> Customers { get; set; }
 
         public List<Food> Menu = new List<Food>();
-        public Hall() { }
 
         public Hall(List<Customer> customers, List<Food> _Menu)
         {
@@ -20,17 +21,6 @@ namespace AdvanceClasses
             Menu = _Menu;
         }
 
-        public bool isNewCustomer(string Name)
-        {
-            if(Customers.Any(c => c.Name == Name))
-                return false;
-            else
-                return true;
-        }
-        public void AddNewCustomer(Customer customer)
-        {
-            Customers.Add(customer);
-        }
         public Customer GetCustomer(string Name)
         {
             return Customers.Find(c=>c.Name == Name);
@@ -59,30 +49,30 @@ namespace AdvanceClasses
             //method to give just cooked food. Dont need implementation yet.
         }
 
-        private string GetFullNameByNick(string nickName, Customer customer)
-        {
-            if (customer.Name.Contains(nickName))
-            {
-                return customer.Name;
-            }
-            return "NULL";
-        }
-
         public void GetPaid(Accounting accounting, List<Food> Recipes, Customer customer)
         {
             double price = accounting.CalculateFoodMenuPrice(Recipes, customer.Order);
 
             if (IsDiscountAppliable(customer))
             {
-                price -=  GetDiscount() * price;
+                price -=  GetDiscountValueFromFile() * price;
             }
             customer.budget = Math.Round(customer.budget - price, 2);
             accounting.AddMoney(price);
         }
 
-        public double GetDiscount()
+        public double GetDiscountValueFromFile()
         {
-            return (float)JsonRead.ReadFromJson<int>(@"..\..\..\Configs\Discount.json").Values.First()/100;
+            var parsedValues = JsonRead.ReadFromJson<int>(DISCOUNT_CONFIG_FILE_PATH).Values;
+
+            if(!object.Equals(parsedValues, null))
+            {
+                var discount = parsedValues.FirstOrDefault();
+
+                return (double)discount / 100;
+            }
+
+            return (double)0;
         }
 
         public bool IsDiscountAppliable(Customer customer)
