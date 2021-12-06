@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using BaseClasses;
 using AdvanceClasses;
+using ChikenKitchenDataBase;
+using ChikenKithen;
+using CommandsModule;
 
 namespace ChickenKitchenTests
 {
@@ -73,7 +76,7 @@ namespace ChickenKitchenTests
             int maxFoodType = 5;
             int totalMax = 20;
 
-            storage = new Storage(foodsList, ingredientsList, foodsAmount, ingredientsAmount, maxIngredentType, maxFoodType, totalMax);
+            storage = new Storage(foodsList, ingredientsList, foodsAmount, ingredientsAmount, ingredientsPrice, maxIngredentType, maxFoodType, totalMax);
 
             kitchen = new Kitchen(storage);
         }
@@ -141,6 +144,103 @@ namespace ChickenKitchenTests
 
             // Then
             Assert.IsFalse(actual, "test string");
+        }
+
+        [Test]
+        public void GetListOfIngredientsForFoodThatConsistOfIngredientsOnly()                 // public List<Ingredient> GetBaseIngredientRecipe(Food food)
+        {
+            // Given
+            cappuccino.RecipeIngredients = cappuccinoIngredients;
+
+            // When
+            List<Ingredient> actual = kitchen.GetBaseIngredientRecipe(cappuccino);
+
+            // Expected
+            List<Ingredient> expected = new List<Ingredient> { coffee, milk, sugar };
+
+            // Then
+            string[] actualIngredients = actual.Select(i => i.Name).ToArray();
+            string[] expectedIngredients = expected.Select(i => i.Name).ToArray();
+
+            CollectionAssert.AreEqual(expectedIngredients, actualIngredients);
+        }
+
+        [Test]
+        public void GetListOfIngredientsForFoodThatConsistOfFoodsOnly()                       // public List<Ingredient> GetBaseIngredientRecipe(Food food)
+        {
+            // Given
+            cappuccino.RecipeFoods = cappuccinoFoods;
+
+            // When
+            List<Ingredient> actual = kitchen.GetBaseIngredientRecipe(cappuccino);
+
+            // Expected
+            List<Ingredient> expected = new List<Ingredient> { coffee, water };
+
+            // Then
+            string[] actualIngredients = actual.Select(i => i.Name).ToArray();
+            string[] expectedIngredients = expected.Select(i => i.Name).ToArray();
+
+            CollectionAssert.AreEqual(expectedIngredients, actualIngredients);
+        }
+
+        [Test]
+        public void GetListOfIngredientsForFoodThatConsistOfIngredientsAndFoodsWithIdenticalIngredients() // public List<Ingredient> GetBaseIngredientRecipe(Food food)
+        {
+            // Given
+            cappuccino.RecipeIngredients = cappuccinoIngredients;
+            cappuccino.RecipeFoods = cappuccinoFoods;
+
+            // When
+            List<Ingredient> actual = kitchen.GetBaseIngredientRecipe(cappuccino);
+
+            // Expected
+            List<Ingredient> expected = new List<Ingredient> { coffee,  milk, sugar, water };
+
+            // Then
+            string[] actualIngredients = actual.Select(i => i.Name).ToArray();
+            string[] expectedIngredients = expected.Select(i => i.Name).ToArray();
+
+            CollectionAssert.AreEqual(expectedIngredients, actualIngredients);               // identical ingredients do not skip
+        }
+
+        [Test]
+        public void GetListOfIngredientsForFoodWithEmptyStringWithoutName()                  // public List<Ingredient> GetBaseIngredientRecipe(Food food)
+        {
+            // Given
+            cappuccino.Name = ("");
+            cappuccino.RecipeIngredients = cappuccinoIngredients;
+
+            // When
+            List<Ingredient> actual = kitchen.GetBaseIngredientRecipe(cappuccino);           // уточнити в Толіка як має оброблятися name = пуста стрічка
+
+            // Expected
+            List<Ingredient> expected = new List<Ingredient> { coffee, milk, sugar };
+
+            // Then
+            string[] actualIngredients = actual.Select(i => i.Name).ToArray();
+            string[] expectedIngredients = expected.Select(i => i.Name).ToArray();
+
+            CollectionAssert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void GetListOfIngredientsForNull()                                            // public List<Ingredient> GetBaseIngredientRecipe(Food food)
+        {
+            // Given
+            cappuccino = null;
+
+            // When
+            List<Ingredient> actual = kitchen.GetBaseIngredientRecipe(cappuccino);           // уточнити в Толіка як має оброблятися null, зараз NullReferenceException
+
+            // Expected
+            List<Ingredient> expected = null;
+
+            // Then
+            string[] actualIngredients = actual.Select(i => i.Name).ToArray();
+            string[] expectedIngredients = expected.Select(i => i.Name).ToArray();
+
+            CollectionAssert.AreEqual(expected, actual);
         }
     }
 }

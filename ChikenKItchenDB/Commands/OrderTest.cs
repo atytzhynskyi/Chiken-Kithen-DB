@@ -19,7 +19,7 @@ namespace ChikenKItchenDB.CommandsModule
         List<Food> foods;
 
         Storage storage;
-        Accounting accounting = new Accounting(500, 0.5, 0, 0);
+        Accounting accounting;
         Kitchen kitchen;
         string _FullCommand;
         ICommand command;
@@ -27,7 +27,9 @@ namespace ChikenKItchenDB.CommandsModule
         [TestInitialize]
         public void SetupContext()
         {
-            accounting = new Accounting(500, 0.5, 0, 0);
+            Dictionary<Ingredient, int> ingredientsPrice = new Dictionary<Ingredient, int>();
+            ingredientsPrice.Add(salt, 10);
+            accounting = new Accounting(500, 0.5, 0, 0, ingredientsPrice);
             accounting.IngredientsPrice[salt] = 10;
 
             ingredients = new List<Ingredient> { salt };

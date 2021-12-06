@@ -51,10 +51,29 @@ namespace ChickenKitchenTests
             // When
             Customer actual = hall.GetCustomer("John Doe");
 
+            // Expected
+            Customer expected = new Customer("NULL");
+
             // Then
-            Assert.IsTrue(object.Equals(actual, null));
+            Assert.AreEqual(expected.Name, actual.Name);
         }
 
+        [Test]
+        public void GetExistingCustomerByNickName()                               // public Customer GetCustomer(string Name)
+        {
+            // Given
+            Hall hall = new Hall();
+            hall.Customers = new List<Customer> { new Customer("Jane Doe") };
+
+            // When
+            Customer actual = hall.GetCustomer("Jane");
+
+            // Expected
+            Customer expected = new Customer("Jane Doe");
+
+            // Then
+            Assert.AreEqual(expected.Name, actual.Name);
+        }
 
         [Test]
         public void GiveExistingFoodFromStorage()                                 // public void GiveFoodFromStorage(Kitchen kitchen, Customer customer)
@@ -111,7 +130,7 @@ namespace ChickenKitchenTests
             double actual = customer.budget;
 
             // Then
-            Assert.AreEqual(40.2, actual);
+            Assert.AreEqual(43, actual);
         }
 
         [Test]
@@ -144,7 +163,7 @@ namespace ChickenKitchenTests
             hall.GetPaid(accounting, recipes, customer);
 
             // Then
-            Assert.AreEqual(30.4, customer.budget);
+            Assert.AreEqual(36, customer.budget);
             //Assert.AreEqual(114, accounting.Budget);
         }             // public void GetPaid(Accounting accounting, Dictionary<Ingredient, int> ingredientPrice, List<Food> Recipes, Customer customer)
     }

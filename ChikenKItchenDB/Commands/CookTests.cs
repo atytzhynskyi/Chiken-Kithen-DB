@@ -17,22 +17,23 @@ namespace ChikenKItchenDB.CommandsModule
         List<Ingredient> ingredients;
         List<Food> Recipes;
         Storage storage;
-        Accounting accounting = new Accounting(500, 0.5, 0, 0);
+        Accounting accounting;
         Kitchen kitchen;
 
         Cook command;
         [TestInitialize]
         public void SetupContext()
         {
-            accounting = new Accounting(500, 0.5, 0, 0);
+            Dictionary<Ingredient, int> ingredientsPrice = new Dictionary<Ingredient, int>();
+            ingredientsPrice.Add(salt, 10);
+            ingredientsPrice.Add(water, 10);
+
+            accounting = new Accounting(500, 0.5, 0, 0, ingredientsPrice);
 
             ingredients = new List<Ingredient> { salt, water };
             saltWater = new Food("Salt water", ingredients.ToArray());
             Recipes = new List<Food> { saltWater };
             storage = new Storage(Recipes, ingredients, new Dictionary<Food, int>(), new Dictionary<Ingredient, int>(), 10, 10, 25);
-
-            accounting.IngredientsPrice.Add(salt, 10);
-            accounting.IngredientsPrice.Add(water, 10);
 
             storage.IngredientsAmount.Add(salt, 10);
             storage.IngredientsAmount.Add(water, 10);

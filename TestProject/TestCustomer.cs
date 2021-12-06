@@ -79,5 +79,22 @@ namespace ChickenKitchenTests
             Assert.AreEqual(false, actual.Item1);
             Assert.AreEqual("NULL", actual.Item2.Name);
         }
+
+        [Test]
+        public void CheckAllergyForFoodIsEqualToNull()
+        {
+            // Given
+            string name = "Jane Doe";
+            Ingredient[] allergies = { new Ingredient("tuna") };
+
+            Customer customer = new Customer(name, allergies);
+
+            // When
+            (bool, Ingredient) actual = customer.isAllergic(recipes, null);
+
+            // Then
+            Assert.AreEqual(null, actual);
+        }
+
     }
 }

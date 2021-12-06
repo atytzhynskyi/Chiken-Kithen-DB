@@ -14,7 +14,7 @@ namespace AdvanceClasses
         public List<Customer> Customers { get; set; }
 
         public List<Food> Menu = new List<Food>();
-
+        public Hall() { }
         public Hall(List<Customer> customers, List<Food> _Menu)
         {
             Customers = customers;
@@ -25,7 +25,7 @@ namespace AdvanceClasses
         {
             return Customers.Find(c=>c.Name == Name);
         }
-
+        
         public void GiveFoodFromStorage(Kitchen kitchen, Customer customer)
         {
             foreach (Food food in kitchen.Storage.Recipes)

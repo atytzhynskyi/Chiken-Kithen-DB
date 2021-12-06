@@ -17,7 +17,7 @@ namespace ChikenKItchenDB.CommandsModule
         List<Ingredient> ingredients;
         List<Food> Recipes;
         Storage storage;
-        Accounting accounting = new Accounting(500, 0.5, 0, 0);
+        Accounting accounting;
         Kitchen kitchen;
         Customer bill;
         Customer den;
@@ -27,15 +27,16 @@ namespace ChikenKItchenDB.CommandsModule
         [TestInitialize]
         public void SetupContext()
         {
-            accounting = new Accounting(500, 0.5, 0, 0);
+            Dictionary<Ingredient, int> ingredientsPrice = new Dictionary<Ingredient, int> ();
+            ingredientsPrice.Add(salt, 10);
+            ingredientsPrice.Add(water, 10);
+
+            accounting = new Accounting(500, 0.5, 0, 0, ingredientsPrice);
 
             ingredients = new List<Ingredient> { salt, water };
             saltWater = new Food("Salt water", ingredients.ToArray());
             Recipes = new List<Food> { saltWater };
             storage = new Storage(Recipes, ingredients);
-
-            accounting.IngredientsPrice[salt] = 10;
-            accounting.IngredientsPrice[water] = 10;
 
             storage.IngredientsAmount[salt] = 10;
             storage.IngredientsAmount[water] = 10;
@@ -195,7 +196,7 @@ namespace ChikenKItchenDB.CommandsModule
 
             Assert.AreEqual(expectResult, command.Result);
             Assert.AreEqual(kitchen.Storage.FoodAmount[saltWater], 1, "dish amount incorrect");
-            Assert.AreEqual(accounting.Budget, 515, "incorrect budget");
+            Assert.AreEqual(accounting.Budget, 510, "incorrect budget");
         }
     }
 }
