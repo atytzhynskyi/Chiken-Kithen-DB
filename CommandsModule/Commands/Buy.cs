@@ -59,7 +59,7 @@ namespace CommandsModule
                 return;
             }
             hall.GetPaid(accounting, kitchen.Storage.Recipes, Customer);
-            Result = $"{Customer.Name}, {Customer.budget + price}, {Customer.Order.Name}, {price} -> success; money amount: {price - tax}; tax: {tax};";
+            Result = $"{Customer.Name}, {Customer.budget + price}, {Customer.Order.Name}, {price} -> success; money amount: {Math.Round(price - tax,2)}; tax: {tax};";
         }
 
         private void ExecuteAllergicBuy(double price)

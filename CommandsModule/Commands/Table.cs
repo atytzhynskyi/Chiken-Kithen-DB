@@ -108,7 +108,7 @@ namespace CommandsModule
         private List<string> GetCustomersFromCommand()
         {
             List<string> commandSplit = new List<string>(FullCommand.Split(", "));
-            List<string> customersName = (List<string>)commandSplit.Where(s => hall.GetCustomer(s).Name != "NULL").ToList();
+            List<string> customersName = (List<string>)commandSplit.Where(s => !object.Equals(hall.GetCustomer(s), null)).ToList();
             return customersName;
         }
         private List<string> GetFoodsFromCommand()
