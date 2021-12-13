@@ -31,7 +31,7 @@ namespace ChikenKItchenDB.CommandsModule
             ingredients = new List<Ingredient> { salt, water };
             saltWater = new Food("Salt water", ingredients.ToArray());
             Recipes = new List<Food> { saltWater };
-            storage = new Storage(Recipes, ingredients, new Dictionary<Food, int>(), new Dictionary<Ingredient, int>(), 10, 10, 25);
+            storage = new Storage(Recipes, ingredients, new Dictionary<Food, int>(), new Dictionary<Ingredient, int>(), 10, 10, 25, 0);
 
             storage.IngredientsAmount.Add(salt, 10);
             storage.IngredientsAmount.Add(water, 10);

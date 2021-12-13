@@ -121,7 +121,6 @@ namespace CommandsModule
             Foods.ForEach(f => pricesSum += orders[f.Name] * accounting.CalculateFoodMenuPrice(
                                                                        kitchen.Storage.Recipes, f));
 
-            //Ingredients.ForEach(i => pricesSum += accounting.IngredientsPrice[i]);
             Ingredients.ForEach(i => pricesSum += accounting.IngredientsPrice[i] * orders[i.Name]);
 
             double finalPrice = pricesSum + accounting.CalculateTransactionTax(pricesSum);
@@ -164,8 +163,6 @@ namespace CommandsModule
         private void OrderFoods()
         {
             double pricesSum = 0;
-            //Foods.ForEach(f => pricesSum += accounting.CalculateFoodMenuPrice(
-            //                                               kitchen.Storage.Recipes, f));
             Foods.ForEach(f => pricesSum += orders[f.Name] * accounting.CalculateFoodMenuPrice(
                                                            kitchen.Storage.Recipes, f));
 

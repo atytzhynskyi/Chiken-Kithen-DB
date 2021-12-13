@@ -92,7 +92,7 @@ namespace ChikenKItchenDB.CommandsModule
 
             command.ExecuteCommand();
 
-            Assert.AreEqual(command.Result, "success; money used:15; tax:5");
+            Assert.AreEqual(command.Result, "success; money used:300; tax:100");
         }
     }
 }
