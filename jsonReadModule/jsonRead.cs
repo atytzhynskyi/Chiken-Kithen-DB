@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Text.Json;
-using System.Linq;
-using System.Reflection;
 using Newtonsoft.Json;
 
 namespace jsonReadModule

@@ -1,10 +1,7 @@
 ﻿using AdvanceClasses;
 using BaseClasses;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 using System.Collections.Generic;
-using System.Text;
-using CommandsModule.Commands;
 using CommandsModule;
 
 namespace ChikenKItchenDB.CommandsModule
