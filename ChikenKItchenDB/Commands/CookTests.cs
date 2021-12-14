@@ -63,7 +63,8 @@ namespace ChikenKItchenDB.CommandsModule
             Assert.AreEqual(storage.FoodAmount[saltWater], 3, "dish count incorrect");
         }
         [TestMethod()]
-        public void TestCookLimitWaste()
+        public void TestCookLimit
+            ()
         {
             command = new Cook(kitchen, "Cook, Salt water, 15");
             command.IsAllowed = true;

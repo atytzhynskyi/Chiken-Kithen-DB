@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using BaseClasses;
 
@@ -52,6 +53,42 @@ namespace AdvanceClasses
 
             return true;
         }
+
+        public void CheckSpoilIngredient(Food food)
+        {
+            if (object.Equals(food, null))
+            {
+                return;
+            }
+
+            if (Storage.Recipes.Any(f => f.Name == food.Name))
+            {
+                food = Storage.Recipes.Find(f => f.Name == food.Name);
+            }
+
+            //group ingredient because recipe can contain several ingredients of one type
+            var groupIngredients = food.RecipeIngredients.GroupBy(x => x);
+            foreach (var item in groupIngredients)
+            {
+                var spoil = Storage.GetNumberOfSpoil(Storage.IngredientsAmount[item.Key], 25);
+                Storage.IngredientsAmount[item.Key] -= spoil;
+
+                if (spoil != 0)
+                {
+                    Console.WriteLine($"Spoil: {item.Key.Name}, amount: {spoil}");
+                }
+            }
+
+            //same for food
+            var groupFoods = food.RecipeFoods.GroupBy(x => x);
+            foreach (var item in groupFoods)
+            {
+                IsEnoughIngredients(item.Key);
+            }
+
+            return;
+        }
+
 
         public bool IsEnoughIngredients(Food food)
         {

@@ -1,6 +1,7 @@
 ﻿using AdvanceClasses;
 using BaseClasses;
 using System;
+using System.Collections.Generic;
 
 namespace CommandsModule
 {
@@ -133,12 +134,6 @@ namespace CommandsModule
                 Result = "Food 404";
                 return;
             }
-            //if (Customer.budget < accounting.CalculateFoodMenuPrice(
-            //                                    kitchen.Storage.Recipes, Food))
-            //{
-            //    Result = "Can't order: customer dont have enough money";
-            //    return;
-            //}
 
             if (Customer.budget < accounting.CalculateFoodMenuPrice(
                                                 kitchen.Storage.Recipes, Food))
@@ -159,6 +154,11 @@ namespace CommandsModule
                 Result = "Can't order: dont have enough ingredients";
                 return;
             }
+
+            //storage has enough ingredients and now let's check of ingredients on spoiling (point 6.8.2)
+            //after it might will not be able enough ingredient
+            //all will be OK because before cooking food we check we have enough ingredient again
+            kitchen.CheckSpoilIngredient(Food);
         }
     }
 }

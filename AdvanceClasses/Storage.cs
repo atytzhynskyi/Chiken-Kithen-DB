@@ -97,7 +97,7 @@ namespace AdvanceClasses
             IngredientsAmount[ingredient] += amount;
         }
 
-        private int GetNumberOfSpoil(int amount, double spoilRate)
+        public int GetNumberOfSpoil(int amount, double spoilRate)
         {
             if (spoilRate <= 0)
             {
