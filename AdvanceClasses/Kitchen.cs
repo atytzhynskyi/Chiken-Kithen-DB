@@ -70,7 +70,7 @@ namespace AdvanceClasses
             var groupIngredients = food.RecipeIngredients.GroupBy(x => x);
             foreach (var item in groupIngredients)
             {
-                var spoil = Storage.GetNumberOfSpoil(Storage.IngredientsAmount[item.Key], 25);
+                var spoil = Storage.GetNumberOfSpoil(Storage.IngredientsAmount[item.Key]);
                 Storage.IngredientsAmount[item.Key] -= spoil;
 
                 if (spoil != 0)
@@ -83,7 +83,10 @@ namespace AdvanceClasses
             var groupFoods = food.RecipeFoods.GroupBy(x => x);
             foreach (var item in groupFoods)
             {
-                IsEnoughIngredients(item.Key);
+                if (Storage.FoodAmount[item.Key] < item.Count())
+                {
+                    CheckSpoilIngredient(item.Key);
+                }
             }
 
             return;

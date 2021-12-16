@@ -97,37 +97,6 @@ namespace AdvanceClasses
             IngredientsAmount[ingredient] += amount;
         }
 
-        public int GetNumberOfSpoil(int amount, double spoilRate)
-        {
-            if (spoilRate <= 0)
-            {
-                return 0;
-            }
-
-            if (spoilRate >= 100)
-            {
-                return amount;
-            }
-
-            var koef = 100;
-            var maxNumbers = 100 * koef;
-            var maxNumberSpoil = (int)Math.Truncate(spoilRate * koef);
-
-            var spoil = 0;
-            for (int i = 1; i <= amount; i++)
-            {
-                Random rnd = new Random();
-                int value = rnd.Next(1, maxNumbers);
-
-                if (value <= maxNumberSpoil)
-                {
-                    spoil += 1;
-                }
-            }
-
-            return spoil;
-        }
-
         public void AddFoodAmount(string foodName, int amount)
         {
             var food = Recipes.Where(x => x.Name == foodName).FirstOrDefault();
@@ -175,5 +144,43 @@ namespace AdvanceClasses
                 Console.Write(IngredientsAmount[ingredient] + "\n");
             }
         }
+
+        public int GetNumberOfSpoil(int amount)
+        {
+            return GetNumberOfSpoil(amount, _spoilRate);
+        }
+
+        private int GetNumberOfSpoil(int amount, double spoilRate)
+        {
+            if (spoilRate <= 0)
+            {
+                return 0;
+            }
+
+            if (spoilRate >= 100)
+            {
+                return amount;
+            }
+
+            //Using 100, we get the most accurate value
+            var koef = 100;
+            var maxNumbers = 100 * koef;
+            var maxNumberSpoil = (int)Math.Truncate(spoilRate * koef);
+
+            var spoil = 0;
+            for (int i = 1; i <= amount; i++)
+            {
+                Random rnd = new Random();
+                int value = rnd.Next(1, maxNumbers);
+
+                if (value <= maxNumberSpoil)
+                {
+                    spoil += 1;
+                }
+            }
+
+            return spoil;
+        }
+
     }
 }
