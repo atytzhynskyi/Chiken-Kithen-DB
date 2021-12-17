@@ -17,6 +17,7 @@ namespace ChikenKitchenDataBase
         public DbSet<FoodComponent> FoodComponents { get; set; }
         public DbSet<IngredientComponent> IngredientComponents { get; set; }
         public DbSet<Allergy> Allergies { get; set; }
+        public DbSet<Trash> Trashes { get; set; }
         public ApplicationContext()
         {
             Database.EnsureCreated();
@@ -60,6 +61,11 @@ namespace ChikenKitchenDataBase
             {
                 SaveAllergies(ReadFile.GetCustomers());
                 SetCustomersAllergies();
+            }
+
+            if (!Trashes.Any())
+            {
+                Trashes.Add(new Trash());
             }
 
             if (!FoodComponents.Any() || !IngredientComponents.Any())
@@ -179,7 +185,12 @@ namespace ChikenKitchenDataBase
             }
         }
 
-        public void SaveAll(List<Ingredient> _Ingredients, Dictionary<Ingredient, int> _IngredientsAmount, Dictionary<Ingredient, int> _IngredientsPrice, List<Food> _Recipes, List<Customer> _Customers, double _Budget)
+        public int GetTrash()
+        {
+            return Trashes.First().Count;
+        }
+
+        public void SaveAll(List<Ingredient> _Ingredients, Dictionary<Ingredient, int> _IngredientsAmount, int _Trash, Dictionary<Ingredient, int> _IngredientsPrice, List<Food> _Recipes, List<Customer> _Customers, double _Budget)
         {
             SaveIngredients(_Ingredients);
             SaveIngredientsProperties(_IngredientsAmount, _IngredientsPrice);
@@ -188,6 +199,7 @@ namespace ChikenKitchenDataBase
             SaveCustomers(_Customers);
             SaveAllergies(_Customers);
             SaveBudget(_Budget);
+            SaveTrashes(_Trash);
             SaveChanges();
         }
         public void SaveIngredients(List<Ingredient> _Ingredients)
@@ -294,6 +306,12 @@ namespace ChikenKitchenDataBase
                     AddWithoutDuplicate(new Allergy(customer, allergyIngredient));
                 }
             }
+        }
+
+        public void SaveTrashes(int count)
+        {
+            Trashes.First().Count = count;
+            SaveChanges();
         }
 
         public void AddWithoutDuplicate(IngredientProperties _ingredientProperties)

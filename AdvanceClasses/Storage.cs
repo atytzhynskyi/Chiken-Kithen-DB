@@ -13,6 +13,8 @@ namespace AdvanceClasses
         public List<Food> Recipes;
         public Dictionary<Food, int> FoodAmount { get; set; } = new Dictionary<Food, int>();
 
+        public int Trash { get; set; }
+
         private readonly int maxIngredientType;
         private readonly int maxFoodType;
         private readonly int totalMax;
@@ -20,7 +22,7 @@ namespace AdvanceClasses
         private readonly double _spoilRate;
 
         public Storage(List<Food> _Foods, List<Ingredient> _Ingredients, Dictionary<Food, int> _FoodAmount,
-            Dictionary<Ingredient, int> _IngredientsAmount, int _maxIngredientType, int _maxFoodType, int _totalMax, double spoilRate)
+            Dictionary<Ingredient, int> _IngredientsAmount, int trash, int _maxIngredientType, int _maxFoodType, int _totalMax, double spoilRate)
         {
             totalMax = _totalMax;
             maxIngredientType = _maxIngredientType;
@@ -32,6 +34,7 @@ namespace AdvanceClasses
             FoodAmount = _FoodAmount;
 
             _spoilRate = spoilRate;
+            Trash = trash;
         }
 
         public Storage(List<Ingredient> _Ingredients, int _maxIngredientType, int _totalMax)
@@ -86,11 +89,13 @@ namespace AdvanceClasses
             }
             if (wasted != 0)
             {
+                Trash += wasted;
                 Console.WriteLine($"Wasted: {ingredientName}, amount: {wasted}");
             }
 
             if (spoil != 0)
             {
+                Trash += spoil;
                 Console.WriteLine($"Spoil: {ingredientName}, amount: {spoil}");
             }
 
@@ -116,6 +121,8 @@ namespace AdvanceClasses
             }
             if(wasted != 0)
             {
+                //var numberOfIngredients = GetNumberOfIngredients(food);
+                //Trash += numberOfIngredients;
                 Console.WriteLine($"Wasted: {foodName}, amount: {wasted}");
             }
 

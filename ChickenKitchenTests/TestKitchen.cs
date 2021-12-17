@@ -71,7 +71,7 @@ namespace ChickenKitchenTests
 
             double spoilRate = 0;
 
-            storage = new Storage(foodsList, ingredientsList, foodsAmount, ingredientsAmount, maxIngredentType, maxFoodType, totalMax, spoilRate);
+            storage = new Storage(foodsList, ingredientsList, foodsAmount, ingredientsAmount, 0, maxIngredentType, maxFoodType, totalMax, spoilRate);
 
             kitchen = new Kitchen(storage);
         }
