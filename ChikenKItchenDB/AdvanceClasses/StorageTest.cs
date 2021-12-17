@@ -1,10 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using BaseClasses;
-using System;
 using System.Collections.Generic;
-using System.Text;
-using ChikenKithen;
-using AdvanceClasses;
 using System.Linq;
 
 namespace AdvanceClasses.Tests

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using NUnit.Framework;
 using BaseClasses;
 using AdvanceClasses;
@@ -73,7 +69,9 @@ namespace ChickenKitchenTests
             int maxFoodType = 5;
             int totalMax = 20;
 
-            storage = new Storage(foodsList, ingredientsList, foodsAmount, ingredientsAmount, maxIngredentType, maxFoodType, totalMax);
+            double spoilRate = 0;
+
+            storage = new Storage(foodsList, ingredientsList, foodsAmount, ingredientsAmount, maxIngredentType, maxFoodType, totalMax, spoilRate);
 
             kitchen = new Kitchen(storage);
         }

@@ -1,12 +1,7 @@
 ﻿using BaseClasses;
-using jsonReadModule;
-using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace AdvanceClasses
 {
@@ -22,8 +17,10 @@ namespace AdvanceClasses
         private readonly int maxFoodType;
         private readonly int totalMax;
 
+        private readonly double _spoilRate;
+
         public Storage(List<Food> _Foods, List<Ingredient> _Ingredients, Dictionary<Food, int> _FoodAmount,
-            Dictionary<Ingredient, int> _IngredientsAmount, int _maxIngredientType, int _maxFoodType, int _totalMax)
+            Dictionary<Ingredient, int> _IngredientsAmount, int _maxIngredientType, int _maxFoodType, int _totalMax, double spoilRate)
         {
             totalMax = _totalMax;
             maxIngredientType = _maxIngredientType;
@@ -33,6 +30,8 @@ namespace AdvanceClasses
             IngredientsAmount = _IngredientsAmount;
             Recipes = _Foods;
             FoodAmount = _FoodAmount;
+
+            _spoilRate = spoilRate;
         }
 
         public Storage(List<Ingredient> _Ingredients, int _maxIngredientType, int _totalMax)
@@ -67,6 +66,9 @@ namespace AdvanceClasses
         }
         public void AddIngredientAmount(string ingredientName, int amount)
         {
+            var spoil = GetNumberOfSpoil(amount, _spoilRate);
+            amount -= spoil;
+
             var ingredient = Ingredients.Where(x => x.Name == ingredientName).FirstOrDefault();
             int newTotalAmount = GetTotalAmount() + amount;
             int ingredientAmount = IngredientsAmount[ingredient];
@@ -82,12 +84,19 @@ namespace AdvanceClasses
                 wasted += ingredientAmount + amount - maxIngredientType;
                 amount -= ingredientAmount + amount - maxIngredientType;
             }
-            if(wasted != 0)
+            if (wasted != 0)
             {
                 Console.WriteLine($"Wasted: {ingredientName}, amount: {wasted}");
             }
+
+            if (spoil != 0)
+            {
+                Console.WriteLine($"Spoil: {ingredientName}, amount: {spoil}");
+            }
+
             IngredientsAmount[ingredient] += amount;
         }
+
         public void AddFoodAmount(string foodName, int amount)
         {
             var food = Recipes.Where(x => x.Name == foodName).FirstOrDefault();
@@ -135,5 +144,43 @@ namespace AdvanceClasses
                 Console.Write(IngredientsAmount[ingredient] + "\n");
             }
         }
+
+        public int GetNumberOfSpoil(int amount)
+        {
+            return GetNumberOfSpoil(amount, _spoilRate);
+        }
+
+        private int GetNumberOfSpoil(int amount, double spoilRate)
+        {
+            if (spoilRate <= 0)
+            {
+                return 0;
+            }
+
+            if (spoilRate >= 100)
+            {
+                return amount;
+            }
+
+            //Using 100, we get the most accurate value
+            var koef = 100;
+            var maxNumbers = 100 * koef;
+            var maxNumberSpoil = (int)Math.Truncate(spoilRate * koef);
+
+            var spoil = 0;
+            for (int i = 1; i <= amount; i++)
+            {
+                Random rnd = new Random();
+                int value = rnd.Next(1, maxNumbers);
+
+                if (value <= maxNumberSpoil)
+                {
+                    spoil += 1;
+                }
+            }
+
+            return spoil;
+        }
+
     }
 }

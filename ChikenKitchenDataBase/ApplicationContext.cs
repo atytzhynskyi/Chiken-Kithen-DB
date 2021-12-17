@@ -1,13 +1,6 @@
-﻿using CsvHelper;
-using CsvHelper.Configuration;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Text;
 using BaseClasses;
 
 namespace ChikenKitchenDataBase
@@ -33,7 +26,7 @@ namespace ChikenKitchenDataBase
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=ChikenKitchen;Trusted_Connection=True;MultipleActiveResultSets=True;");
+            optionsBuilder.UseSqlServer("Server=.\\SQLEXPRESS;Database=ChikenKitchen;Trusted_Connection=True;MultipleActiveResultSets=True;");
         }
 
         public void InitializeFromFiles()

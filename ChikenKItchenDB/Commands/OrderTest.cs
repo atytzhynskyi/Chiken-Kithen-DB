@@ -1,10 +1,7 @@
 ﻿using AdvanceClasses;
 using BaseClasses;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 using System.Collections.Generic;
-using System.Text;
-using CommandsModule.Commands;
 using CommandsModule;
 
 namespace ChikenKItchenDB.CommandsModule
@@ -95,7 +92,7 @@ namespace ChikenKItchenDB.CommandsModule
 
             command.ExecuteCommand();
 
-            Assert.AreEqual(command.Result, "success; money used:15; tax:5");
+            Assert.AreEqual(command.Result, "success; money used:300; tax:100");
         }
     }
 }

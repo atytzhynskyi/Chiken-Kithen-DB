@@ -1,9 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ChikenKithen;
-using System;
 using System.Collections.Generic;
-using System.Text;
-using ChikenKItchenDB;
 using BaseClasses;
 using AdvanceClasses;
 

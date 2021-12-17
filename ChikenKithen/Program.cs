@@ -1,13 +1,10 @@
-﻿using BaseClasses;
-using ChikenKitchenDataBase;
+﻿using ChikenKitchenDataBase;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using AdvanceClasses;
 using CommandsModule;
 using jsonReadModule;
-using ConfigurationModule;
+
 namespace ChikenKithen
 {
     class Program
@@ -29,13 +26,15 @@ namespace ChikenKithen
                                                         applicationContext.GetIngredientsPrice());
 
                 var WarehouseSize = JsonRead.ReadFromJson<int>(@"..\..\..\Configs\WarehouseSize.json");
+                var spoilConfig = JsonRead.ReadFromJson<double>(@"..\..\..\Configs\SpoilConfig.json");
                 Storage storage = new Storage(applicationContext.GetFoods(),
                                               applicationContext.Ingredients.ToList(),
                                               applicationContext.GetFoodsAmount(),
                                               applicationContext.GetIngredientsAmount(),
                                               WarehouseSize.Where(k => k.Key == "max ingredient type").First().Value,
                                               WarehouseSize.Where(k => k.Key == "max dish type").First().Value,
-                                              WarehouseSize.Where(k => k.Key == "total maximum").First().Value);
+                                              WarehouseSize.Where(k => k.Key == "total maximum").First().Value,
+                                              spoilConfig.Where(k => k.Key == "spoil rate").First().Value);
                 
                 Kitchen kitchen = new Kitchen(storage);
                 Hall hall = new Hall(applicationContext.GetCustomers(), kitchen.Storage.Recipes);

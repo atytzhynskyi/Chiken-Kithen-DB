@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AdvanceClasses
+﻿namespace AdvanceClasses
 {
     class Program
     {
