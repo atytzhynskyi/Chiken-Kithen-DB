@@ -10,8 +10,12 @@ namespace CommandsModule
         {
             ICommand command;
 
+            if (kitchen.Storage.isRestaurantPoisoned())
+            {
+                return new Default("RESTAURANT POISONED");
+            }
+
             string commandType = commandString.Split(", ")[0];
-            
 
          switch (commandType)
             {

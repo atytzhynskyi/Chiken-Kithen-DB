@@ -35,6 +35,7 @@ namespace ChikenKithen
                                               WarehouseSize.Where(k => k.Key == "max ingredient type").First().Value,
                                               WarehouseSize.Where(k => k.Key == "max dish type").First().Value,
                                               WarehouseSize.Where(k => k.Key == "total maximum").First().Value,
+                                              WarehouseSize.Where(k => k.Key == "waste limit").First().Value,
                                               spoilConfig.Where(k => k.Key == "spoil rate").First().Value);
                 
                 Kitchen kitchen = new Kitchen(storage);

@@ -75,6 +75,7 @@ namespace AdvanceClasses
 
                 if (spoil != 0)
                 {
+                    Storage.Trash += spoil;
                     Console.WriteLine($"Spoil: {item.Key.Name}, amount: {spoil}");
                 }
             }
@@ -91,7 +92,6 @@ namespace AdvanceClasses
 
             return;
         }
-
 
         public bool IsEnoughIngredients(Food food)
         {

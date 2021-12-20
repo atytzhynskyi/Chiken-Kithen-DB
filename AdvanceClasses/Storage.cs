@@ -19,10 +19,11 @@ namespace AdvanceClasses
         private readonly int maxFoodType;
         private readonly int totalMax;
 
+        private readonly int _wasteLimit;
         private readonly double _spoilRate;
 
         public Storage(List<Food> _Foods, List<Ingredient> _Ingredients, Dictionary<Food, int> _FoodAmount,
-            Dictionary<Ingredient, int> _IngredientsAmount, int trash, int _maxIngredientType, int _maxFoodType, int _totalMax, double spoilRate)
+            Dictionary<Ingredient, int> _IngredientsAmount, int trash, int _maxIngredientType, int _maxFoodType, int _totalMax, int wasteLimit, double spoilRate)
         {
             totalMax = _totalMax;
             maxIngredientType = _maxIngredientType;
@@ -33,6 +34,7 @@ namespace AdvanceClasses
             Recipes = _Foods;
             FoodAmount = _FoodAmount;
 
+            _wasteLimit = wasteLimit;
             _spoilRate = spoilRate;
             Trash = trash;
         }
@@ -121,13 +123,42 @@ namespace AdvanceClasses
             }
             if(wasted != 0)
             {
-                //var numberOfIngredients = GetNumberOfIngredients(food);
-                //Trash += numberOfIngredients;
+                int numberOfIngredients = GetNumberOfIngredients(food);
+                Trash += numberOfIngredients * wasted;
                 Console.WriteLine($"Wasted: {foodName}, amount: {wasted}");
             }
 
             FoodAmount[food] += amount;
         }
+
+        private int GetNumberOfIngredients(Food food)
+        {
+            var numberOfIngredients = 0;
+
+            if (object.Equals(food, null))
+            {
+                return numberOfIngredients;
+            }
+
+            if (Recipes.Any(f => f.Name == food.Name))
+            {
+                food = Recipes.Find(f => f.Name == food.Name);
+            }
+
+            foreach (var item in food.RecipeIngredients)
+            {
+                numberOfIngredients += 1;
+            }
+
+            var groupFoods = food.RecipeFoods.GroupBy(x => x);
+            foreach (var item in groupFoods)
+            {
+                numberOfIngredients += GetNumberOfIngredients(item.Key);
+            }
+
+            return numberOfIngredients;
+        }
+
         private int GetTotalAmount()
         {
             return IngredientsAmount.Values.Sum() + FoodAmount.Values.Sum();
@@ -187,6 +218,16 @@ namespace AdvanceClasses
             }
 
             return spoil;
+        }
+
+        public bool isRestaurantPoisoned()
+        {
+            if (_wasteLimit == 0)
+            {
+                return false;
+            }
+
+            return Trash > _wasteLimit;
         }
 
     }
