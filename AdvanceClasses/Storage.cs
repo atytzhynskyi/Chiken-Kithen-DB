@@ -22,7 +22,7 @@ namespace AdvanceClasses
         private readonly int _wasteLimit;
         private readonly double _spoilRate;
 
-        public Storage(List<Food> _Foods, List<Ingredient> _Ingredients, Dictionary<Food, int> _FoodAmount,
+        public Storage(List<Food> _Foods, List<Ingredient> _Ingredients, Dictionary<Food, int> foodsAmount,
             Dictionary<Ingredient, int> _IngredientsAmount, int trash, int _maxIngredientType, int _maxFoodType, int _totalMax, int wasteLimit, double spoilRate)
         {
             totalMax = _totalMax;
@@ -32,7 +32,7 @@ namespace AdvanceClasses
             Ingredients = _Ingredients;
             IngredientsAmount = _IngredientsAmount;
             Recipes = _Foods;
-            FoodAmount = _FoodAmount;
+            FoodAmount = foodsAmount;
 
             _wasteLimit = wasteLimit;
             _spoilRate = spoilRate;

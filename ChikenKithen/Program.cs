@@ -54,10 +54,9 @@ namespace ChikenKithen
 
                     command.ExecuteCommand();
 
-                    Console.WriteLine($"{command.FullCommand} -> {command.Result}");
+                    Console.WriteLine($"{command.FullCommand} -> {command.Result}\n");
 
-
-                    applicationContext.SaveAll(storage.Ingredients, storage.IngredientsAmount, storage.Trash, accounting.IngredientsPrice, kitchen.Storage.Recipes, hall.Customers, accounting.Budget);
+                    applicationContext.SaveAll(storage.Ingredients, storage.IngredientsAmount, accounting.IngredientsPrice, kitchen.Storage.Recipes, storage.FoodAmount, hall.Customers, accounting.Budget, storage.Trash);
                     recordsBase.AddRecordIfSomeChange(command,kitchen, accounting);
                 }
                 //*/

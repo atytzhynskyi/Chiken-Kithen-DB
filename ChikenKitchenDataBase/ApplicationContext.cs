@@ -12,6 +12,7 @@ namespace ChikenKitchenDataBase
         public DbSet<Budget> Budgets { get; set; }
         public DbSet<Ingredient> Ingredients { get; set; }
         public DbSet<IngredientProperties> IngredientProperties { get; set; }
+        public DbSet<FoodProperties> FoodProperties { get; set; }
         public DbSet<Food> Foods { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<FoodComponent> FoodComponents { get; set; }
@@ -80,7 +81,22 @@ namespace ChikenKitchenDataBase
         public Dictionary<Food, int> GetFoodsAmount()
         {
             Dictionary<Food, int> foodsAmount = new Dictionary<Food, int>();
-            Foods.ToList().ForEach(f=>foodsAmount.Add(f,0));
+            foreach (FoodProperties foodProperties in FoodProperties)
+            {
+                foodsAmount.Add(Foods.Where(i => i.Id == foodProperties.FoodId).FirstOrDefault(), foodProperties.Count);
+            }
+            foreach (var food in Foods)
+            {
+                try
+                {
+                    _ = foodsAmount[food];
+                }
+                catch (System.Collections.Generic.KeyNotFoundException)
+                {
+                    foodsAmount.Add(food, 0);
+                }
+            }
+
             return foodsAmount;
         }
 
@@ -190,16 +206,17 @@ namespace ChikenKitchenDataBase
             return Trashes.First().Count;
         }
 
-        public void SaveAll(List<Ingredient> _Ingredients, Dictionary<Ingredient, int> _IngredientsAmount, int _Trash, Dictionary<Ingredient, int> _IngredientsPrice, List<Food> _Recipes, List<Customer> _Customers, double _Budget)
+        public void SaveAll(List<Ingredient> _Ingredients, Dictionary<Ingredient, int> _IngredientsAmount, Dictionary<Ingredient, int> _IngredientsPrice, List<Food> _Recipes, Dictionary<Food, int> foodsAmount, List<Customer> _Customers, double _Budget, int trash)
         {
             SaveIngredients(_Ingredients);
             SaveIngredientsProperties(_IngredientsAmount, _IngredientsPrice);
             SaveFoods(_Recipes);
+            SaveFoodsProperties(foodsAmount);
             SaveRecipeItems(_Recipes);
             SaveCustomers(_Customers);
             SaveAllergies(_Customers);
             SaveBudget(_Budget);
-            SaveTrashes(_Trash);
+            SaveTrashes(trash);
             SaveChanges();
         }
         public void SaveIngredients(List<Ingredient> _Ingredients)
@@ -233,6 +250,30 @@ namespace ChikenKitchenDataBase
                     ing.IngredientId = Ingredients.Where(i => i.Name == _ingredient.Name).FirstOrDefault().Id;
                     IngredientProperties.Where(ip => ip.IngredientId == ing.IngredientId).FirstOrDefault().Count = ing.Count;
                     IngredientProperties.Where(ip => ip.IngredientId == ing.IngredientId).FirstOrDefault().Price = ing.Price;
+                }
+                catch (System.Collections.Generic.KeyNotFoundException) { }
+            }
+
+            SaveChanges();
+        }
+
+        public void SaveFoodsProperties(Dictionary<Food, int> foodsAmount)
+        {
+            foreach (Food food in Foods)
+            {
+                FoodProperties foodProp = new FoodProperties(food, foodsAmount[food]);
+                foodProp.FoodId = Foods.Where(i => i.Name == food.Name).FirstOrDefault().Id;
+                AddWithoutDuplicate(foodProp);
+            }
+            SaveChanges();
+
+            foreach (Food food in Foods)
+            {
+                try
+                {
+                    FoodProperties foodProp = new FoodProperties(food, foodsAmount[food]);
+                    foodProp.FoodId = Foods.Where(i => i.Name == food.Name).FirstOrDefault().Id;
+                    FoodProperties.Where(ip => ip.FoodId == foodProp.FoodId).FirstOrDefault().Count = foodProp.Count;
                 }
                 catch (System.Collections.Generic.KeyNotFoundException) { }
             }
@@ -321,6 +362,15 @@ namespace ChikenKitchenDataBase
                 return;
             }
             IngredientProperties.Add(_ingredientProperties);
+        }
+
+        public void AddWithoutDuplicate(FoodProperties foodProp)
+        {
+            if (FoodProperties.Any(ip => ip.FoodId == foodProp.FoodId))
+            {
+                return;
+            }
+            FoodProperties.Add(foodProp);
         }
 
         public void AddWithoutDuplicate(Ingredient ingredient)
