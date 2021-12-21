@@ -10,12 +10,18 @@ namespace CommandsModule
         {
             ICommand command;
 
+            string commandType = commandString.Split(", ")[0];
+
+
             if (kitchen.Storage.isRestaurantPoisoned())
             {
+                if (commandType.Trim().ToLower() == "throw trash away")
+                {
+                    return new ThrowTrashAway(kitchen, commandString);
+                }
+
                 return new Default("RESTAURANT POISONED");
             }
-
-            string commandType = commandString.Split(", ")[0];
 
          switch (commandType)
             {
