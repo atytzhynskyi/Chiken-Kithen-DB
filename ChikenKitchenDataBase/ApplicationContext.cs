@@ -134,6 +134,27 @@ namespace ChikenKitchenDataBase
             return IngredientAmount;
         }
 
+        public Dictionary<Ingredient, int> GetIngredientsTrashAmount()
+        {
+            Dictionary<Ingredient, int> ingredientTrashAmount = new Dictionary<Ingredient, int>();
+            foreach (IngredientProperties ingredientProperties in IngredientProperties)
+            {
+                ingredientTrashAmount.Add(Ingredients.Where(i => i.Id == ingredientProperties.IngredientId).FirstOrDefault(), ingredientProperties.Trash);
+            }
+            foreach (var ingredient in Ingredients)
+            {
+                try
+                {
+                    _ = ingredientTrashAmount[ingredient];
+                }
+                catch (System.Collections.Generic.KeyNotFoundException)
+                {
+                    ingredientTrashAmount.Add(ingredient, 0);
+                }
+            }
+            return ingredientTrashAmount;
+        }
+
         public Dictionary<Ingredient, int> GetIngredientsPrice()
         {
             Dictionary<Ingredient, int> IngredientPrice = new Dictionary<Ingredient, int>();
@@ -201,15 +222,22 @@ namespace ChikenKitchenDataBase
             }
         }
 
+        //MVO +++ DELETE
         public int GetTrash()
         {
             return Trashes.First().Count;
         }
 
-        public void SaveAll(List<Ingredient> _Ingredients, Dictionary<Ingredient, int> _IngredientsAmount, Dictionary<Ingredient, int> _IngredientsPrice, List<Food> _Recipes, Dictionary<Food, int> foodsAmount, List<Customer> _Customers, double _Budget, int trash)
+        //public Dictionary<Ingredient, int> GetTrashes()
+        //{
+        //    //return Trashes.First().Count;
+            
+        //}
+
+        public void SaveAll(List<Ingredient> _Ingredients, Dictionary<Ingredient, int> _IngredientsAmount, Dictionary<Ingredient, int> _IngredientsPrice, List<Food> _Recipes, Dictionary<Food, int> foodsAmount, List<Customer> _Customers, double _Budget, int trash, Dictionary<Ingredient, int> ingredientsTrashAmount)
         {
             SaveIngredients(_Ingredients);
-            SaveIngredientsProperties(_IngredientsAmount, _IngredientsPrice);
+            SaveIngredientsProperties(_IngredientsAmount, _IngredientsPrice, ingredientsTrashAmount);
             SaveFoods(_Recipes);
             SaveFoodsProperties(foodsAmount);
             SaveRecipeItems(_Recipes);
@@ -232,11 +260,11 @@ namespace ChikenKitchenDataBase
             Budgets.First().Balance = _Budget;
             SaveChanges();
         }
-        public void SaveIngredientsProperties(Dictionary<Ingredient, int> _IngredientsAmount, Dictionary<Ingredient, int> _IngredientsPrice)
+        public void SaveIngredientsProperties(Dictionary<Ingredient, int> _IngredientsAmount, Dictionary<Ingredient, int> _IngredientsPrice, Dictionary<Ingredient, int> ingredientsTrashAmount)
         {
             foreach (Ingredient _ingredient in Ingredients)
             {
-                IngredientProperties ing = new IngredientProperties(_ingredient, _IngredientsAmount[_ingredient], _IngredientsPrice[_ingredient]);
+                IngredientProperties ing = new IngredientProperties(_ingredient, _IngredientsAmount[_ingredient]);
                 ing.IngredientId = Ingredients.Where(i => i.Name == _ingredient.Name).FirstOrDefault().Id;
                 AddWithoutDuplicate(ing);
             }
@@ -246,10 +274,11 @@ namespace ChikenKitchenDataBase
             {
                 try
                 {
-                    IngredientProperties ing = new IngredientProperties(_ingredient, _IngredientsAmount[_ingredient], _IngredientsPrice[_ingredient]);
+                    IngredientProperties ing = new IngredientProperties(_ingredient, _IngredientsAmount[_ingredient], _IngredientsPrice[_ingredient], ingredientsTrashAmount[_ingredient]);
                     ing.IngredientId = Ingredients.Where(i => i.Name == _ingredient.Name).FirstOrDefault().Id;
                     IngredientProperties.Where(ip => ip.IngredientId == ing.IngredientId).FirstOrDefault().Count = ing.Count;
                     IngredientProperties.Where(ip => ip.IngredientId == ing.IngredientId).FirstOrDefault().Price = ing.Price;
+                    IngredientProperties.Where(ip => ip.IngredientId == ing.IngredientId).FirstOrDefault().Trash = ing.Trash;
                 }
                 catch (System.Collections.Generic.KeyNotFoundException) { }
             }

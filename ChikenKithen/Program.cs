@@ -31,6 +31,7 @@ namespace ChikenKithen
                                               applicationContext.Ingredients.ToList(),
                                               applicationContext.GetFoodsAmount(),
                                               applicationContext.GetIngredientsAmount(),
+                                              applicationContext.GetIngredientsTrashAmount(),
                                               applicationContext.GetTrash(),
                                               WarehouseSize.Where(k => k.Key == "max ingredient type").First().Value,
                                               WarehouseSize.Where(k => k.Key == "max dish type").First().Value,
@@ -56,7 +57,7 @@ namespace ChikenKithen
 
                     Console.WriteLine($"{command.FullCommand} -> {command.Result}\n");
 
-                    applicationContext.SaveAll(storage.Ingredients, storage.IngredientsAmount, accounting.IngredientsPrice, kitchen.Storage.Recipes, storage.FoodAmount, hall.Customers, accounting.Budget, storage.Trash);
+                    applicationContext.SaveAll(storage.Ingredients, storage.IngredientsAmount, accounting.IngredientsPrice, kitchen.Storage.Recipes, storage.FoodAmount, hall.Customers, accounting.Budget, storage.Trash, storage.IngredientsTrashAmount);
                     recordsBase.AddRecordIfSomeChange(command,kitchen, accounting);
                 }
                 //*/

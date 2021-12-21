@@ -14,6 +14,7 @@ namespace ChickenKitchenTests
         List<Ingredient> ingredientsList;
         Dictionary<Ingredient, int> ingredientsAmount;
         Dictionary<Ingredient, int> ingredientsPrice;
+        Dictionary<Ingredient, int> ingredientsTrashAmount;
         Food americano;
         Ingredient[] americanoIngredients;
         Food cappuccino;
@@ -51,6 +52,8 @@ namespace ChickenKitchenTests
                 { sugar, 8 }
             };
 
+            ingredientsTrashAmount = new Dictionary<Ingredient, int>();
+
             americanoIngredients = new Ingredient[] { coffee, water };
             americano = new Food("americano", americanoIngredients);
 
@@ -71,7 +74,7 @@ namespace ChickenKitchenTests
 
             double spoilRate = 0;
 
-            storage = new Storage(foodsList, ingredientsList, foodsAmount, ingredientsAmount, 0, maxIngredentType, maxFoodType, totalMax, 0, spoilRate);
+            storage = new Storage(foodsList, ingredientsList, foodsAmount, ingredientsAmount, ingredientsTrashAmount, 0, maxIngredentType, maxFoodType, totalMax, 0, spoilRate);
 
             kitchen = new Kitchen(storage);
         }

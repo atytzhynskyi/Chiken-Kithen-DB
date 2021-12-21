@@ -75,7 +75,7 @@ namespace AdvanceClasses
 
                 if (spoil != 0)
                 {
-                    Storage.Trash += spoil;
+                    Storage.IngredientsTrashAmount[item.Key] += spoil;
                     Console.WriteLine($"Spoil: {item.Key.Name}, amount: {spoil}");
                 }
             }

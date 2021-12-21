@@ -9,6 +9,7 @@ namespace AdvanceClasses
     {
         public List<Ingredient> Ingredients { get; set; }
         public Dictionary<Ingredient, int> IngredientsAmount { get; set; } = new Dictionary<Ingredient, int>();
+        public Dictionary<Ingredient, int> IngredientsTrashAmount { get; set; } = new Dictionary<Ingredient, int>();
 
         public List<Food> Recipes;
         public Dictionary<Food, int> FoodAmount { get; set; } = new Dictionary<Food, int>();
@@ -23,7 +24,7 @@ namespace AdvanceClasses
         private readonly double _spoilRate;
 
         public Storage(List<Food> _Foods, List<Ingredient> _Ingredients, Dictionary<Food, int> foodsAmount,
-            Dictionary<Ingredient, int> _IngredientsAmount, int trash, int _maxIngredientType, int _maxFoodType, int _totalMax, int wasteLimit, double spoilRate)
+            Dictionary<Ingredient, int> _IngredientsAmount, Dictionary<Ingredient, int> ingredientsTrashAmount, int trash, int _maxIngredientType, int _maxFoodType, int _totalMax, int wasteLimit, double spoilRate)
         {
             totalMax = _totalMax;
             maxIngredientType = _maxIngredientType;
@@ -34,6 +35,7 @@ namespace AdvanceClasses
             Recipes = _Foods;
             FoodAmount = foodsAmount;
 
+            IngredientsTrashAmount = ingredientsTrashAmount;
             _wasteLimit = wasteLimit;
             _spoilRate = spoilRate;
             Trash = trash;
@@ -48,6 +50,7 @@ namespace AdvanceClasses
             Ingredients = _Ingredients;
             Recipes = new List<Food>();
             FillDictionaryByZero<Ingredient>(Ingredients, IngredientsAmount);
+            FillDictionaryByZero<Ingredient>(Ingredients, IngredientsTrashAmount);
         }
         public Storage(List<Food> recipes, List<Ingredient> _Ingredients)
         {
@@ -58,6 +61,7 @@ namespace AdvanceClasses
             Ingredients = _Ingredients;
             Recipes = recipes;
             FillDictionaryByZero<Ingredient>(Ingredients, IngredientsAmount);
+            FillDictionaryByZero<Ingredient>(Ingredients, IngredientsTrashAmount);
 
             FillDictionaryByZero<Food>(Recipes, FoodAmount);
         }
@@ -91,13 +95,13 @@ namespace AdvanceClasses
             }
             if (wasted != 0)
             {
-                Trash += wasted;
+                IngredientsTrashAmount[ingredient] += wasted;
                 Console.WriteLine($"Wasted: {ingredientName}, amount: {wasted}");
             }
 
             if (spoil != 0)
             {
-                Trash += spoil;
+                IngredientsTrashAmount[ingredient] += spoil;
                 Console.WriteLine($"Spoil: {ingredientName}, amount: {spoil}");
             }
 
@@ -123,21 +127,18 @@ namespace AdvanceClasses
             }
             if(wasted != 0)
             {
-                int numberOfIngredients = GetNumberOfIngredients(food);
-                Trash += numberOfIngredients * wasted;
+                FillInTrash(food, wasted);
                 Console.WriteLine($"Wasted: {foodName}, amount: {wasted}");
             }
 
             FoodAmount[food] += amount;
         }
 
-        private int GetNumberOfIngredients(Food food)
+        private void FillInTrash(Food food, int times)
         {
-            var numberOfIngredients = 0;
-
             if (object.Equals(food, null))
             {
-                return numberOfIngredients;
+                return;
             }
 
             if (Recipes.Any(f => f.Name == food.Name))
@@ -147,16 +148,14 @@ namespace AdvanceClasses
 
             foreach (var item in food.RecipeIngredients)
             {
-                numberOfIngredients += 1;
+                IngredientsTrashAmount[item] += times;
             }
 
             var groupFoods = food.RecipeFoods.GroupBy(x => x);
             foreach (var item in groupFoods)
             {
-                numberOfIngredients += GetNumberOfIngredients(item.Key);
+                FillInTrash(item.Key, times);
             }
-
-            return numberOfIngredients;
         }
 
         private int GetTotalAmount()
@@ -220,6 +219,11 @@ namespace AdvanceClasses
             return spoil;
         }
 
+        //private int GetNumberOfTrash()
+        //{
+        //    return IngredientsTrashAmount.Values.Sum();
+        //}
+
         public bool isRestaurantPoisoned()
         {
             if (_wasteLimit == 0)
@@ -227,7 +231,7 @@ namespace AdvanceClasses
                 return false;
             }
 
-            return Trash > _wasteLimit;
+            return IngredientsTrashAmount.Values.Sum() > _wasteLimit;
         }
 
     }
