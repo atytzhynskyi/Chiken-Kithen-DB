@@ -66,7 +66,6 @@ namespace ChikenKitchenDataBase
 
             if (!Trashes.Any())
             {
-                Trashes.Add(new Trash());
             }
 
             if (!FoodComponents.Any() || !IngredientComponents.Any())
@@ -180,6 +179,18 @@ namespace ChikenKitchenDataBase
         {
             return Foods.ToList();
         }
+
+        public Dictionary<Ingredient, int> GetTrashes()
+        {
+            Dictionary<Ingredient, int> trashes = new Dictionary<Ingredient, int>();
+            foreach (Trash trash in Trashes)
+            {
+                trashes.Add(Ingredients.Where(i => i.Id == trash.IngredientId).FirstOrDefault(), trash.Count);
+            }
+
+            return trashes;
+        }
+
         public void SetRecipes()
         {
             List<FoodComponent> foodComponentsCopy = FoodComponents.ToList();
@@ -222,29 +233,22 @@ namespace ChikenKitchenDataBase
             }
         }
 
-        //MVO +++ DELETE
-        public int GetTrash()
-        {
-            return Trashes.First().Count;
-        }
-
-        //public Dictionary<Ingredient, int> GetTrashes()
-        //{
-        //    //return Trashes.First().Count;
-            
-        //}
-
-        public void SaveAll(List<Ingredient> _Ingredients, Dictionary<Ingredient, int> _IngredientsAmount, Dictionary<Ingredient, int> _IngredientsPrice, List<Food> _Recipes, Dictionary<Food, int> foodsAmount, List<Customer> _Customers, double _Budget, int trash, Dictionary<Ingredient, int> ingredientsTrashAmount)
+        public void SaveAll(List<Ingredient> _Ingredients, Dictionary<Ingredient, int> _IngredientsAmount, Dictionary<Ingredient, int> _IngredientsPrice, List<Food> _Recipes, Dictionary<Food, int> foodsAmount, List<Customer> _Customers, double _Budget, Dictionary<Ingredient, int> ingredientsTrashAmount, bool throwTrashAway)
         {
             SaveIngredients(_Ingredients);
-            SaveIngredientsProperties(_IngredientsAmount, _IngredientsPrice, ingredientsTrashAmount);
+
+            if (throwTrashAway)
+            {
+                SaveTrashes(ingredientsTrashAmount);
+            }
+
+            SaveIngredientsProperties(_IngredientsAmount, _IngredientsPrice, ingredientsTrashAmount, throwTrashAway);
             SaveFoods(_Recipes);
             SaveFoodsProperties(foodsAmount);
             SaveRecipeItems(_Recipes);
             SaveCustomers(_Customers);
             SaveAllergies(_Customers);
             SaveBudget(_Budget);
-            SaveTrashes(trash);
             SaveChanges();
         }
         public void SaveIngredients(List<Ingredient> _Ingredients)
@@ -260,7 +264,7 @@ namespace ChikenKitchenDataBase
             Budgets.First().Balance = _Budget;
             SaveChanges();
         }
-        public void SaveIngredientsProperties(Dictionary<Ingredient, int> _IngredientsAmount, Dictionary<Ingredient, int> _IngredientsPrice, Dictionary<Ingredient, int> ingredientsTrashAmount)
+        public void SaveIngredientsProperties(Dictionary<Ingredient, int> _IngredientsAmount, Dictionary<Ingredient, int> _IngredientsPrice, Dictionary<Ingredient, int> ingredientsTrashAmount, bool throwTrashAway)
         {
             foreach (Ingredient _ingredient in Ingredients)
             {
@@ -274,7 +278,8 @@ namespace ChikenKitchenDataBase
             {
                 try
                 {
-                    IngredientProperties ing = new IngredientProperties(_ingredient, _IngredientsAmount[_ingredient], _IngredientsPrice[_ingredient], ingredientsTrashAmount[_ingredient]);
+                    var trashAmount = throwTrashAway ? 0 : ingredientsTrashAmount[_ingredient];
+                    IngredientProperties ing = new IngredientProperties(_ingredient, _IngredientsAmount[_ingredient], _IngredientsPrice[_ingredient], trashAmount);
                     ing.IngredientId = Ingredients.Where(i => i.Name == _ingredient.Name).FirstOrDefault().Id;
                     IngredientProperties.Where(ip => ip.IngredientId == ing.IngredientId).FirstOrDefault().Count = ing.Count;
                     IngredientProperties.Where(ip => ip.IngredientId == ing.IngredientId).FirstOrDefault().Price = ing.Price;
@@ -378,9 +383,33 @@ namespace ChikenKitchenDataBase
             }
         }
 
-        public void SaveTrashes(int count)
+        public void SaveTrashes(Dictionary<Ingredient, int> ingredientsTrashAmount)
         {
-            Trashes.First().Count = count;
+
+            foreach (Ingredient _ingredient in Ingredients)
+            {
+                Trash trash = new Trash(_ingredient);
+                trash.IngredientId = Ingredients.Where(i => i.Name == _ingredient.Name).FirstOrDefault().Id;
+                AddWithoutDuplicate(trash);
+            }
+            SaveChanges();
+
+            foreach (Ingredient _ingredient in Ingredients)
+            {
+                try
+                {
+                    Trash trash = new Trash(_ingredient, ingredientsTrashAmount[_ingredient]);
+                    trash.IngredientId = Ingredients.Where(i => i.Name == _ingredient.Name).FirstOrDefault().Id;
+                    Trashes.Where(ip => ip.IngredientId == trash.IngredientId).FirstOrDefault().Count += trash.Count;
+                }
+                catch (System.Collections.Generic.KeyNotFoundException) { }
+            }
+
+            SaveChanges();
+
+
+
+
             SaveChanges();
         }
 
@@ -447,6 +476,15 @@ namespace ChikenKitchenDataBase
                 Allergies.Add(allergy);
                 SaveChanges();
             }
+        }
+
+        public void AddWithoutDuplicate(Trash trash)
+        {
+            if (Trashes.Any(ip => ip.IngredientId == trash.IngredientId))
+            {
+                return;
+            }
+            Trashes.Add(trash);
         }
     }
 }

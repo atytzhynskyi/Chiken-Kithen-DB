@@ -4,6 +4,7 @@ using System.Linq;
 using AdvanceClasses;
 using CommandsModule;
 using jsonReadModule;
+using System.IO;
 
 namespace ChikenKithen
 {
@@ -32,7 +33,6 @@ namespace ChikenKithen
                                               applicationContext.GetFoodsAmount(),
                                               applicationContext.GetIngredientsAmount(),
                                               applicationContext.GetIngredientsTrashAmount(),
-                                              applicationContext.GetTrash(),
                                               WarehouseSize.Where(k => k.Key == "max ingredient type").First().Value,
                                               WarehouseSize.Where(k => k.Key == "max dish type").First().Value,
                                               WarehouseSize.Where(k => k.Key == "total maximum").First().Value,
@@ -57,8 +57,60 @@ namespace ChikenKithen
 
                     Console.WriteLine($"{command.FullCommand} -> {command.Result}\n");
 
-                    applicationContext.SaveAll(storage.Ingredients, storage.IngredientsAmount, accounting.IngredientsPrice, kitchen.Storage.Recipes, storage.FoodAmount, hall.Customers, accounting.Budget, storage.Trash, storage.IngredientsTrashAmount);
+                    applicationContext.SaveAll(
+                        storage.Ingredients, 
+                        storage.IngredientsAmount, 
+                        accounting.IngredientsPrice, 
+                        kitchen.Storage.Recipes, 
+                        storage.FoodAmount, 
+                        hall.Customers, 
+                        accounting.Budget, 
+                        storage.IngredientsTrashAmount, 
+                        storage.ThrowTrashAway);
+
                     recordsBase.AddRecordIfSomeChange(command,kitchen, accounting);
+
+                    if (storage.ThrowTrashAway)
+                    {
+                        var fileName = $@"..\..\..\TrashHistory.txt";
+
+                        if (!File.Exists(fileName))
+                        {
+                            File.WriteAllText(fileName, "");
+                        }
+
+                        var trashHistory = File.ReadAllText(fileName);
+
+
+                        var currentTrash = "Current trash: ";
+
+                        foreach (var trash in storage.IngredientsTrashAmount)
+                        {
+                            if (trash.Value > 0)
+                            {
+                                currentTrash += $"{trash.Key.Name}: {trash.Value},";
+                            }
+                        }
+
+                        var trashes = applicationContext.GetTrashes();
+
+                        var totalTrash = "Total trash: ";
+                        foreach (var trash in trashes)
+                        {
+                            if (trash.Value > 0)
+                            {
+                                totalTrash += $"{trash.Key.Name}: {trash.Value},";
+                            }
+                        }
+
+                        trashHistory += "\n=================================\n" + currentTrash + "\n" + totalTrash + "\n";
+
+                        File.WriteAllText(fileName, trashHistory);
+
+
+                        storage.IngredientsTrashAmount = applicationContext.GetIngredientsTrashAmount();
+                        storage.ThrowTrashAway = false;
+                    }
                 }
                 //*/
             }

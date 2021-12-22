@@ -15,7 +15,7 @@ namespace CommandsModule
 
             if (kitchen.Storage.isRestaurantPoisoned())
             {
-                if (commandType.Trim().ToLower() == "throw trash away")
+                if (commandType == "Throw trash away")
                 {
                     return new ThrowTrashAway(kitchen, commandString);
                 }
@@ -51,6 +51,9 @@ namespace CommandsModule
                     break;
                 case ("End Day"):
                     command = new EndDay(commandString, accounting);
+                    break;
+                case ("Throw trash away"):
+                    command = new ThrowTrashAway(kitchen, commandString);
                     break;
                 default:
                     command = new Default("Command not found");

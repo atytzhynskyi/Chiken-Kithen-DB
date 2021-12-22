@@ -23,7 +23,8 @@ namespace CommandsModule
 
         public void ExecuteCommand()
         {
-            throw new NotImplementedException();
+            kitchen.Storage.ThrowTrashAway = true;
+            Result = "look file \"TrashHistory.txt\"";
         }
     }
 }
