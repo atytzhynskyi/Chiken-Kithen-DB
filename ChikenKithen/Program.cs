@@ -4,7 +4,6 @@ using System.Linq;
 using AdvanceClasses;
 using CommandsModule;
 using jsonReadModule;
-using System.IO;
 
 namespace ChikenKithen
 {
@@ -15,7 +14,7 @@ namespace ChikenKithen
             using (ApplicationContext applicationContext = new ApplicationContext())
             {
                 //applicationContext.Database.EnsureDeleted();
-                
+
                 applicationContext.InitializeFromFiles();
                 applicationContext.SetPropertiesIngredientsId();
 
@@ -38,10 +37,13 @@ namespace ChikenKithen
                                               WarehouseSize.Where(k => k.Key == "total maximum").First().Value,
                                               WarehouseSize.Where(k => k.Key == "waste limit").First().Value,
                                               spoilConfig.Where(k => k.Key == "spoil rate").First().Value);
-                
+
                 Kitchen kitchen = new Kitchen(storage);
                 Hall hall = new Hall(applicationContext.GetCustomers(), kitchen.Storage.Recipes);
                 RecordsBase recordsBase = new RecordsBase(accounting, kitchen);
+
+                //prepare of trash for passing to save in the file after calling of command "Throw trash away"
+                var trashController = new TrashController();
 
                 while (2 + 2 != 5)
                 {
@@ -58,70 +60,38 @@ namespace ChikenKithen
                     Console.WriteLine($"{command.FullCommand} -> {command.Result}\n");
 
                     applicationContext.SaveAll(
-                        storage.Ingredients, 
-                        storage.IngredientsAmount, 
-                        accounting.IngredientsPrice, 
-                        kitchen.Storage.Recipes, 
-                        storage.FoodAmount, 
-                        hall.Customers, 
-                        accounting.Budget, 
-                        storage.IngredientsTrashAmount, 
+                        storage.Ingredients,
+                        storage.IngredientsAmount,
+                        accounting.IngredientsPrice,
+                        kitchen.Storage.Recipes,
+                        storage.FoodAmount,
+                        hall.Customers,
+                        accounting.Budget,
+                        storage.IngredientsTrashAmount,
                         storage.ThrowTrashAway);
 
-                    recordsBase.AddRecordIfSomeChange(command,kitchen, accounting);
+                    recordsBase.AddRecordIfSomeChange(command, kitchen, accounting);
 
                     if (storage.ThrowTrashAway)
                     {
-                        var fileName = $@"..\..\..\TrashHistory.txt";
+                        trashController.SaveHistory(applicationContext.GetTrashes(), storage.IngredientsTrashAmount);
 
-                        if (!File.Exists(fileName))
-                        {
-                            File.WriteAllText(fileName, "");
-                        }
-
-                        var trashHistory = File.ReadAllText(fileName);
-
-
-                        var currentTrash = "Current trash: ";
-
-                        foreach (var trash in storage.IngredientsTrashAmount)
-                        {
-                            if (trash.Value > 0)
-                            {
-                                currentTrash += $"{trash.Key.Name}: {trash.Value},";
-                            }
-                        }
-
-                        var trashes = applicationContext.GetTrashes();
-
-                        var totalTrash = "Total trash: ";
-                        foreach (var trash in trashes)
-                        {
-                            if (trash.Value > 0)
-                            {
-                                totalTrash += $"{trash.Key.Name}: {trash.Value},";
-                            }
-                        }
-
-                        trashHistory += "\n=================================\n" + currentTrash + "\n" + totalTrash + "\n";
-
-                        File.WriteAllText(fileName, trashHistory);
-
-
+                        //clearing the amount of trash
                         storage.IngredientsTrashAmount = applicationContext.GetIngredientsTrashAmount();
                         storage.ThrowTrashAway = false;
                     }
                 }
-                //*/
+
             }
         }
+
         static void ShowWarehouse(Kitchen kitchen)
         {
-            foreach(var ingredient in kitchen.Storage.IngredientsAmount.Where(i => i.Value != 0))
+            foreach (var ingredient in kitchen.Storage.IngredientsAmount.Where(i => i.Value != 0))
             {
                 Console.Write($"{ingredient.Key.Name} {ingredient.Value}, ");
             }
-            foreach(var food in kitchen.Storage.FoodAmount.Where(f=>f.Value != 0))
+            foreach (var food in kitchen.Storage.FoodAmount.Where(f => f.Value != 0))
             {
                 Console.Write($"{food.Key.Name} {food.Value}, ");
             }

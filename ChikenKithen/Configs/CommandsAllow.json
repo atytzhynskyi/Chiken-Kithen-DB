@@ -4,5 +4,6 @@
   "Buy": false,
   "Cook": true,
   "Order": true,
-  "Table": true
+  "Table": true,
+  "Throw trash away":  true
 }

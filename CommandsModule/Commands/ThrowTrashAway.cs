@@ -1,5 +1,4 @@
 ﻿using AdvanceClasses;
-using System;
 
 namespace CommandsModule
 {
@@ -18,7 +17,6 @@ namespace CommandsModule
 
             FullCommand = _FullCommand;
             CommandType = FullCommand.Split(", ")[0];
-
         }
 
         public void ExecuteCommand()
