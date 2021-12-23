@@ -46,13 +46,19 @@ namespace CommandsModule
         public void ExecuteCommand()
         {
             SetOrdersFromCommand();
-            if(!object.Equals(Result, null)) return;
+            if (!object.Equals(Result, null)) return;
 
             SetIngredientsAndFoods();
             if (!object.Equals(Result, null)) return;
-            
+
             SetResultIfCommandIssues();
             if (!object.Equals(Result, null)) return;
+
+            if (orderOption != "No")
+            {
+                //maybe, it's need to run only in the "OrderIngredients()"
+                kitchen.Storage.RunSpoiling();
+            }
 
             switch (orderOption)
             {
@@ -75,9 +81,9 @@ namespace CommandsModule
 
         private void SetIngredientsAndFoods()
         {
-            foreach(var order in orders)
+            foreach (var order in orders)
             {
-                if(!object.Equals(kitchen.Storage.GetIngredient(order.Key), null))
+                if (!object.Equals(kitchen.Storage.GetIngredient(order.Key), null))
                 {
                     Ingredients.Add(kitchen.Storage.GetIngredient(order.Key));
                     continue;
@@ -107,7 +113,7 @@ namespace CommandsModule
         private void SetOrdersFromCommand()
         {
             Regex regex = new Regex(@" (.+?), (\d+)");
-            foreach(Match m in regex.Matches(FullCommand))
+            foreach (Match m in regex.Matches(FullCommand))
             {
                 orders.Add(m.Groups[1].ToString(), Convert.ToInt32(m.Groups[2].ToString()));
             }
@@ -141,7 +147,7 @@ namespace CommandsModule
         private void OrderIngredients()
         {
             double pricesSum = 0;
-            Ingredients.ForEach(i => pricesSum += accounting.IngredientsPrice[i]*orders[i.Name]);
+            Ingredients.ForEach(i => pricesSum += accounting.IngredientsPrice[i] * orders[i.Name]);
 
             double finalPrice = pricesSum + accounting.CalculateTransactionTax(pricesSum);
 
@@ -157,7 +163,7 @@ namespace CommandsModule
             {
                 kitchen.Storage.AddIngredientAmount(ingredient.Name, orders[ingredient.Name]);
             }
-            Result = $"success; money used:{finalPrice}; tax:{Math.Round(finalPrice-pricesSum, 2)}";
+            Result = $"success; money used:{finalPrice}; tax:{Math.Round(finalPrice - pricesSum, 2)}";
         }
 
         private void OrderFoods()
@@ -168,9 +174,9 @@ namespace CommandsModule
 
 
             double finalPrice = pricesSum + accounting.CalculateTransactionTax(pricesSum);
-            
 
-            if(finalPrice > accounting.Budget)
+
+            if (finalPrice > accounting.Budget)
             {
                 Result = "Not enough money";
                 return;

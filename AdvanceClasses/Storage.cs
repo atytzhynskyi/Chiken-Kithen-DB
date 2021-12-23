@@ -74,9 +74,6 @@ namespace AdvanceClasses
         }
         public void AddIngredientAmount(string ingredientName, int amount)
         {
-            var spoil = GetNumberOfSpoil(amount, _spoilRate);
-            amount -= spoil;
-
             var ingredient = Ingredients.Where(x => x.Name == ingredientName).FirstOrDefault();
             int newTotalAmount = GetTotalAmount() + amount;
             int ingredientAmount = IngredientsAmount[ingredient];
@@ -96,12 +93,6 @@ namespace AdvanceClasses
             {
                 IngredientsTrashAmount[ingredient] += wasted;
                 Console.WriteLine($"Wasted: {ingredientName}, amount: {wasted}");
-            }
-
-            if (spoil != 0)
-            {
-                IngredientsTrashAmount[ingredient] += spoil;
-                Console.WriteLine($"Spoil: {ingredientName}, amount: {spoil}");
             }
 
             IngredientsAmount[ingredient] += amount;
