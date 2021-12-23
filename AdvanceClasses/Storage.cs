@@ -67,9 +67,9 @@ namespace AdvanceClasses
 
         private void FillDictionaryByZero<T>(List<T> list, Dictionary<T, int> dict)
         {
-            foreach(var item in list)
+            foreach (var item in list)
             {
-                dict.Add(item,0);
+                dict.Add(item, 0);
             }
         }
         public void AddIngredientAmount(string ingredientName, int amount)
@@ -124,7 +124,7 @@ namespace AdvanceClasses
                 wasted += foodAmount + amount - maxFoodType;
                 amount -= foodAmount + amount - maxFoodType;
             }
-            if(wasted != 0)
+            if (wasted != 0)
             {
                 FillInTrash(food, wasted);
                 Console.WriteLine($"Wasted: {foodName}, amount: {wasted}");
@@ -218,10 +218,22 @@ namespace AdvanceClasses
             return spoil;
         }
 
-        //private int GetNumberOfTrash()
-        //{
-        //    return IngredientsTrashAmount.Values.Sum();
-        //}
+        public void RunSpoiling()
+        {
+            Dictionary<Ingredient, int> ingredientsAmountCopy = new Dictionary<Ingredient, int>(IngredientsAmount);
+            foreach (var item in ingredientsAmountCopy)
+            {
+                var spoil = GetNumberOfSpoil(item.Value);
+
+                if (spoil != 0)
+                {
+                    IngredientsAmount[item.Key] -= spoil;
+                    IngredientsTrashAmount[item.Key] += spoil;
+                    Console.WriteLine($"Spoil: {item.Key.Name}, amount: {spoil}");
+                }
+            }
+
+        }
 
         public bool isRestaurantPoisoned()
         {

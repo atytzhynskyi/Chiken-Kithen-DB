@@ -57,7 +57,7 @@ namespace CommandsModule
                 return;
             }
             hall.GetPaid(accounting, kitchen.Storage.Recipes, Customer);
-            Result = $"{Customer.Name}, {Customer.budget + price}, {Customer.Order.Name}, {price} -> success; money amount: {Math.Round(price - tax,2)}; tax: {tax};";
+            Result = $"{Customer.Name}, {Customer.budget + price}, {Customer.Order.Name}, {price} -> success; money amount: {Math.Round(price - tax, 2)}; tax: {tax};";
         }
 
         private void ExecuteAllergicBuy(double price)
@@ -147,14 +147,7 @@ namespace CommandsModule
                 return;
             }
 
-
-            if (!kitchen.IsEnoughIngredients(Food))
-            {
-                Result = "Can't order: dont have enough ingredients";
-                return;
-            }
-
-            //storage has enough ingredients and now let's check of ingredients on spoiling (point 6.8.2)
+            //check of ingredients on spoiling (point 6.8.2)
             //after it might will not be able enough ingredient
             kitchen.CheckSpoilIngredient(Food);
 
