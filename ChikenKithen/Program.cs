@@ -32,6 +32,7 @@ namespace ChikenKithen
                                               applicationContext.GetFoodsAmount(),
                                               applicationContext.GetIngredientsAmount(),
                                               applicationContext.GetIngredientsTrashAmount(),
+                                              applicationContext.GetTotalTrashAmount(),
                                               WarehouseSize.Where(k => k.Key == "max ingredient type").First().Value,
                                               WarehouseSize.Where(k => k.Key == "max dish type").First().Value,
                                               WarehouseSize.Where(k => k.Key == "total maximum").First().Value,
@@ -41,9 +42,6 @@ namespace ChikenKithen
                 Kitchen kitchen = new Kitchen(storage);
                 Hall hall = new Hall(applicationContext.GetCustomers(), kitchen.Storage.Recipes);
                 RecordsBase recordsBase = new RecordsBase(accounting, kitchen);
-
-                //prepare of trash for passing to save in the file after calling of command "Throw trash away"
-                var trashController = new TrashController();
 
                 while (2 + 2 != 5)
                 {
@@ -68,18 +66,9 @@ namespace ChikenKithen
                         hall.Customers,
                         accounting.Budget,
                         storage.IngredientsTrashAmount,
-                        storage.ThrowTrashAway);
+                        storage.TotalTrashAmount);
 
                     recordsBase.AddRecordIfSomeChange(command, kitchen, accounting);
-
-                    if (storage.ThrowTrashAway)
-                    {
-                        trashController.SaveHistory(applicationContext.GetTrashes(), storage.IngredientsTrashAmount);
-
-                        //clearing the amount of trash
-                        storage.IngredientsTrashAmount = applicationContext.GetIngredientsTrashAmount();
-                        storage.ThrowTrashAway = false;
-                    }
                 }
 
             }

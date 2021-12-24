@@ -10,6 +10,7 @@ namespace AdvanceClasses
         public List<Ingredient> Ingredients { get; set; }
         public Dictionary<Ingredient, int> IngredientsAmount { get; set; } = new Dictionary<Ingredient, int>();
         public Dictionary<Ingredient, int> IngredientsTrashAmount { get; set; } = new Dictionary<Ingredient, int>();
+        public Dictionary<Ingredient, int> TotalTrashAmount { get; set; } = new Dictionary<Ingredient, int>();
 
         public List<Food> Recipes;
         public Dictionary<Food, int> FoodAmount { get; set; } = new Dictionary<Food, int>();
@@ -21,10 +22,17 @@ namespace AdvanceClasses
         private readonly int _wasteLimit;
         private readonly double _spoilRate;
 
-        public bool ThrowTrashAway;
-
-        public Storage(List<Food> _Foods, List<Ingredient> _Ingredients, Dictionary<Food, int> foodsAmount,
-            Dictionary<Ingredient, int> _IngredientsAmount, Dictionary<Ingredient, int> ingredientsTrashAmount, int _maxIngredientType, int _maxFoodType, int _totalMax, int wasteLimit, double spoilRate)
+        public Storage(List<Food> _Foods,
+            List<Ingredient> _Ingredients,
+            Dictionary<Food, int> foodsAmount,
+            Dictionary<Ingredient, int> _IngredientsAmount,
+            Dictionary<Ingredient, int> ingredientsTrashAmount,
+            Dictionary<Ingredient, int> totalTrashAmount,
+            int _maxIngredientType,
+            int _maxFoodType,
+            int _totalMax,
+            int wasteLimit,
+            double spoilRate)
         {
             totalMax = _totalMax;
             maxIngredientType = _maxIngredientType;
@@ -36,6 +44,7 @@ namespace AdvanceClasses
             FoodAmount = foodsAmount;
 
             IngredientsTrashAmount = ingredientsTrashAmount;
+            TotalTrashAmount = totalTrashAmount;
             _wasteLimit = wasteLimit;
             _spoilRate = spoilRate;
         }
