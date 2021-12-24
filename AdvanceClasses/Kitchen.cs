@@ -66,17 +66,10 @@ namespace AdvanceClasses
                 food = Storage.Recipes.Find(f => f.Name == food.Name);
             }
 
-            //group ingredient because recipe can contain several ingredients of one type
-            var groupIngredients = food.RecipeIngredients.GroupBy(x => x);
-            foreach (var item in groupIngredients)
+            foreach (var item in food.RecipeIngredients)
             {
-                var spoil = Storage.GetNumberOfSpoil(Storage.IngredientsAmount[item.Key]);
-                Storage.IngredientsAmount[item.Key] -= spoil;
-
-                if (spoil != 0)
-                {
-                    Console.WriteLine($"Spoil: {item.Key.Name}, amount: {spoil}");
-                }
+                Storage.RunSpoiling();
+                break;
             }
 
             //same for food
@@ -91,7 +84,6 @@ namespace AdvanceClasses
 
             return;
         }
-
 
         public bool IsEnoughIngredients(Food food)
         {

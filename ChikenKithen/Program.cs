@@ -14,7 +14,7 @@ namespace ChikenKithen
             using (ApplicationContext applicationContext = new ApplicationContext())
             {
                 //applicationContext.Database.EnsureDeleted();
-                
+
                 applicationContext.InitializeFromFiles();
                 applicationContext.SetPropertiesIngredientsId();
 
@@ -31,11 +31,14 @@ namespace ChikenKithen
                                               applicationContext.Ingredients.ToList(),
                                               applicationContext.GetFoodsAmount(),
                                               applicationContext.GetIngredientsAmount(),
+                                              applicationContext.GetIngredientsTrashAmount(),
+                                              applicationContext.GetTotalTrashAmount(),
                                               WarehouseSize.Where(k => k.Key == "max ingredient type").First().Value,
                                               WarehouseSize.Where(k => k.Key == "max dish type").First().Value,
                                               WarehouseSize.Where(k => k.Key == "total maximum").First().Value,
+                                              WarehouseSize.Where(k => k.Key == "waste limit").First().Value,
                                               spoilConfig.Where(k => k.Key == "spoil rate").First().Value);
-                
+
                 Kitchen kitchen = new Kitchen(storage);
                 Hall hall = new Hall(applicationContext.GetCustomers(), kitchen.Storage.Recipes);
                 RecordsBase recordsBase = new RecordsBase(accounting, kitchen);
@@ -52,22 +55,32 @@ namespace ChikenKithen
 
                     command.ExecuteCommand();
 
-                    Console.WriteLine($"{command.FullCommand} -> {command.Result}");
+                    Console.WriteLine($"{command.FullCommand} -> {command.Result}\n");
 
+                    applicationContext.SaveAll(
+                        storage.Ingredients,
+                        storage.IngredientsAmount,
+                        accounting.IngredientsPrice,
+                        kitchen.Storage.Recipes,
+                        storage.FoodAmount,
+                        hall.Customers,
+                        accounting.Budget,
+                        storage.IngredientsTrashAmount,
+                        storage.TotalTrashAmount);
 
-                    applicationContext.SaveAll(storage.Ingredients, storage.IngredientsAmount, accounting.IngredientsPrice, kitchen.Storage.Recipes, hall.Customers, accounting.Budget);
-                    recordsBase.AddRecordIfSomeChange(command,kitchen, accounting);
+                    recordsBase.AddRecordIfSomeChange(command, kitchen, accounting);
                 }
-                //*/
+
             }
         }
+
         static void ShowWarehouse(Kitchen kitchen)
         {
-            foreach(var ingredient in kitchen.Storage.IngredientsAmount.Where(i => i.Value != 0))
+            foreach (var ingredient in kitchen.Storage.IngredientsAmount.Where(i => i.Value != 0))
             {
                 Console.Write($"{ingredient.Key.Name} {ingredient.Value}, ");
             }
-            foreach(var food in kitchen.Storage.FoodAmount.Where(f=>f.Value != 0))
+            foreach (var food in kitchen.Storage.FoodAmount.Where(f => f.Value != 0))
             {
                 Console.Write($"{food.Key.Name} {food.Value}, ");
             }

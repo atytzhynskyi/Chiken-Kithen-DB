@@ -9,6 +9,8 @@ namespace AdvanceClasses
     {
         public List<Ingredient> Ingredients { get; set; }
         public Dictionary<Ingredient, int> IngredientsAmount { get; set; } = new Dictionary<Ingredient, int>();
+        public Dictionary<Ingredient, int> IngredientsTrashAmount { get; set; } = new Dictionary<Ingredient, int>();
+        public Dictionary<Ingredient, int> TotalTrashAmount { get; set; } = new Dictionary<Ingredient, int>();
 
         public List<Food> Recipes;
         public Dictionary<Food, int> FoodAmount { get; set; } = new Dictionary<Food, int>();
@@ -17,10 +19,20 @@ namespace AdvanceClasses
         private readonly int maxFoodType;
         private readonly int totalMax;
 
+        private readonly int _wasteLimit;
         private readonly double _spoilRate;
 
-        public Storage(List<Food> _Foods, List<Ingredient> _Ingredients, Dictionary<Food, int> _FoodAmount,
-            Dictionary<Ingredient, int> _IngredientsAmount, int _maxIngredientType, int _maxFoodType, int _totalMax, double spoilRate)
+        public Storage(List<Food> _Foods,
+            List<Ingredient> _Ingredients,
+            Dictionary<Food, int> foodsAmount,
+            Dictionary<Ingredient, int> _IngredientsAmount,
+            Dictionary<Ingredient, int> ingredientsTrashAmount,
+            Dictionary<Ingredient, int> totalTrashAmount,
+            int _maxIngredientType,
+            int _maxFoodType,
+            int _totalMax,
+            int wasteLimit,
+            double spoilRate)
         {
             totalMax = _totalMax;
             maxIngredientType = _maxIngredientType;
@@ -29,8 +41,11 @@ namespace AdvanceClasses
             Ingredients = _Ingredients;
             IngredientsAmount = _IngredientsAmount;
             Recipes = _Foods;
-            FoodAmount = _FoodAmount;
+            FoodAmount = foodsAmount;
 
+            IngredientsTrashAmount = ingredientsTrashAmount;
+            TotalTrashAmount = totalTrashAmount;
+            _wasteLimit = wasteLimit;
             _spoilRate = spoilRate;
         }
 
@@ -43,6 +58,7 @@ namespace AdvanceClasses
             Ingredients = _Ingredients;
             Recipes = new List<Food>();
             FillDictionaryByZero<Ingredient>(Ingredients, IngredientsAmount);
+            FillDictionaryByZero<Ingredient>(Ingredients, IngredientsTrashAmount);
         }
         public Storage(List<Food> recipes, List<Ingredient> _Ingredients)
         {
@@ -53,22 +69,20 @@ namespace AdvanceClasses
             Ingredients = _Ingredients;
             Recipes = recipes;
             FillDictionaryByZero<Ingredient>(Ingredients, IngredientsAmount);
+            FillDictionaryByZero<Ingredient>(Ingredients, IngredientsTrashAmount);
 
             FillDictionaryByZero<Food>(Recipes, FoodAmount);
         }
 
         private void FillDictionaryByZero<T>(List<T> list, Dictionary<T, int> dict)
         {
-            foreach(var item in list)
+            foreach (var item in list)
             {
-                dict.Add(item,0);
+                dict.Add(item, 0);
             }
         }
         public void AddIngredientAmount(string ingredientName, int amount)
         {
-            var spoil = GetNumberOfSpoil(amount, _spoilRate);
-            amount -= spoil;
-
             var ingredient = Ingredients.Where(x => x.Name == ingredientName).FirstOrDefault();
             int newTotalAmount = GetTotalAmount() + amount;
             int ingredientAmount = IngredientsAmount[ingredient];
@@ -86,12 +100,8 @@ namespace AdvanceClasses
             }
             if (wasted != 0)
             {
+                IngredientsTrashAmount[ingredient] += wasted;
                 Console.WriteLine($"Wasted: {ingredientName}, amount: {wasted}");
-            }
-
-            if (spoil != 0)
-            {
-                Console.WriteLine($"Spoil: {ingredientName}, amount: {spoil}");
             }
 
             IngredientsAmount[ingredient] += amount;
@@ -114,13 +124,39 @@ namespace AdvanceClasses
                 wasted += foodAmount + amount - maxFoodType;
                 amount -= foodAmount + amount - maxFoodType;
             }
-            if(wasted != 0)
+            if (wasted != 0)
             {
+                FillInTrash(food, wasted);
                 Console.WriteLine($"Wasted: {foodName}, amount: {wasted}");
             }
 
             FoodAmount[food] += amount;
         }
+
+        private void FillInTrash(Food food, int times)
+        {
+            if (object.Equals(food, null))
+            {
+                return;
+            }
+
+            if (Recipes.Any(f => f.Name == food.Name))
+            {
+                food = Recipes.Find(f => f.Name == food.Name);
+            }
+
+            foreach (var item in food.RecipeIngredients)
+            {
+                IngredientsTrashAmount[item] += times;
+            }
+
+            var groupFoods = food.RecipeFoods.GroupBy(x => x);
+            foreach (var item in groupFoods)
+            {
+                FillInTrash(item.Key, times);
+            }
+        }
+
         private int GetTotalAmount()
         {
             return IngredientsAmount.Values.Sum() + FoodAmount.Values.Sum();
@@ -180,6 +216,33 @@ namespace AdvanceClasses
             }
 
             return spoil;
+        }
+
+        public void RunSpoiling()
+        {
+            Dictionary<Ingredient, int> ingredientsAmountCopy = new Dictionary<Ingredient, int>(IngredientsAmount);
+            foreach (var item in ingredientsAmountCopy)
+            {
+                var spoil = GetNumberOfSpoil(item.Value);
+
+                if (spoil != 0)
+                {
+                    IngredientsAmount[item.Key] -= spoil;
+                    IngredientsTrashAmount[item.Key] += spoil;
+                    Console.WriteLine($"Spoil: {item.Key.Name}, amount: {spoil}");
+                }
+            }
+
+        }
+
+        public bool isRestaurantPoisoned()
+        {
+            if (_wasteLimit == 0)
+            {
+                return false;
+            }
+
+            return IngredientsTrashAmount.Values.Sum() > _wasteLimit;
         }
 
     }
