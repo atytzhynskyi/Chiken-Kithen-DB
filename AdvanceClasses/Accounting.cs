@@ -57,9 +57,9 @@ namespace AdvanceClasses
 
             return Math.Round(price,2);
         }
-        public double CalculateFoodMenuPrice(List<Food> Recipes, Food food)
+        public double CalculateFoodMenuPrice(List<Food> Recipes, Food food, bool isOrder = false)
         {
-            return Math.Round(CalculateFoodCostPrice(Recipes, food) * (1 + marginProfit), 2);
+            return Math.Round(CalculateFoodCostPrice(Recipes, food) * (1 + (isOrder ? 0 : marginProfit)), 2);
         }
         public void PayDayTax()
         {
@@ -67,7 +67,15 @@ namespace AdvanceClasses
         }
         public double CalculateDailyTax()
         {
-            double profit = Budget - startBudget - CollectedTax;
+            //double profit = Budget - startBudget - CollectedTax;
+
+            //CollectedTax doesn't matter because we added amount to budget without tax when we have "buy command"
+            //and added amount to budget with tax when we have "order command"
+            //Therefore, when we subtract budget before and after we get a profit
+            //in the other words after "buy" we have new budget without needed to pay a tax
+            //and after "order" our budget decrease and new budget without needed to pay a tax too
+            //and we get the same conclusion - a profit it's subtract a budget before and after
+            double profit = Budget - startBudget;
             double dailyTax = profit * this.dailyTax;
 
             if (dailyTax <= 0) return 0;
@@ -77,13 +85,13 @@ namespace AdvanceClasses
         public void UseMoney(double amount)
         {
             Budget -= Math.Round(amount + CalculateTransactionTax(amount), 2);
-            CollectedTax += Math.Round(CalculateTransactionTax(amount), 2);
+            //CollectedTax += Math.Round(CalculateTransactionTax(amount), 2);
             Budget = Math.Round(Budget, 2);
         }
         public void AddMoney(double amount)
         {
             Budget = Math.Round(Budget + amount - CalculateTransactionTax(amount), 2);
-            CollectedTax = Math.Round(CollectedTax + CalculateTransactionTax(amount), 2);
+            //CollectedTax = Math.Round(CollectedTax + CalculateTransactionTax(amount), 2);
         }
         public void AddMoneyWithoutTax(double amount)
         {
