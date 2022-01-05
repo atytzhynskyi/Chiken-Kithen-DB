@@ -9,7 +9,6 @@ namespace AdvanceClasses
     public class Hall
     {
         const string DISCOUNT_CONFIG_FILE_PATH = @"..\..\..\Configs\Discount.json";
-        const string TIPS_CONFIG_FILE_PATH = @"..\..\..\Configs\TipConfig.json";
 
         public List<Customer> Customers { get; set; }
 
@@ -63,6 +62,7 @@ namespace AdvanceClasses
 
             amountOfTip = amountOfTip <= customer.budget ? amountOfTip : customer.budget;
             customer.budget -= amountOfTip;
+            customer.budget = Math.Round(customer.budget, 2);
 
             accounting.AddTip(amountOfTip);
         }
@@ -79,20 +79,6 @@ namespace AdvanceClasses
             }
 
             return (double)0;
-        }
-
-        public int GetTipValueFromFile()
-        {
-            var parsedValues = JsonRead.ReadFromJson<int>(TIPS_CONFIG_FILE_PATH).Values;
-
-            if (!object.Equals(parsedValues, null))
-            {
-                var maxTips = parsedValues.FirstOrDefault();
-
-                return maxTips;
-            }
-
-            return 0;
         }
 
         public bool IsDiscountAppliable(Customer customer)
@@ -130,17 +116,10 @@ namespace AdvanceClasses
             return tip;
         }
 
-        public double GetAmountOfTips(Customer customer, double count)
-        {
-            var tip = GetTip(GetTipValueFromFile());
-            return GetAmountOfTips(customer, count, tip);
-        }
-
         public double GetAmountOfTips(Customer customer, double count, int tip)
         {
             return Math.Round(count * tip / 100, 2);
         }
-
 
     }
 }

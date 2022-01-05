@@ -9,31 +9,35 @@ namespace AdvanceClasses
     {
         public double Budget { get; private set; }
         public double CollectedTax { get; private set; } = 0;
-        public double Tips { get; private set; } = 0;
+        public double CollectedTip { get; private set; } = 0;
         public Dictionary<Ingredient, int> IngredientsPrice { get; set; } = new Dictionary<Ingredient, int>();
 
         public readonly double transactionTax;
         public readonly double dailyTax;
         public readonly double marginProfit;
-        
+
+        public readonly int maxTip;
+
         readonly double startBudget;
 
-        public Accounting(double _Budget, int _transactionTax, int _marginProfit, int _dailyTax, Dictionary<Ingredient, int> IngredientsPrice)
+        public Accounting(double _Budget, int _transactionTax, int _marginProfit, int _dailyTax, int _maxTip, Dictionary<Ingredient, int> IngredientsPrice)
         {
             Budget = _Budget;
             startBudget = _Budget;
             transactionTax = Math.Round((float)_transactionTax/100,2);
             marginProfit = Math.Round((float)_marginProfit /100, 2);
             dailyTax = Math.Round((float)_dailyTax /100, 2);
+            maxTip = _maxTip;
             this.IngredientsPrice = IngredientsPrice;
         }
-        public Accounting(double _Budget, double _transactionTax, double _marginProfit, double _dailyTax, Dictionary<Ingredient, int> IngredientsPrice)
+        public Accounting(double _Budget, double _transactionTax, double _marginProfit, double _dailyTax, int _maxTip, Dictionary<Ingredient, int> IngredientsPrice)
         {
             Budget = _Budget;
             startBudget = _Budget;
             transactionTax = _transactionTax;
             marginProfit = _marginProfit;
             dailyTax = _dailyTax;
+            maxTip = _maxTip;
             this.IngredientsPrice = IngredientsPrice;
         }
 
@@ -77,7 +81,7 @@ namespace AdvanceClasses
             //and after "order" our budget decrease and new budget without needed to pay a tax too
             //and we get the same conclusion - a profit it's subtract a budget before and after
             //Tips we cannot include in profit for daily tax
-            double profit = Budget - startBudget - Tips;
+            double profit = Budget - startBudget - CollectedTip;
             double dailyTax = profit * this.dailyTax;
 
             if (dailyTax <= 0) return 0;
@@ -102,8 +106,8 @@ namespace AdvanceClasses
         }
         public void AddTip(double amount)
         {
-            Tips += amount;
-            Tips = Math.Round(Tips, 2);
+            CollectedTip += amount;
+            CollectedTip = Math.Round(CollectedTip, 2);
 
             Budget += amount;
         }

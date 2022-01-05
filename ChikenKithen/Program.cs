@@ -19,10 +19,12 @@ namespace ChikenKithen
                 applicationContext.SetPropertiesIngredientsId();
 
                 var TaxConfigs = JsonRead.ReadFromJson<int>(@"..\..\..\Configs\TaxConfigs.json");
+                var tipConfig = JsonRead.ReadFromJson<int>(@"..\..\..\Configs\TipConfig.json");
                 Accounting accounting = new Accounting(applicationContext.GetBudget(),
                                                         TaxConfigs.Where(k => k.Key == "transaction tax").First().Value,
                                                         TaxConfigs.Where(k => k.Key == "profit margin").First().Value,
                                                         TaxConfigs.Where(k => k.Key == "daily tax").First().Value,
+                                                        tipConfig.Where(k => k.Key == "max tip").First().Value,
                                                         applicationContext.GetIngredientsPrice());
 
                 var WarehouseSize = JsonRead.ReadFromJson<int>(@"..\..\..\Configs\WarehouseSize.json");

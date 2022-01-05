@@ -59,7 +59,7 @@ namespace CommandsModule
 
             var customerBudgetOld = Customer.budget;
 
-            var tip = hall.GetTip(hall.GetTipValueFromFile());
+            var tip = hall.GetTip(accounting.maxTip);
             var amountOfTip = hall.isTip() ? hall.GetAmountOfTips(Customer, price, tip) : 0;
 
             hall.GetPaid(accounting, kitchen.Storage.Recipes, Customer, amountOfTip);
