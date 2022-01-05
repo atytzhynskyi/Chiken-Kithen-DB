@@ -56,8 +56,17 @@ namespace CommandsModule
                 ExecuteAllergicBuy(price);
                 return;
             }
-            hall.GetPaid(accounting, kitchen.Storage.Recipes, Customer);
-            Result = $"{Customer.Name}, {Customer.budget + price}, {Customer.Order.Name}, {price} -> success; money amount: {Math.Round(price - tax, 2)}; tax: {tax};";
+
+            var customerBudgetOld = Customer.budget;
+
+            var tip = hall.GetTip(hall.GetTipValueFromFile());
+            var amountOfTip = hall.isTip() ? hall.GetAmountOfTips(Customer, price, tip) : 0;
+
+            hall.GetPaid(accounting, kitchen.Storage.Recipes, Customer, amountOfTip);
+
+            amountOfTip = customerBudgetOld - price - amountOfTip > 0 ? amountOfTip : customerBudgetOld - price; 
+
+            Result = $"{Customer.Name}, {Customer.budget + price + amountOfTip}, {Customer.Order.Name}, {price} -> success; money amount: {Math.Round(price - tax, 2)}; tax: {tax}; tip {amountOfTip}";
         }
 
         private void ExecuteAllergicBuy(double price)
@@ -158,5 +167,6 @@ namespace CommandsModule
                 return;
             }
         }
+
     }
 }

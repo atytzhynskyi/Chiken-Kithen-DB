@@ -87,7 +87,7 @@ namespace ChickenKitchenTests
         }
 
         [Test]
-        public void GetPaidFoodThatConsistOfIngredientsOnly()                     // public void GetPaid(Accounting accounting, Dictionary<Ingredient, int> ingredientPrice, List<Food> Recipes, Customer customer)
+        public void GetPaidFoodThatConsistOfIngredientsOnlyWithoutTip()                     // public void GetPaid(Accounting accounting, Dictionary<Ingredient, int> ingredientPrice, List<Food> Recipes, Customer customer)
         {
             // Given
             Hall hall = new Hall();
@@ -106,8 +106,10 @@ namespace ChickenKitchenTests
             customer.VisitsCount = 1;
             customer.budget = 50;
 
+            var amountOfTip = 0;
+
             // When
-            hall.GetPaid(accounting, recipes, customer);
+            hall.GetPaid(accounting, recipes, customer, amountOfTip);
             double actual = customer.budget;
 
             // Then
@@ -115,7 +117,7 @@ namespace ChickenKitchenTests
         }
 
         [Test]
-        public void GetPaidFoodThatConsistOfFoodsAndIngredients()
+        public void GetPaidFoodThatConsistOfFoodsAndIngredientsWithoutTip()
         {
             // Given
             Hall hall = new Hall();
@@ -140,12 +142,15 @@ namespace ChickenKitchenTests
             customer.VisitsCount = 1;
             customer.budget = 50;
 
+            var amountOfTip = 0;
+
             // When
-            hall.GetPaid(accounting, recipes, customer);
+            hall.GetPaid(accounting, recipes, customer, amountOfTip);
 
             // Then
             Assert.AreEqual(30.4, customer.budget);
             //Assert.AreEqual(114, accounting.Budget);
         }             // public void GetPaid(Accounting accounting, Dictionary<Ingredient, int> ingredientPrice, List<Food> Recipes, Customer customer)
+
     }
 }

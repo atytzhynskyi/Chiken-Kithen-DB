@@ -9,6 +9,7 @@ namespace AdvanceClasses
     {
         public double Budget { get; private set; }
         public double CollectedTax { get; private set; } = 0;
+        public double Tips { get; private set; } = 0;
         public Dictionary<Ingredient, int> IngredientsPrice { get; set; } = new Dictionary<Ingredient, int>();
 
         public readonly double transactionTax;
@@ -75,7 +76,8 @@ namespace AdvanceClasses
             //in the other words after "buy" we have new budget without needed to pay a tax
             //and after "order" our budget decrease and new budget without needed to pay a tax too
             //and we get the same conclusion - a profit it's subtract a budget before and after
-            double profit = Budget - startBudget;
+            //Tips we cannot include in profit for daily tax
+            double profit = Budget - startBudget - Tips;
             double dailyTax = profit * this.dailyTax;
 
             if (dailyTax <= 0) return 0;
@@ -96,7 +98,16 @@ namespace AdvanceClasses
         public void AddMoneyWithoutTax(double amount)
         {
             Budget += amount;
+            Budget = Math.Round(Budget, 2);
         }
+        public void AddTip(double amount)
+        {
+            Tips += amount;
+            Tips = Math.Round(Tips, 2);
+
+            Budget += amount;
+        }
+
         public void UseMoneyWithoutTax(double amount)
         {
             Budget -= amount;

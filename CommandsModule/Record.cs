@@ -12,6 +12,7 @@ namespace CommandsModule
         public Dictionary<Food, int> FoodsAmount = new Dictionary<Food, int>();
         public Dictionary<Ingredient, int> IngredientsAmount = new Dictionary<Ingredient, int>();
         public double Budget;
+        public double Tips;
 
         public Record(ICommand command, Kitchen kitchen, Accounting accounting)
         {
@@ -19,12 +20,14 @@ namespace CommandsModule
             FoodsAmount = kitchen.Storage.FoodAmount.ToDictionary(x => x.Key, x => x.Value);
             IngredientsAmount = kitchen.Storage.IngredientsAmount.ToDictionary(x => x.Key, x => x.Value);
             Budget = accounting.Budget;
+            Tips = accounting.Tips;
         }
         public Record(Accounting accounting, Kitchen kitchen)
         {
             FoodsAmount = kitchen.Storage.FoodAmount.ToDictionary(x => x.Key, x => x.Value);
             IngredientsAmount = kitchen.Storage.IngredientsAmount.ToDictionary(x => x.Key, x => x.Value);
             Budget = accounting.Budget;
+            Tips = accounting.Tips;
         }
     }
 }

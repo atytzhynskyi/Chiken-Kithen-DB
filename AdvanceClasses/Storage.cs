@@ -207,7 +207,7 @@ namespace AdvanceClasses
             for (int i = 1; i <= amount; i++)
             {
                 Random rnd = new Random();
-                int value = rnd.Next(1, maxNumbers);
+                int value = rnd.Next(1, maxNumbers + 1);
 
                 if (value <= maxNumberSpoil)
                 {
