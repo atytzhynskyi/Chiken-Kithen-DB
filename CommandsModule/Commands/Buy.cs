@@ -66,7 +66,7 @@ namespace CommandsModule
 
             amountOfTip = customerBudgetOld - price - amountOfTip > 0 ? amountOfTip : customerBudgetOld - price; 
 
-            Result = $"{Customer.Name}, {Customer.budget + price + amountOfTip}, {Customer.Order.Name}, {price} -> success; money amount: {Math.Round(price - tax, 2)}; tax: {tax}; tip {amountOfTip}";
+            Result = $"{Customer.Name}, {Math.Round(Customer.budget + price + amountOfTip, 2)}, {Customer.Order.Name}, {price} -> success; money amount: {Math.Round(price - tax, 2)}; tax: {tax}; tip {amountOfTip}";
         }
 
         private void ExecuteAllergicBuy(double price)

@@ -110,6 +110,7 @@ namespace AdvanceClasses
             CollectedTip = Math.Round(CollectedTip, 2);
 
             Budget += amount;
+            Budget = Math.Round(Budget, 2);
         }
 
         public void UseMoneyWithoutTax(double amount)
