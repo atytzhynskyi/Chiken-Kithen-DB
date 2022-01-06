@@ -123,40 +123,24 @@ namespace CommandsModule
 
         private void OrderIngredientsAndFoods()
         {
-
             double pricesSum = 0;
-            //Foods.ForEach(f => pricesSum += orders[f.Name] * accounting.CalculateFoodMenuPrice(
-            //                                                           kitchen.Storage.Recipes, f, true));
 
             foreach (var item in Foods)
             {
                 double price = accounting.CalculateFoodMenuPrice(kitchen.Storage.Recipes, item, true) * orders[item.Name];
-
-                double volatility = kitchen.Storage.GetDishVolatility();
-                volatility /= 100;
-                volatility += 1;
+                var volatility = ConvertVolatilityToPrice(kitchen.Storage.GetDishVolatility());
+                pricesSum = Math.Round(pricesSum + price * volatility, 2);
 
                 ordersVolatility.Add(item.Name, volatility);
-
-                price *= volatility;
-                pricesSum = Math.Round(pricesSum + price, 2);
             }
-
-
-            //Ingredients.ForEach(i => pricesSum += accounting.IngredientsPrice[i] * orders[i.Name]);
 
             foreach (var item in Ingredients)
             {
                 double price = accounting.IngredientsPrice[item] * orders[item.Name];
-
-                double volatility = kitchen.Storage.GetIngredientVolatility();
-                volatility /= 100;
-                volatility += 1;
+                var volatility = ConvertVolatilityToPrice(kitchen.Storage.GetIngredientVolatility());
+                pricesSum = Math.Round(pricesSum + price * volatility, 2);
 
                 ordersVolatility.Add(item.Name, volatility);
-
-                price *= volatility;
-                pricesSum = Math.Round(pricesSum + price, 2);
             }
 
             double finalPrice = pricesSum + accounting.CalculateTransactionTax(pricesSum);
@@ -178,27 +162,23 @@ namespace CommandsModule
         private void OrderIngredients()
         {
             double pricesSum = 0;
-            //Ingredients.ForEach(i => pricesSum += accounting.IngredientsPrice[i] * orders[i.Name]);
-
             var isVolatility = ordersVolatility.Count() > 0;
 
             foreach (var item in Ingredients)
             {
+                double volatility;
                 double price = accounting.IngredientsPrice[item] * orders[item.Name];
 
                 if (isVolatility)
                 {
-                    price *= ordersVolatility[item.Name];
-                    pricesSum = Math.Round(pricesSum + price, 2);
-                    continue;
+                    volatility = ordersVolatility[item.Name];
+                }
+                else
+                {
+                    volatility = ConvertVolatilityToPrice(kitchen.Storage.GetIngredientVolatility());
                 }
 
-                double volatility = kitchen.Storage.GetIngredientVolatility();
-                volatility /= 100;
-                volatility += 1;
-
-                price *= volatility;
-                pricesSum = Math.Round(pricesSum + price, 2);
+                pricesSum = Math.Round(pricesSum + price * volatility, 2);
             }
 
             double finalPrice = pricesSum + accounting.CalculateTransactionTax(pricesSum);
@@ -222,28 +202,23 @@ namespace CommandsModule
         private void OrderFoods()
         {
             double pricesSum = 0;
-            //Foods.ForEach(f => pricesSum += orders[f.Name] * accounting.CalculateFoodMenuPrice(
-                                                           //kitchen.Storage.Recipes, f, true));
-
             var isVolatility = ordersVolatility.Count() > 0;
 
             foreach (var item in Foods)
             {
+                double volatility;
                 double price = accounting.CalculateFoodMenuPrice(kitchen.Storage.Recipes, item, true) * orders[item.Name];
 
                 if (isVolatility)
                 {
-                    price *= ordersVolatility[item.Name];
-                    pricesSum = Math.Round(pricesSum + price, 2);
-                    continue;
+                    volatility = ordersVolatility[item.Name];
+                }
+                else
+                {
+                    volatility = ConvertVolatilityToPrice(kitchen.Storage.GetDishVolatility());
                 }
 
-                double volatility = kitchen.Storage.GetDishVolatility();
-                volatility /= 100;
-                volatility += 1;
-
-                price *= volatility;
-                pricesSum = Math.Round(pricesSum + price, 2);
+                pricesSum = Math.Round(pricesSum + price * volatility, 2);
             }
 
             double finalPrice = pricesSum + accounting.CalculateTransactionTax(pricesSum);
@@ -264,5 +239,10 @@ namespace CommandsModule
 
             Result = $"success; money used:{finalPrice}; tax:{Math.Round(finalPrice - pricesSum, 2)}";
         }
+        private double ConvertVolatilityToPrice(double volatility)
+        {
+            return volatility / 100 + 1;
+        }
+
     }
 }
