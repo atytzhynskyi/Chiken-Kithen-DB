@@ -41,6 +41,8 @@ namespace ChikenKItchenDB.CommandsModule
                 10,
                 25,
                 0,
+                0,
+                0,
                 0);
 
             storage.IngredientsAmount.Add(salt, 10);
