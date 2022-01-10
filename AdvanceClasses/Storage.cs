@@ -272,10 +272,10 @@ namespace AdvanceClasses
             Random rnd = new Random();
             int volatility = rnd.Next(maxVolatility * (-1), maxVolatility + 1);
 
-            if (volatility >= 100)
-            {
-                return 100;
-            }
+            //if (volatility >= 100)
+            //{
+            //    return 100;
+            //}
 
             if (volatility <= -100)
             {

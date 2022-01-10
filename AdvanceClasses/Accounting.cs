@@ -62,9 +62,9 @@ namespace AdvanceClasses
 
             return Math.Round(price,2);
         }
-        public double CalculateFoodMenuPrice(List<Food> Recipes, Food food, bool isOrder = false)
+        public double CalculateFoodMenuPrice(List<Food> Recipes, Food food)
         {
-            return Math.Round(CalculateFoodCostPrice(Recipes, food) * (1 + (isOrder ? 0 : marginProfit)), 2);
+            return Math.Round(CalculateFoodCostPrice(Recipes, food) * (1 + marginProfit), 2);
         }
         public void PayDayTax()
         {
