@@ -90,36 +90,5 @@ namespace AdvanceClasses
             return false;
         }
 
-        public bool isTip()
-        {
-            Random rnd = new Random();
-            int tips = rnd.Next(2);
-
-            return tips == 0 ? false : true;
-        }
-
-        public int GetTip(int maxTip)
-        {
-            if (maxTip <= 0)
-            {
-                return 0;
-            }
-
-            if (maxTip >= 100)
-            {
-                return 100;
-            }
-
-            Random rnd = new Random();
-            int tip = rnd.Next(1, maxTip + 1);
-
-            return tip;
-        }
-
-        public double GetAmountOfTips(Customer customer, double count, int tip)
-        {
-            return Math.Round(count * tip / 100, 2);
-        }
-
     }
 }

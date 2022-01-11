@@ -14,30 +14,31 @@ namespace AdvanceClasses
 
         public readonly double transactionTax;
         public readonly double dailyTax;
+        public readonly double tipTax;
         public readonly double marginProfit;
-
-        public readonly int maxTip;
+        public readonly double maxTipPercent;
 
         readonly double startBudget;
 
-        public Accounting(double _Budget, int _transactionTax, int _marginProfit, int _dailyTax, int _maxTip, Dictionary<Ingredient, int> IngredientsPrice)
+        public Accounting(double _Budget, int _transactionTax, int _marginProfit, int _dailyTax, int _tipTax, int _maxTipPercent, Dictionary<Ingredient, int> IngredientsPrice)
         {
             Budget = _Budget;
             startBudget = _Budget;
             transactionTax = Math.Round((float)_transactionTax/100,2);
             marginProfit = Math.Round((float)_marginProfit /100, 2);
             dailyTax = Math.Round((float)_dailyTax /100, 2);
-            maxTip = _maxTip;
+            tipTax = Math.Round((float)_tipTax / 100, 2);
+            maxTipPercent = Math.Round((float)_maxTipPercent / 100, 2);
             this.IngredientsPrice = IngredientsPrice;
         }
-        public Accounting(double _Budget, double _transactionTax, double _marginProfit, double _dailyTax, int _maxTip, Dictionary<Ingredient, int> IngredientsPrice)
+        public Accounting(double _Budget, double _transactionTax, double _marginProfit, double _dailyTax, double _maxTipPercent, Dictionary<Ingredient, int> IngredientsPrice)
         {
             Budget = _Budget;
             startBudget = _Budget;
             transactionTax = _transactionTax;
             marginProfit = _marginProfit;
             dailyTax = _dailyTax;
-            maxTip = _maxTip;
+            maxTipPercent = _maxTipPercent;
             this.IngredientsPrice = IngredientsPrice;
         }
 
@@ -62,6 +63,8 @@ namespace AdvanceClasses
 
             return Math.Round(price,2);
         }
+
+
         public double CalculateFoodMenuPrice(List<Food> Recipes, Food food)
         {
             return Math.Round(CalculateFoodCostPrice(Recipes, food) * (1 + marginProfit), 2);
@@ -109,7 +112,7 @@ namespace AdvanceClasses
             CollectedTip += amount;
             CollectedTip = Math.Round(CollectedTip, 2);
 
-            Budget += amount;
+            Budget += amount - CalculateTipTax(amount);
             Budget = Math.Round(Budget, 2);
         }
 
@@ -126,9 +129,40 @@ namespace AdvanceClasses
         {
             return Math.Round(amount * transactionTax, 2);
         }
+
+        public double CalculateTipTax(double amount)
+        {
+            return Math.Round(amount * tipTax, 2);
+        }
         public double GetStartBudget()
         {
             return startBudget;
+        }
+
+        public bool isTip()
+        {
+            Random rnd = new Random();
+            int tips = rnd.Next(2);
+
+            return tips == 0 ? false : true;
+        }
+
+        private double GetTipPercent()
+        {
+            if (maxTipPercent <= 0)
+            {
+                return 0;
+            }
+
+            Random rnd = new Random();
+            var tipPercent = rnd.NextDouble() * maxTipPercent;
+
+            return tipPercent;
+        }
+
+        public double GetTip(double price)
+        {
+            return Math.Round(price * GetTipPercent(), 2);
         }
     }
 }

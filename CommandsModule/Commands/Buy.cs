@@ -49,7 +49,6 @@ namespace CommandsModule
             {
                 price = Math.Round(price * hall.GetDiscountValueFromFile(), 2);
             }
-            double tax = accounting.CalculateTransactionTax(price);
 
             if (Customer.isAllergic(kitchen.Storage.Recipes, Food).Item1)
             {
@@ -59,12 +58,12 @@ namespace CommandsModule
 
             var customerBudgetOld = Customer.budget;
 
-            var tip = hall.GetTip(accounting.maxTip);
-            var amountOfTip = hall.isTip() ? hall.GetAmountOfTips(Customer, price, tip) : 0;
+            var amountOfTip = accounting.isTip() ? accounting.GetTip(price) : 0;
+
 
             hall.GetPaid(accounting, kitchen.Storage.Recipes, Customer, amountOfTip);
-
-            amountOfTip = customerBudgetOld - price - amountOfTip > 0 ? amountOfTip : customerBudgetOld - price; 
+            amountOfTip = price + amountOfTip < customerBudgetOld ? amountOfTip : customerBudgetOld - price;
+            var tax = accounting.CalculateTransactionTax(price) + accounting.CalculateTipTax(amountOfTip);
 
             Result = $"{Customer.Name}, {Math.Round(Customer.budget + price + amountOfTip, 2)}, {Customer.Order.Name}, {price} -> success; money amount: {Math.Round(price - tax, 2)}; tax: {tax}; tip {amountOfTip}";
         }
