@@ -22,6 +22,8 @@ namespace AdvanceClasses
         private readonly int _wasteLimit;
         private readonly double _spoilRate;
 
+        private readonly int _maxIngredientVolatility;
+        private readonly int _maxDishVolatility;
         public Storage(List<Food> _Foods,
             List<Ingredient> _Ingredients,
             Dictionary<Food, int> foodsAmount,
@@ -32,7 +34,9 @@ namespace AdvanceClasses
             int _maxFoodType,
             int _totalMax,
             int wasteLimit,
-            double spoilRate)
+            double spoilRate,
+            int maxIngredientVolatility,
+            int maxDishVolatility)
         {
             totalMax = _totalMax;
             maxIngredientType = _maxIngredientType;
@@ -47,6 +51,9 @@ namespace AdvanceClasses
             TotalTrashAmount = totalTrashAmount;
             _wasteLimit = wasteLimit;
             _spoilRate = spoilRate;
+
+            _maxIngredientVolatility = maxIngredientVolatility;
+            _maxDishVolatility = maxDishVolatility;
         }
 
         public Storage(List<Ingredient> _Ingredients, int _maxIngredientType, int _totalMax)
@@ -207,7 +214,7 @@ namespace AdvanceClasses
             for (int i = 1; i <= amount; i++)
             {
                 Random rnd = new Random();
-                int value = rnd.Next(1, maxNumbers);
+                int value = rnd.Next(1, maxNumbers + 1);
 
                 if (value <= maxNumberSpoil)
                 {
@@ -244,6 +251,40 @@ namespace AdvanceClasses
 
             return IngredientsTrashAmount.Values.Sum() > _wasteLimit;
         }
+
+        public int GetIngredientVolatility()
+        {
+            return GetVolatility(_maxIngredientVolatility);
+        }
+
+        public int GetDishVolatility()
+        {
+            return GetVolatility(_maxDishVolatility);
+        }
+
+        public int GetVolatility(int maxVolatility)
+        {
+            if (maxVolatility == 0)
+            {
+                return 0;
+            }
+
+            Random rnd = new Random();
+            int volatility = rnd.Next(maxVolatility * (-1), maxVolatility + 1);
+
+            //if (volatility >= 100)
+            //{
+            //    return 100;
+            //}
+
+            if (volatility <= -100)
+            {
+                return -100;
+            }
+
+            return volatility;
+        }
+
 
     }
 }

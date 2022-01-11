@@ -19,14 +19,17 @@ namespace ChikenKithen
                 applicationContext.SetPropertiesIngredientsId();
 
                 var TaxConfigs = JsonRead.ReadFromJson<int>(@"..\..\..\Configs\TaxConfigs.json");
+                var tipConfig = JsonRead.ReadFromJson<int>(@"..\..\..\Configs\TipConfig.json");
                 Accounting accounting = new Accounting(applicationContext.GetBudget(),
                                                         TaxConfigs.Where(k => k.Key == "transaction tax").First().Value,
                                                         TaxConfigs.Where(k => k.Key == "profit margin").First().Value,
                                                         TaxConfigs.Where(k => k.Key == "daily tax").First().Value,
+                                                        tipConfig.Where(k => k.Key == "max tip").First().Value,
                                                         applicationContext.GetIngredientsPrice());
 
                 var WarehouseSize = JsonRead.ReadFromJson<int>(@"..\..\..\Configs\WarehouseSize.json");
                 var spoilConfig = JsonRead.ReadFromJson<double>(@"..\..\..\Configs\SpoilConfig.json");
+                var ordersDeliveries = JsonRead.ReadFromJson<int>(@"..\..\..\Configs\OrdersDeliveries.json");
                 Storage storage = new Storage(applicationContext.GetFoods(),
                                               applicationContext.Ingredients.ToList(),
                                               applicationContext.GetFoodsAmount(),
@@ -37,7 +40,9 @@ namespace ChikenKithen
                                               WarehouseSize.Where(k => k.Key == "max dish type").First().Value,
                                               WarehouseSize.Where(k => k.Key == "total maximum").First().Value,
                                               WarehouseSize.Where(k => k.Key == "waste limit").First().Value,
-                                              spoilConfig.Where(k => k.Key == "spoil rate").First().Value);
+                                              spoilConfig.Where(k => k.Key == "spoil rate").First().Value,
+                                              ordersDeliveries.Where(k => k.Key == "order ingredient volatility").First().Value,
+                                              ordersDeliveries.Where(k => k.Key == "order dish volatility").First().Value);
 
                 Kitchen kitchen = new Kitchen(storage);
                 Hall hall = new Hall(applicationContext.GetCustomers(), kitchen.Storage.Recipes);
