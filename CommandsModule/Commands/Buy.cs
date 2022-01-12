@@ -58,7 +58,7 @@ namespace CommandsModule
 
             var customerBudgetOld = Customer.budget;
 
-            var tip = accounting.isTip() ? accounting.GetTip(price) : 0;
+            var tip = accounting.IsTip() ? accounting.GetTip(price) : 0;
 
 
             hall.GetPaid(accounting, kitchen.Storage.Recipes, Customer, tip);

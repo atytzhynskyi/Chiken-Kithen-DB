@@ -143,12 +143,9 @@ namespace AdvanceClasses
             return startBudget;
         }
 
-        public bool isTip()
+        public bool IsTip()
         {
-            Random rnd = new Random();
-            int tips = rnd.Next(2);
-
-            return tips == 0 ? false : true;
+            return Randomizer.Randomizer.GetRandomBool();
         }
 
         private double GetTipPercent()
@@ -158,10 +155,7 @@ namespace AdvanceClasses
                 return 0;
             }
 
-            Random rnd = new Random();
-            var tipPercent = rnd.NextDouble() * maxTipPercent;
-
-            return tipPercent;
+            return Randomizer.Randomizer.GetRandomDouble() * maxTipPercent;
         }
 
         public double GetTip(double price)

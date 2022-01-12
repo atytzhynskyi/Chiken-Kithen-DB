@@ -187,28 +187,17 @@ namespace AdvanceClasses
                 Console.Write(IngredientsAmount[ingredient] + "\n");
             }
         }
-
         public int GetNumberOfSpoil(int amount)
         {
-            return GetNumberOfSpoil(amount, _spoilRate);
-        }
-
-        private int GetNumberOfSpoil(int amount, double spoilRate)
-        {
-            if (spoilRate <= 0)
+            if (_spoilRate <= 0)
             {
                 return 0;
-            }
-
-            if (spoilRate >= 100)
-            {
-                return amount;
             }
 
             //Using 100, we get the most accurate value
             var koef = 100;
             var maxNumbers = 100 * koef;
-            var maxNumberSpoil = (int)Math.Truncate(spoilRate * koef);
+            var maxNumberSpoil = (int)Math.Truncate(_spoilRate * koef);
 
             var spoil = 0;
             for (int i = 1; i <= amount; i++)
@@ -242,7 +231,7 @@ namespace AdvanceClasses
 
         }
 
-        public bool isRestaurantPoisoned()
+        public bool IsRestaurantPoisoned()
         {
             if (_wasteLimit == 0)
             {
@@ -269,14 +258,9 @@ namespace AdvanceClasses
                 return 0;
             }
 
-            Random rnd = new Random();
-            int volatility = rnd.Next(maxVolatility * (-1), maxVolatility + 1);
-
-            //if (volatility >= 100)
-            //{
-            //    return 100;
-            //}
-
+            int volatility = Randomizer.Randomizer.GetRandomInt(maxVolatility);
+            volatility = Randomizer.Randomizer.GetRandomBool() ? volatility : volatility * (-1);
+            
             if (volatility <= -100)
             {
                 return -100;

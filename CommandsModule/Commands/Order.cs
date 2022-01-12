@@ -9,8 +9,6 @@ namespace CommandsModule
 {
     public class Order : ICommand
     {
-        private const string ORDER_OPTION_CONFIG_KEY = "";
-
         public int Amount;
 
         public string FullCommand { get; private set; }

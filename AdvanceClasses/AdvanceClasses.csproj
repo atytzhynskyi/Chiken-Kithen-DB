@@ -9,6 +9,7 @@
     <ProjectReference Include="..\BaseClasses\BaseClasses.csproj" />
     <ProjectReference Include="..\ConfigurationModule\ConfigurationModule.csproj" />
     <ProjectReference Include="..\jsonReadModule\jsonReadModule.csproj" />
+    <ProjectReference Include="..\Randomizer\Randomizer.csproj" />
   </ItemGroup>
 
 </Project>

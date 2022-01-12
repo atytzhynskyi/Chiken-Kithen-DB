@@ -13,7 +13,7 @@ namespace CommandsModule
             string commandType = commandString.Split(", ")[0];
 
 
-            if (kitchen.Storage.isRestaurantPoisoned())
+            if (kitchen.Storage.IsRestaurantPoisoned())
             {
                 if (commandType == "Throw trash away")
                 {
