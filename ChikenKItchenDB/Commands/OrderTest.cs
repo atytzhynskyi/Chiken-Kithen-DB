@@ -26,7 +26,7 @@ namespace ChikenKItchenDB.CommandsModule
         {
             Dictionary<Ingredient, int> ingredientsPrice = new Dictionary<Ingredient, int>();
             ingredientsPrice.Add(salt, 10);
-            accounting = new Accounting(500, 0.5, 0, 0, 0, ingredientsPrice);
+            accounting = new Accounting(500, 0.5, 0, 0, 0, 0, 0, ingredientsPrice);
             accounting.IngredientsPrice[salt] = 10;
 
             ingredients = new List<Ingredient> { salt };

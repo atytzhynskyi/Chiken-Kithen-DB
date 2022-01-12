@@ -28,7 +28,7 @@ namespace ChikenKitchenDataBase
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=.\\SQLEXPRESS;Database=ChikenKitchen;Trusted_Connection=True;MultipleActiveResultSets=True;");
+            optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=ChikenKitchenDB;Trusted_Connection=True;MultipleActiveResultSets=True;");
         }
 
         public void InitializeFromFiles()

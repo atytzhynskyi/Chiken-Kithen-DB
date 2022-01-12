@@ -15,12 +15,14 @@ namespace AdvanceClasses
         public readonly double transactionTax;
         public readonly double dailyTax;
         public readonly double tipTax;
+        public readonly double wasteTax;
+
         public readonly double marginProfit;
         public readonly double maxTipPercent;
-
+        
         readonly double startBudget;
 
-        public Accounting(double _Budget, int _transactionTax, int _marginProfit, int _dailyTax, int _tipTax, int _maxTipPercent, Dictionary<Ingredient, int> IngredientsPrice)
+        public Accounting(double _Budget, int _transactionTax, int _marginProfit, int _dailyTax, int _tipTax, int _maxTipPercent, int _wasteTax, Dictionary<Ingredient, int> IngredientsPrice)
         {
             Budget = _Budget;
             startBudget = _Budget;
@@ -31,7 +33,7 @@ namespace AdvanceClasses
             maxTipPercent = Math.Round((float)_maxTipPercent / 100, 2);
             this.IngredientsPrice = IngredientsPrice;
         }
-        public Accounting(double _Budget, double _transactionTax, double _marginProfit, double _dailyTax, double _maxTipPercent, Dictionary<Ingredient, int> IngredientsPrice)
+        public Accounting(double _Budget, double _transactionTax, double _marginProfit, double _dailyTax, double _tipTax, double _maxTipPercent, double _wasteTax, Dictionary<Ingredient, int> IngredientsPrice)
         {
             Budget = _Budget;
             startBudget = _Budget;
@@ -39,6 +41,8 @@ namespace AdvanceClasses
             marginProfit = _marginProfit;
             dailyTax = _dailyTax;
             maxTipPercent = _maxTipPercent;
+            tipTax = _tipTax;
+            wasteTax = _wasteTax;
             this.IngredientsPrice = IngredientsPrice;
         }
 

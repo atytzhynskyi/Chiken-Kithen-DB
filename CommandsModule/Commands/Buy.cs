@@ -58,14 +58,14 @@ namespace CommandsModule
 
             var customerBudgetOld = Customer.budget;
 
-            var amountOfTip = accounting.isTip() ? accounting.GetTip(price) : 0;
+            var tip = accounting.isTip() ? accounting.GetTip(price) : 0;
 
 
-            hall.GetPaid(accounting, kitchen.Storage.Recipes, Customer, amountOfTip);
-            amountOfTip = price + amountOfTip < customerBudgetOld ? amountOfTip : customerBudgetOld - price;
-            var tax = accounting.CalculateTransactionTax(price) + accounting.CalculateTipTax(amountOfTip);
+            hall.GetPaid(accounting, kitchen.Storage.Recipes, Customer, tip);
+            tip = price + tip < customerBudgetOld ? tip : customerBudgetOld - price;
+            var tax = accounting.CalculateTransactionTax(price) + accounting.CalculateTipTax(tip);
 
-            Result = $"{Customer.Name}, {Math.Round(Customer.budget + price + amountOfTip, 2)}, {Customer.Order.Name}, {price} -> success; money amount: {Math.Round(price - tax, 2)}; tax: {tax}; tip {amountOfTip}";
+            Result = $"{Customer.Name}, {Math.Round(Customer.budget + price + tip, 2)}, {Customer.Order.Name}, {price} -> success; money amount: {Math.Round(price - tax + tip, 2)}; tax: {tax + accounting.CalculateTipTax(tip)}; tip {tip}";
         }
 
         private void ExecuteAllergicBuy(double price)
