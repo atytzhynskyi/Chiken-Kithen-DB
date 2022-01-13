@@ -75,11 +75,11 @@ namespace ChikenKithen
                         hall.Customers,
                         accounting.Budget,
                         storage.IngredientsTrashAmount,
-                        storage.TotalTrashAmount);
+                        storage.TrashAmount);
 
                     recordsBase.AddRecordIfSomeChange(command, kitchen, accounting);
                 }
-
+                //*/
             }
         }
 
@@ -93,7 +93,12 @@ namespace ChikenKithen
             {
                 Console.Write($"{food.Key.Name} {food.Value}, ");
             }
-            Console.Write('\n');
+            Console.Write("\nWaste:");
+            foreach(var ingredient in kitchen.Storage.IngredientsTrashAmount.Where(i=>i.Value != 0))
+            {
+                Console.Write($"{ingredient.Key.Name} {ingredient.Value}, ");
+            }
+            Console.Write("\n");
         }
     }
 }

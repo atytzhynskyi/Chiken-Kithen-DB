@@ -1,21 +1,21 @@
-Name;Julie Mirage;
-Budget;100;
-Allergies;Soy;
-Name;Elon Carousel;
-Budget;50;
-Allergies;Vinegar;Olives
-Name;Adam Smith;
-Budget;100;
-Allergies;
-Name;Alexandra Smith;
-Budget;500;
-Allergies;
-Name;Barbara Smith;
-Budget;250;
-Allergies;Chocolate;
-Name;Christian Donnovan;
-Budget;500;
-Allergies;Paprika;
-Name;Bernard Unfortunate;
-Budget;15;
-Allergies;Potatoes;
+Name,Julie Mirage,
+Budget,100,
+Allergies,Soy,
+Name,Elon Carousel,
+Budget,50,
+Allergies,Vinegar,Olives
+Name,Adam Smith,
+Budget,100,
+Allergies,
+Name,Alexandra Smith,
+Budget,500,
+Allergies,
+Name,Barbara Smith,
+Budget,250,
+Allergies,Chocolate,
+Name,Christian Donnovan,
+Budget,500,
+Allergies,Paprika,
+Name,Bernard Unfortunate,
+Budget,15,
+Allergies,Potatoes,

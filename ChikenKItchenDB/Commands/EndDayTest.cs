@@ -32,15 +32,24 @@ namespace ChikenKItchenDB.CommandsModule
             ingredientsPrice.Add(salt, 10);
             ingredientsPrice.Add(water, 10);
 
-            accounting = new Accounting(500, 0.5, 0, 0, 0.1, 0.1, 0.1, ingredientsPrice);
+            accounting = new Accounting(500, 0.5, 0, 0.1, 0.1, 0.1, 0.1, ingredientsPrice);
 
             ingredients = new List<Ingredient> { salt, water };
-            saltWater = new Food("Salt water", ingredients.ToArray());
-            Recipes = new List<Food> { saltWater };
-            storage = new Storage(Recipes, ingredients);
 
-            storage.IngredientsAmount[salt] = 10;
-            storage.IngredientsAmount[water] = 10;
+            var ingredientsAmount = new Dictionary<Ingredient, int>();
+            ingredientsAmount.Add(salt, 10);
+            ingredientsAmount.Add(water, 10);
+            
+            var ingredientsTrashAmount = new Dictionary<Ingredient, int>();
+            ingredientsTrashAmount.Add(salt, 10);
+            ingredientsTrashAmount.Add(water, 10);
+
+            var foodsAmount = new Dictionary<Food, int>();
+            saltWater = new Food("Salt water", ingredients.ToArray());
+            foodsAmount.Add(saltWater, 0);
+            Recipes = new List<Food> { saltWater };
+            storage = new Storage(Recipes, ingredients, foodsAmount, ingredientsAmount, ingredientsTrashAmount, new Dictionary<Ingredient, int>(), int.MaxValue, int.MaxValue, int.MaxValue, 0, 0, 0, 0);
+
 
             kitchen = new Kitchen(storage);
 
@@ -52,12 +61,12 @@ namespace ChikenKItchenDB.CommandsModule
         [TestMethod]
         public void EndDaySuccess()
         {
-            EndDay EndDayCommand = new EndDay("", accounting);
+            EndDay EndDayCommand = new EndDay("", accounting, kitchen);
             BuyCommand = new Buy(accounting, hall, kitchen, "Buy, Den, Salt water");
             BuyCommand.IsAllowed = true;
             BuyCommand.ExecuteCommand();
 
-            var expectbudget = Math.Round(accounting.Budget - accounting.CalculateDailyTax() - accounting.CalculateTipTax(), 2);
+            var expectbudget = Math.Round(accounting.Budget - accounting.CalculateDailyTax(kitchen), 2);
 
             EndDayCommand.ExecuteCommand();
 

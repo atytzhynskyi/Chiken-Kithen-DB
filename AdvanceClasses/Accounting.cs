@@ -20,12 +20,12 @@ namespace AdvanceClasses
         public readonly double marginProfit;
         public readonly double maxTipPercent;
         
-        readonly double startBudget;
+        private double _startBudget;
 
         public Accounting(double _Budget, int _transactionTax, int _marginProfit, int _dailyTax, int _tipTax, int _maxTipPercent, int _wasteTax, Dictionary<Ingredient, int> IngredientsPrice)
         {
             Budget = _Budget;
-            startBudget = _Budget;
+            _startBudget = _Budget;
             transactionTax = Math.Round((float)_transactionTax/100,2);
             marginProfit = Math.Round((float)_marginProfit /100, 2);
             dailyTax = Math.Round((float)_dailyTax /100, 2);
@@ -36,7 +36,7 @@ namespace AdvanceClasses
         public Accounting(double _Budget, double _transactionTax, double _marginProfit, double _dailyTax, double _tipTax, double _maxTipPercent, double _wasteTax, Dictionary<Ingredient, int> IngredientsPrice)
         {
             Budget = _Budget;
-            startBudget = _Budget;
+            _startBudget = _Budget;
             transactionTax = _transactionTax;
             marginProfit = _marginProfit;
             dailyTax = _dailyTax;
@@ -73,11 +73,25 @@ namespace AdvanceClasses
         {
             return Math.Round(CalculateFoodCostPrice(Recipes, food) * (1 + marginProfit), 2);
         }
-        public void PayDayTax()
+        public void PayDayTax(Kitchen kitchen)
         {
-            Budget = Math.Round(Budget - CalculateDailyTax() - CalculateTipTax(),2);
+            Budget = Math.Round(Budget - CalculateDailyTax(kitchen),2);
+            _startBudget = Budget;
         }
-        public double CalculateDailyTax()
+
+        private double CalculateWasteTax(Kitchen kitchen)
+        {
+            var totalPrice = 0;
+            
+            foreach(var ingredient in kitchen.Storage.IngredientsTrashAmount.Keys)
+            {
+                totalPrice += kitchen.Storage.IngredientsTrashAmount[ingredient] * IngredientsPrice[ingredient];
+            }
+
+            return totalPrice;
+        }
+
+        public double CalculateDailyTax(Kitchen kitchen)
         {
             //double profit = Budget - startBudget - CollectedTax;
 
@@ -88,12 +102,11 @@ namespace AdvanceClasses
             //and after "order" our budget decrease and new budget without needed to pay a tax too
             //and we get the same conclusion - a profit it's subtract a budget before and after
             //Tips we cannot include in profit for daily tax
-            double profit = Budget - startBudget - CollectedTip;
+            double profit = Budget - _startBudget - CollectedTip;
             double dailyTax = profit * this.dailyTax;
 
-            if (dailyTax <= 0) return 0;
 
-            return Math.Round(dailyTax, 2);
+            return Math.Round(dailyTax + CalculateTipTax() + CalculateWasteTax(kitchen), 2);
         }
         public void UseMoney(double amount)
         {
@@ -140,7 +153,7 @@ namespace AdvanceClasses
         }
         public double GetStartBudget()
         {
-            return startBudget;
+            return _startBudget;
         }
 
         public bool IsTip()
