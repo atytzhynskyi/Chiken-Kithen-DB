@@ -75,7 +75,7 @@ namespace AdvanceClasses
         }
         public void PayDayTax()
         {
-            Budget = Math.Round(Budget - CalculateDailyTax(),2);
+            Budget = Math.Round(Budget - CalculateDailyTax() - CalculateTipTax(),2);
         }
         public double CalculateDailyTax()
         {
@@ -116,7 +116,7 @@ namespace AdvanceClasses
             CollectedTip += amount;
             CollectedTip = Math.Round(CollectedTip, 2);
 
-            Budget += amount - CalculateTipTax(amount);
+            Budget += amount;
             Budget = Math.Round(Budget, 2);
         }
 
@@ -134,9 +134,9 @@ namespace AdvanceClasses
             return Math.Round(amount * transactionTax, 2);
         }
 
-        public double CalculateTipTax(double amount)
+        public double CalculateTipTax()
         {
-            return Math.Round(amount * tipTax, 2);
+            return Math.Round(CollectedTip * tipTax, 2);
         }
         public double GetStartBudget()
         {

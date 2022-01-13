@@ -63,9 +63,9 @@ namespace CommandsModule
 
             hall.GetPaid(accounting, kitchen.Storage.Recipes, Customer, tip);
             tip = price + tip < customerBudgetOld ? tip : customerBudgetOld - price;
-            var tax = accounting.CalculateTransactionTax(price) + accounting.CalculateTipTax(tip);
+            var tax = accounting.CalculateTransactionTax(price);
 
-            Result = $"{Customer.Name}, {Math.Round(Customer.budget + price + tip, 2)}, {Customer.Order.Name}, {price} -> success; money amount: {Math.Round(price - tax + tip, 2)}; tax: {tax + accounting.CalculateTipTax(tip)}; tip {tip}";
+            Result = $"{Customer.Name}, {Math.Round(Customer.budget + price + tip, 2)}, {Customer.Order.Name}, {price} -> success; money amount: {Math.Round(price - tax + tip, 2)}; tax: {tax}; tip {tip}";
         }
 
         private void ExecuteAllergicBuy(double price)
