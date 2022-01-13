@@ -262,7 +262,7 @@ namespace ChikenKitchenDataBase
             List<Customer> _Customers,
             double _Budget,
             Dictionary<Ingredient, int> ingredientsTrashAmount,
-            Dictionary<Ingredient, int> totalTrashAmount)
+            Dictionary<Ingredient, int> trashAmount)
         {
             SaveIngredients(_Ingredients);
             SaveIngredientsProperties(_IngredientsAmount, _IngredientsPrice, ingredientsTrashAmount);
@@ -272,7 +272,7 @@ namespace ChikenKitchenDataBase
             SaveCustomers(_Customers);
             SaveAllergies(_Customers);
             SaveBudget(_Budget);
-            SaveTrash(totalTrashAmount);
+            SaveTrash(trashAmount);
             SaveChanges();
         }
         public void SaveIngredients(List<Ingredient> _Ingredients)
@@ -406,7 +406,7 @@ namespace ChikenKitchenDataBase
             }
         }
 
-        public void SaveTrash(Dictionary<Ingredient, int> totalTrashAmount)
+        public void SaveTrash(Dictionary<Ingredient, int> trashAmount)
         {
 
             foreach (Ingredient _ingredient in Ingredients)
@@ -421,7 +421,7 @@ namespace ChikenKitchenDataBase
             {
                 try
                 {
-                    Trash trash = new Trash(_ingredient, totalTrashAmount[_ingredient]);
+                    Trash trash = new Trash(_ingredient, trashAmount[_ingredient]);
                     trash.IngredientId = Ingredients.Where(i => i.Name == _ingredient.Name).FirstOrDefault().Id;
                     Trash.Where(ip => ip.IngredientId == trash.IngredientId).FirstOrDefault().Count += trash.Count;
                 }
