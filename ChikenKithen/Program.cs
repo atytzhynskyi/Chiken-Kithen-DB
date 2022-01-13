@@ -20,8 +20,8 @@ namespace ChikenKithen
                 applicationContext.InitializeFromFiles();
                 applicationContext.SetPropertiesIngredientsId();
 
-                var TaxConfigs = JsonRead.ReadFromJson<int>(@"..\..\..\Configs\TaxConfigs.json");
-                var tipConfig = JsonRead.ReadFromJson<int>(@"..\..\..\Configs\TipConfig.json");
+                var TaxConfigs = JsonRead.ReadFromJson<double>(@"..\..\..\Configs\TaxConfigs.json");
+                var tipConfig = JsonRead.ReadFromJson<double>(@"..\..\..\Configs\TipConfig.json");
                 Accounting accounting = new Accounting(applicationContext.GetBudget(),
                                                         TaxConfigs.Where(k => k.Key == "transaction tax").First().Value,
                                                         TaxConfigs.Where(k => k.Key == "profit margin").First().Value,

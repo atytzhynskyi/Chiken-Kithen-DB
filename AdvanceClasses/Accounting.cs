@@ -22,17 +22,6 @@ namespace AdvanceClasses
         
         private double _startBudget;
 
-        public Accounting(double _Budget, int _transactionTax, int _marginProfit, int _dailyTax, int _tipTax, int _maxTipPercent, int _wasteTax, Dictionary<Ingredient, int> IngredientsPrice)
-        {
-            Budget = _Budget;
-            _startBudget = _Budget;
-            transactionTax = Math.Round((float)_transactionTax/100,2);
-            marginProfit = Math.Round((float)_marginProfit /100, 2);
-            dailyTax = Math.Round((float)_dailyTax /100, 2);
-            tipTax = Math.Round((float)_tipTax / 100, 2);
-            maxTipPercent = Math.Round((float)_maxTipPercent / 100, 2);
-            this.IngredientsPrice = IngredientsPrice;
-        }
         public Accounting(double _Budget, double _transactionTax, double _marginProfit, double _dailyTax, double _tipTax, double _maxTipPercent, double _wasteTax, Dictionary<Ingredient, int> IngredientsPrice)
         {
             Budget = _Budget;
@@ -88,7 +77,7 @@ namespace AdvanceClasses
                 totalPrice += kitchen.Storage.IngredientsTrashAmount[ingredient] * IngredientsPrice[ingredient];
             }
 
-            return totalPrice;
+            return (double)totalPrice*wasteTax;
         }
 
         public double CalculateDailyTax(Kitchen kitchen)
