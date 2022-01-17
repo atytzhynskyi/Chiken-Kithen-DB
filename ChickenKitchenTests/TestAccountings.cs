@@ -91,7 +91,7 @@ namespace ChickenKitchenTests
             accounting.AddMoney(20);
 
             // When
-            double actual = accounting.CalculateDailyTax(kitchen);       // need change public readonly double dailyTax
+            double actual = accounting.CalculateEndDayTax(kitchen);       // need change public readonly double dailyTax
 
             // Then
             Assert.AreEqual(3.6, actual);

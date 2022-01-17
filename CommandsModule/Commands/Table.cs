@@ -92,7 +92,9 @@ namespace CommandsModule
                 var price = accounting.CalculateFoodMenuPrice(kitchen.Storage.Recipes, buy.Food);
                 if(price > buy.Customer.budget)
                 {
-                    buy.Customer.budget = Math.Round(price - buy.Customer.budget, 2);
+                    var moneyGet = Math.Round(price - buy.Customer.budget, 2);
+                    _budgetPool = Math.Round(_budgetPool - moneyGet, 2);
+                    buy.Customer.budget = Math.Round(moneyGet + buy.Customer.budget, 2);
                 }
             }
 

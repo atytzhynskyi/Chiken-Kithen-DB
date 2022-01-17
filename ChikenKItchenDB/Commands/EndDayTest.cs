@@ -66,7 +66,7 @@ namespace ChikenKItchenDB.CommandsModule
             BuyCommand.IsAllowed = true;
             BuyCommand.ExecuteCommand();
 
-            var expectbudget = Math.Round(accounting.Budget - accounting.CalculateDailyTax(kitchen), 2);
+            var expectbudget = Math.Round(accounting.Budget - accounting.CalculateEndDayTax(kitchen), 2);
 
             EndDayCommand.ExecuteCommand();
 

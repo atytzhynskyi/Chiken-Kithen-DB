@@ -23,7 +23,7 @@ namespace CommandsModule.Commands
 
         public void ExecuteCommand()
         {
-            Result = $"Current budget:{Accounting.Budget}, Start budget:{Accounting.GetStartBudget()}, Tax:{Accounting.CalculateDailyTax(Kitchen)}";
+            Result = $"Current budget:{Accounting.Budget}, Start budget:{Accounting.GetStartBudget()}, Tax:{Accounting.CalculateEndDayTax(Kitchen)}(Tip tax:{Accounting.CalculateTipTax()}; Waste tax:{Accounting.CalculateWasteTax(Kitchen)}; Profit tax:{Accounting.CalculateProfitTax()})";
             Accounting.PayDayTax(Kitchen);
         }
     }
