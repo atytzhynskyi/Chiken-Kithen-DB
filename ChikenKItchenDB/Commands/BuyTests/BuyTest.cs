@@ -26,12 +26,11 @@ namespace ChikenKItchenDB.CommandsModule
         [TestInitialize]
         public void SetupContext()
         {
-            Randomizer.Randomizer.Random = new Random(0);
             Dictionary<Ingredient, int> ingredientsPrice = new Dictionary<Ingredient, int>();
             ingredientsPrice.Add(salt, 10);
             ingredientsPrice.Add(water, 10);
 
-            accounting = new Accounting(500, 0.5, 0, 0, 0, 0, 0, ingredientsPrice);
+            accounting = new Accounting(500, 0.5, 0, 0, ingredientsPrice);
 
             ingredients = new List<Ingredient> { salt, water };
             saltWater = new Food("Salt water", ingredients.ToArray());

@@ -133,12 +133,6 @@ namespace CommandsModule
                 Result = "Food 404";
                 return;
             }
-            //if (Customer.budget < accounting.CalculateFoodMenuPrice(
-            //                                    kitchen.Storage.Recipes, Food))
-            //{
-            //    Result = "Can't order: customer dont have enough money";
-            //    return;
-            //}
 
             if (Customer.budget < accounting.CalculateFoodMenuPrice(
                                                 kitchen.Storage.Recipes, Food))
