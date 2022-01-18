@@ -22,7 +22,6 @@
     <ProjectReference Include="..\CommandsModule\CommandsModule.csproj" />
     <ProjectReference Include="..\ConfigurationModule\ConfigurationModule.csproj" />
     <ProjectReference Include="..\jsonReadModule\jsonReadModule.csproj" />
-    <ProjectReference Include="..\Randomizer\Randomizer.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -13,15 +13,12 @@ namespace ChikenKitchenDataBase
         public int Count { get; set; }
         [Column("Price")]
         public int Price { get; set; }
-        [Column("Trash")]
-        public int Trash { get; set; }
         public IngredientProperties() { }
-        public IngredientProperties(Ingredient _Ingredient, int _Count, int _Price, int trash)
+        public IngredientProperties(Ingredient _Ingredient, int _Count, int _Price)
         {
             Ingredient = _Ingredient;
             Count = _Count;
             Price = _Price;
-            Trash = trash;
         }
         public IngredientProperties(Ingredient _Ingredient, int _Count)
         {

@@ -1,7 +1,5 @@
 {
   "profit margin": 40,
   "transaction tax": 10,
-  "daily tax": 20,
-  "waste tax": 15,
-  "tip tax" : 5
+  "daily tax": 20
 }

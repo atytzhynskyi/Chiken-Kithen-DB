@@ -47,7 +47,6 @@ namespace CommandsModule
 
                     fs.WriteLine(GetWareHouse(record.IngredientsAmount, record.FoodsAmount));
                     fs.WriteLine($"Budget: {record.Budget}");
-                    fs.WriteLine($"Tips: {record.Tip}");
 
                     fs.WriteLine("");
                     if (RecordsBase.Records.First() == record)

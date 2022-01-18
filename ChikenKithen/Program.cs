@@ -4,7 +4,6 @@ using System.Linq;
 using AdvanceClasses;
 using CommandsModule;
 using jsonReadModule;
-using Randomizer;
 
 namespace ChikenKithen
 {
@@ -15,39 +14,26 @@ namespace ChikenKithen
             using (ApplicationContext applicationContext = new ApplicationContext())
             {
                 //applicationContext.Database.EnsureDeleted();
-                Randomizer.Randomizer.Random = new Random();
-
+                
                 applicationContext.InitializeFromFiles();
                 applicationContext.SetPropertiesIngredientsId();
 
                 var TaxConfigs = JsonRead.ReadFromJson<int>(@"..\..\..\Configs\TaxConfigs.json");
-                var tipConfig = JsonRead.ReadFromJson<int>(@"..\..\..\Configs\TipConfig.json");
                 Accounting accounting = new Accounting(applicationContext.GetBudget(),
                                                         TaxConfigs.Where(k => k.Key == "transaction tax").First().Value,
                                                         TaxConfigs.Where(k => k.Key == "profit margin").First().Value,
                                                         TaxConfigs.Where(k => k.Key == "daily tax").First().Value,
-                                                        tipConfig.Where(k => k.Key == "max tip").First().Value,
-                                                        TaxConfigs.Where(k => k.Key == "tip tax").First().Value,
-                                                        TaxConfigs.Where(k=> k.Key == "waste tax").First().Value,
-                                                        applicationContext.GetIngredientsPrice()) ;
+                                                        applicationContext.GetIngredientsPrice());
 
                 var WarehouseSize = JsonRead.ReadFromJson<int>(@"..\..\..\Configs\WarehouseSize.json");
-                var spoilConfig = JsonRead.ReadFromJson<double>(@"..\..\..\Configs\SpoilConfig.json");
-                var ordersDeliveries = JsonRead.ReadFromJson<int>(@"..\..\..\Configs\OrdersDeliveries.json");
                 Storage storage = new Storage(applicationContext.GetFoods(),
                                               applicationContext.Ingredients.ToList(),
                                               applicationContext.GetFoodsAmount(),
                                               applicationContext.GetIngredientsAmount(),
-                                              applicationContext.GetIngredientsTrashAmount(),
-                                              applicationContext.GetTotalTrashAmount(),
                                               WarehouseSize.Where(k => k.Key == "max ingredient type").First().Value,
                                               WarehouseSize.Where(k => k.Key == "max dish type").First().Value,
-                                              WarehouseSize.Where(k => k.Key == "total maximum").First().Value,
-                                              WarehouseSize.Where(k => k.Key == "waste limit").First().Value,
-                                              spoilConfig.Where(k => k.Key == "spoil rate").First().Value,
-                                              ordersDeliveries.Where(k => k.Key == "order ingredient volatility").First().Value,
-                                              ordersDeliveries.Where(k => k.Key == "order dish volatility").First().Value);
-
+                                              WarehouseSize.Where(k => k.Key == "total maximum").First().Value);
+                
                 Kitchen kitchen = new Kitchen(storage);
                 Hall hall = new Hall(applicationContext.GetCustomers(), kitchen.Storage.Recipes);
                 RecordsBase recordsBase = new RecordsBase(accounting, kitchen);
@@ -64,32 +50,22 @@ namespace ChikenKithen
 
                     command.ExecuteCommand();
 
-                    Console.WriteLine($"{command.FullCommand} -> {command.Result}\n");
+                    Console.WriteLine($"{command.FullCommand} -> {command.Result}");
 
-                    applicationContext.SaveAll(
-                        storage.Ingredients,
-                        storage.IngredientsAmount,
-                        accounting.IngredientsPrice,
-                        kitchen.Storage.Recipes,
-                        storage.FoodAmount,
-                        hall.Customers,
-                        accounting.Budget,
-                        storage.IngredientsTrashAmount,
-                        storage.TotalTrashAmount);
 
-                    recordsBase.AddRecordIfSomeChange(command, kitchen, accounting);
+                    applicationContext.SaveAll(storage.Ingredients, storage.IngredientsAmount, accounting.IngredientsPrice, kitchen.Storage.Recipes, hall.Customers, accounting.Budget);
+                    recordsBase.AddRecordIfSomeChange(command,kitchen, accounting);
                 }
-
+                //*/
             }
         }
-
         static void ShowWarehouse(Kitchen kitchen)
         {
-            foreach (var ingredient in kitchen.Storage.IngredientsAmount.Where(i => i.Value != 0))
+            foreach(var ingredient in kitchen.Storage.IngredientsAmount.Where(i => i.Value != 0))
             {
                 Console.Write($"{ingredient.Key.Name} {ingredient.Value}, ");
             }
-            foreach (var food in kitchen.Storage.FoodAmount.Where(f => f.Value != 0))
+            foreach(var food in kitchen.Storage.FoodAmount.Where(f=>f.Value != 0))
             {
                 Console.Write($"{food.Key.Name} {food.Value}, ");
             }
