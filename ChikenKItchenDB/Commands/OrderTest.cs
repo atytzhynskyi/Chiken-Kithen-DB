@@ -26,13 +26,13 @@ namespace ChikenKItchenDB.CommandsModule
         {
             Dictionary<Ingredient, int> ingredientsPrice = new Dictionary<Ingredient, int>();
             ingredientsPrice.Add(salt, 10);
-            accounting = new Accounting(500, 0.5, 0, 0, 0, 0, 0, ingredientsPrice);
+            accounting = new Accounting(500, 0.5, 0, 0, ingredientsPrice);
             accounting.IngredientsPrice[salt] = 10;
 
             ingredients = new List<Ingredient> { salt };
             foods = new List<Food> { saltWater };
             storage = new Storage(foods, ingredients);
-
+            
             kitchen = new Kitchen(storage);
         }
         [TestMethod]
@@ -55,7 +55,7 @@ namespace ChikenKItchenDB.CommandsModule
             command = order;
 
             command.IsAllowed = true;
-
+            
 
             command.ExecuteCommand();
 
@@ -92,7 +92,7 @@ namespace ChikenKItchenDB.CommandsModule
 
             command.ExecuteCommand();
 
-            Assert.AreEqual(command.Result, "success; money used:300; tax:100");
+            Assert.AreEqual(command.Result, "success; money used:15; tax:5");
         }
     }
 }

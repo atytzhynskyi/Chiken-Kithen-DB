@@ -11,17 +11,7 @@ namespace CommandsModule
             ICommand command;
 
             string commandType = commandString.Split(", ")[0];
-
-
-            if (kitchen.Storage.IsRestaurantPoisoned())
-            {
-                if (commandType == "Throw trash away")
-                {
-                    return new ThrowTrashAway(kitchen, commandString);
-                }
-
-                return new Default("RESTAURANT POISONED");
-            }
+            
 
          switch (commandType)
             {
@@ -51,9 +41,6 @@ namespace CommandsModule
                     break;
                 case ("End Day"):
                     command = new EndDay(commandString, accounting);
-                    break;
-                case ("Throw trash away"):
-                    command = new ThrowTrashAway(kitchen, commandString);
                     break;
                 default:
                     command = new Default("Command not found");

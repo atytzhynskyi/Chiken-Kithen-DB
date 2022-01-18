@@ -26,24 +26,12 @@ namespace ChikenKItchenDB.CommandsModule
             ingredientsPrice.Add(salt, 10);
             ingredientsPrice.Add(water, 10);
 
-            accounting = new Accounting(500, 0.5, 0, 0, 0, 0, 0, ingredientsPrice);
+            accounting = new Accounting(500, 0.5, 0, 0, ingredientsPrice);
 
             ingredients = new List<Ingredient> { salt, water };
             saltWater = new Food("Salt water", ingredients.ToArray());
             Recipes = new List<Food> { saltWater };
-            storage = new Storage(Recipes,
-                ingredients,
-                new Dictionary<Food, int>(),
-                new Dictionary<Ingredient, int>(),
-                new Dictionary<Ingredient, int>(),
-                new Dictionary<Ingredient, int>(),
-                10,
-                10,
-                25,
-                0,
-                0,
-                0,
-                0);
+            storage = new Storage(Recipes, ingredients, new Dictionary<Food, int>(), new Dictionary<Ingredient, int>(), 10, 10, 25);
 
             storage.IngredientsAmount.Add(salt, 10);
             storage.IngredientsAmount.Add(water, 10);
@@ -75,8 +63,7 @@ namespace ChikenKItchenDB.CommandsModule
             Assert.AreEqual(storage.FoodAmount[saltWater], 3, "dish count incorrect");
         }
         [TestMethod()]
-        public void TestCookLimit
-            ()
+        public void TestCookLimitWaste()
         {
             command = new Cook(kitchen, "Cook, Salt water, 15");
             command.IsAllowed = true;

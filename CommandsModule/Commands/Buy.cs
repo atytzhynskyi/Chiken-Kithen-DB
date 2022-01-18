@@ -49,23 +49,15 @@ namespace CommandsModule
             {
                 price = Math.Round(price * hall.GetDiscountValueFromFile(), 2);
             }
+            double tax = accounting.CalculateTransactionTax(price);
 
             if (Customer.isAllergic(kitchen.Storage.Recipes, Food).Item1)
             {
                 ExecuteAllergicBuy(price);
                 return;
             }
-
-            var customerBudgetOld = Customer.budget;
-
-            var tip = accounting.IsTip() ? accounting.GetTip(price) : 0;
-
-
-            hall.GetPaid(accounting, kitchen.Storage.Recipes, Customer, tip);
-            tip = price + tip < customerBudgetOld ? tip : customerBudgetOld - price;
-            var tax = accounting.CalculateTransactionTax(price);
-
-            Result = $"{Customer.Name}, {Math.Round(Customer.budget + price + tip, 2)}, {Customer.Order.Name}, {price} -> success; money amount: {Math.Round(price - tax + tip, 2)}; tax: {tax}; tip {tip}";
+            hall.GetPaid(accounting, kitchen.Storage.Recipes, Customer);
+            Result = $"{Customer.Name}, {Customer.budget + price}, {Customer.Order.Name}, {price} -> success; money amount: {Math.Round(price - tax,2)}; tax: {tax};";
         }
 
         private void ExecuteAllergicBuy(double price)
@@ -141,6 +133,12 @@ namespace CommandsModule
                 Result = "Food 404";
                 return;
             }
+            //if (Customer.budget < accounting.CalculateFoodMenuPrice(
+            //                                    kitchen.Storage.Recipes, Food))
+            //{
+            //    Result = "Can't order: customer dont have enough money";
+            //    return;
+            //}
 
             if (Customer.budget < accounting.CalculateFoodMenuPrice(
                                                 kitchen.Storage.Recipes, Food))
@@ -155,17 +153,12 @@ namespace CommandsModule
                 return;
             }
 
-            //check of ingredients on spoiling (point 6.8.2)
-            //after it might will not be able enough ingredient
-            kitchen.CheckSpoilIngredient(Food);
 
-            //check it again
             if (!kitchen.IsEnoughIngredients(Food))
             {
                 Result = "Can't order: dont have enough ingredients";
                 return;
             }
         }
-
     }
 }

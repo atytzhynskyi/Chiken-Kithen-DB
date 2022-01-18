@@ -1,0 +1,14 @@
+INIT
+Warehouse: Tuna 10, Chicken 10, Potatoes 10, Asparagus 10, Milk 10, Honey 10, Paprika 10, Garlic 10, Water 10, Lemon 10, Tomatoes 10, Pickles 10, Feta 10, Vinegar 10, Rice 10, Chocolate 10, Olives 0, Soy 0, Emperor Chicken 0, Fat Cat Chicken 0, Princess Chicken 0, Youth Sauce 0, Spicy Sauce 0, Omega Sauce 0, Diamond Salad 0, Ruby Salad 0, Fries 0, Smashed Potatoes 0, Tuna Cake 0, Fish In Water 0, 
+Budget: 401,62
+
+START
+
+Buy, Julie Mirage, Fries -> Julie Mirage, 1,51, Fries, 4,62 -> success; money amount: 4,16; tax: 0,46;
+Warehouse: Tuna 10, Chicken 10, Potatoes 9, Asparagus 10, Milk 10, Honey 10, Paprika 10, Garlic 10, Water 10, Lemon 10, Tomatoes 10, Pickles 10, Feta 10, Vinegar 10, Rice 10, Chocolate 10, Olives 0, Soy 0, Emperor Chicken 0, Fat Cat Chicken 0, Princess Chicken 0, Youth Sauce 0, Spicy Sauce 0, Omega Sauce 0, Diamond Salad 0, Ruby Salad 0, Fries 0, Smashed Potatoes 0, Tuna Cake 0, Fish In Water 0, 
+Budget: 405,78
+
+Order, Potatoes, 11 -> success; money used:36,3; tax:3,3
+Warehouse: Tuna 10, Chicken 10, Potatoes 10, Asparagus 10, Milk 10, Honey 10, Paprika 10, Garlic 10, Water 10, Lemon 10, Tomatoes 10, Pickles 10, Feta 10, Vinegar 10, Rice 10, Chocolate 10, Olives 0, Soy 0, Emperor Chicken 0, Fat Cat Chicken 0, Princess Chicken 0, Youth Sauce 0, Spicy Sauce 0, Omega Sauce 0, Diamond Salad 0, Ruby Salad 0, Fries 0, Smashed Potatoes 0, Tuna Cake 0, Fish In Water 0, 
+Budget: 369,48
+

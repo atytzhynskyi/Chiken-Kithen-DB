@@ -2,7 +2,7 @@
 
 namespace CommandsModule.Commands
 {
-    public class EndDay : ICommand
+    class EndDay : ICommand
     {
         public string FullCommand { get; }
 

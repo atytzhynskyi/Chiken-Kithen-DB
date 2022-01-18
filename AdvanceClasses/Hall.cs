@@ -22,9 +22,9 @@ namespace AdvanceClasses
 
         public Customer GetCustomer(string Name)
         {
-            return Customers.Find(c => c.Name == Name);
+            return Customers.Find(c=>c.Name == Name);
         }
-
+        
         public void GiveFoodFromStorage(Kitchen kitchen, Customer customer)
         {
             foreach (Food food in kitchen.Storage.Recipes)
@@ -48,30 +48,23 @@ namespace AdvanceClasses
             //method to give just cooked food. Dont need implementation yet.
         }
 
-        public void GetPaid(Accounting accounting, List<Food> Recipes, Customer customer, double amountOfTip)
+        public void GetPaid(Accounting accounting, List<Food> Recipes, Customer customer)
         {
             double price = accounting.CalculateFoodMenuPrice(Recipes, customer.Order);
 
             if (IsDiscountAppliable(customer))
             {
-                price -= GetDiscountValueFromFile() * price;
+                price -=  GetDiscountValueFromFile() * price;
             }
             customer.budget = Math.Round(customer.budget - price, 2);
-
             accounting.AddMoney(price);
-
-            amountOfTip = amountOfTip <= customer.budget ? amountOfTip : customer.budget;
-            customer.budget -= amountOfTip;
-            customer.budget = Math.Round(customer.budget, 2);
-
-            accounting.AddTip(amountOfTip);
         }
 
         public double GetDiscountValueFromFile()
         {
             var parsedValues = JsonRead.ReadFromJson<int>(DISCOUNT_CONFIG_FILE_PATH).Values;
 
-            if (!object.Equals(parsedValues, null))
+            if(!object.Equals(parsedValues, null))
             {
                 var discount = parsedValues.FirstOrDefault();
 
@@ -89,6 +82,5 @@ namespace AdvanceClasses
             }
             return false;
         }
-
     }
 }
