@@ -58,7 +58,7 @@ namespace ChikenKitchenDataBase
 
                 Ingredient ingredient = ingredients.Where(i => i.Name == name).FirstOrDefault();
 
-                ingredientsProperties.Add(new IngredientProperties(ingredient, amount, price));
+                ingredientsProperties.Add(new IngredientProperties(ingredient, amount, price, 0));
             }
             return ingredientsProperties;
         }

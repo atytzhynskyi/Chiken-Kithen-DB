@@ -1,5 +1,6 @@
 {
   "total maximum": 500,
   "max ingredient type": 10,
-  "max dish type": 3
+  "max dish type": 3,
+  "waste limit": 50
 }
