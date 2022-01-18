@@ -11,6 +11,8 @@ namespace CommandsModule
         public string CommandType { get; private set; }
         public bool IsAllowed { get; set; }
 
+        public bool TipOff { get; set; } = false;
+
         public string AllergicConfig { get; set; }
 
         private Accounting accounting { get; set; }
@@ -58,7 +60,7 @@ namespace CommandsModule
 
             var customerBudgetOld = Customer.budget;
 
-            var tip = accounting.IsTip() ? accounting.GetTip(price) : 0;
+            var tip = !TipOff && accounting.IsTip() ? accounting.GetTip(price) : 0;
 
 
             hall.GetPaid(accounting, kitchen.Storage.Recipes, Customer, tip);
