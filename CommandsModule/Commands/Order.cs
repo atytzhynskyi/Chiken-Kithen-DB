@@ -11,8 +11,6 @@ namespace CommandsModule
     {
         private const string ORDER_OPTION_CONFIG_KEY = "";
 
-        public int Amount;
-
         public string FullCommand { get; private set; }
         public string CommandType { get; private set; }
         public string Result { get; private set; }
@@ -25,10 +23,11 @@ namespace CommandsModule
             orderOption = option;
         }
 
-        private List<Ingredient> Ingredients = new List<Ingredient>();
-        private List<Food> Foods = new List<Food>();
+        private string _orderName;
+        private Ingredient Ingredient;
+        private Food Food;
+        public int Amount;
 
-        private Dictionary<string, int> orders = new Dictionary<string, int>();
 
         private Accounting accounting { get; set; }
         private Kitchen kitchen { get; set; }
@@ -47,10 +46,7 @@ namespace CommandsModule
         {
             SetOrdersFromCommand();
             if(!object.Equals(Result, null)) return;
-
-            SetIngredientsAndFoods();
-            if (!object.Equals(Result, null)) return;
-            
+                        
             SetResultIfCommandIssues();
             if (!object.Equals(Result, null)) return;
 
@@ -73,24 +69,6 @@ namespace CommandsModule
 
         }
 
-        private void SetIngredientsAndFoods()
-        {
-            foreach(var order in orders)
-            {
-                if(!object.Equals(kitchen.Storage.GetIngredient(order.Key), null))
-                {
-                    Ingredients.Add(kitchen.Storage.GetIngredient(order.Key));
-                    continue;
-                }
-                if (!object.Equals(kitchen.Storage.GetRecipe(order.Key), null))
-                {
-                    Foods.Add(kitchen.Storage.GetRecipe(order.Key));
-                    continue;
-                }
-                Result = "Ingredient or Food not found";
-            }
-        }
-
         private void SetResultIfCommandIssues()
         {
             if (!IsAllowed)
@@ -98,53 +76,52 @@ namespace CommandsModule
                 Result = "Command not allowed";
                 return;
             }
-            if (orders.Values.Any(a => a < 0))
+            if (Amount <= 0)
             {
-                Result = "Amount can't be negative";
+                Result = "Amount can't be negative or zero";
             }
         }
 
         private void SetOrdersFromCommand()
         {
             Regex regex = new Regex(@" (.+?), (\d+)");
-            foreach(Match m in regex.Matches(FullCommand))
+            _orderName = regex.Matches(FullCommand).First().Groups[1].ToString();
+            
+            if(kitchen.Storage.Recipes.Any(r=>r.Name == _orderName))
             {
-                orders.Add(m.Groups[1].ToString(), Convert.ToInt32(m.Groups[2].ToString()));
+                Food = kitchen.Storage.Recipes.Find(r => r.Name == _orderName);
+            }
+            else if(kitchen.Storage.Ingredients.Any(i=>i.Name == _orderName))
+            {
+                Ingredient = kitchen.Storage.Ingredients.Find(i=>i.Name == _orderName);
+            }
+            else
+            {
+                Result = "Food or Ingredient not found";
             }
             return;
         }
 
         private void OrderIngredientsAndFoods()
         {
-
-            double pricesSum = 0;
-            Foods.ForEach(f => pricesSum += orders[f.Name] * accounting.CalculateFoodMenuPrice(
-                                                                       kitchen.Storage.Recipes, f));
-
-            //Ingredients.ForEach(i => pricesSum += accounting.IngredientsPrice[i]);
-            Ingredients.ForEach(i => pricesSum += accounting.IngredientsPrice[i] * orders[i.Name]);
-
-            double finalPrice = pricesSum + accounting.CalculateTransactionTax(pricesSum);
-
-            if (finalPrice > accounting.Budget)
+            if(Ingredient != null)
             {
-                Result = "Not enough money";
+                OrderIngredients();
                 return;
             }
-
-            OrderIngredients();
-
-            OrderFoods();
-
-            Result = $"success; money used:{finalPrice}; tax:{Math.Round(finalPrice - pricesSum, 2)}";
+            if(Food != null)
+            {
+                OrderFoods();
+                return;
+            }
+            Result = "Food or Ingredient not found";
         }
 
         private void OrderIngredients()
         {
-            double pricesSum = 0;
-            Ingredients.ForEach(i => pricesSum += accounting.IngredientsPrice[i]*orders[i.Name]);
+            double pricesSum = accounting.IngredientsPrice[Ingredient] * Amount;
 
-            double finalPrice = pricesSum + accounting.CalculateTransactionTax(pricesSum);
+            double finalPrice = Math.Round(pricesSum + accounting.CalculateTransactionTax(pricesSum), 2);
 
             if (finalPrice > accounting.Budget)
             {
@@ -153,26 +130,17 @@ namespace CommandsModule
             }
 
             accounting.UseMoney(pricesSum);
+            kitchen.Storage.AddIngredientAmount(Ingredient.Name, Amount);
 
-            foreach (Ingredient ingredient in Ingredients)
-            {
-                kitchen.Storage.AddIngredientAmount(ingredient.Name, orders[ingredient.Name]);
-            }
             Result = $"success; money used:{finalPrice}; tax:{Math.Round(finalPrice-pricesSum, 2)}";
         }
 
         private void OrderFoods()
         {
-            double pricesSum = 0;
-            //Foods.ForEach(f => pricesSum += accounting.CalculateFoodMenuPrice(
-            //                                               kitchen.Storage.Recipes, f));
-            Foods.ForEach(f => pricesSum += orders[f.Name] * accounting.CalculateFoodMenuPrice(
-                                                           kitchen.Storage.Recipes, f));
+            double pricesSum = accounting.CalculateFoodMenuPrice(kitchen.Storage.Recipes, Food);
 
-
-            double finalPrice = pricesSum + accounting.CalculateTransactionTax(pricesSum);
+            double finalPrice = Math.Round(pricesSum + accounting.CalculateTransactionTax(pricesSum), 2);
             
-
             if(finalPrice > accounting.Budget)
             {
                 Result = "Not enough money";
@@ -180,11 +148,7 @@ namespace CommandsModule
             }
 
             accounting.UseMoney(pricesSum);
-
-            foreach (Food food in Foods)
-            {
-                kitchen.Storage.AddFoodAmount(food.Name, orders[food.Name]);
-            }
+            kitchen.Storage.AddFoodAmount(Food.Name, Amount);
 
             Result = $"success; money used:{finalPrice}; tax:{Math.Round(finalPrice - pricesSum, 2)}";
         }
