@@ -11,19 +11,20 @@ namespace CommandsModule.Commands
         public bool IsAllowed { get; set; }
 
         public string Result { get; private set; }
-        public Accounting accounting;
-
-        public EndDay(string _FullCommand, Accounting accounting)
+        public Accounting Accounting;
+        public Kitchen Kitchen;
+        public EndDay(string _FullCommand, Accounting accounting, Kitchen kitchen)
         {
-            this.accounting = accounting;
+            this.Accounting = accounting;
+            this.Kitchen = kitchen;
             FullCommand = _FullCommand;
             CommandType = FullCommand.Split(", ")[0];
         }
 
         public void ExecuteCommand()
         {
-            Result = $"Current budget:{accounting.Budget}, Start budget:{accounting.GetStartBudget()}, Tax:{accounting.CalculateDailyTax()}";
-            accounting.PayDayTax();
+            Result = $"Current budget:{Accounting.Budget}, Start budget:{Accounting.GetStartBudget()}, Tax:{Accounting.CalculateEndDayTax(Kitchen)}(Tip tax:{Accounting.CalculateTipTax()}; Waste tax:{Accounting.CalculateWasteTax(Kitchen)}; Profit tax:{Accounting.CalculateProfitTax()})";
+            Accounting.PayDayTax(Kitchen);
         }
     }
 }

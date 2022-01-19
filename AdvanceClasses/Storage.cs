@@ -10,7 +10,7 @@ namespace AdvanceClasses
         public List<Ingredient> Ingredients { get; set; }
         public Dictionary<Ingredient, int> IngredientsAmount { get; set; } = new Dictionary<Ingredient, int>();
         public Dictionary<Ingredient, int> IngredientsTrashAmount { get; set; } = new Dictionary<Ingredient, int>();
-        public Dictionary<Ingredient, int> TotalTrashAmount { get; set; } = new Dictionary<Ingredient, int>();
+        public Dictionary<Ingredient, int> TrashAmount { get; set; } = new Dictionary<Ingredient, int>();
 
         public List<Food> Recipes;
         public Dictionary<Food, int> FoodAmount { get; set; } = new Dictionary<Food, int>();
@@ -48,7 +48,7 @@ namespace AdvanceClasses
             FoodAmount = foodsAmount;
 
             IngredientsTrashAmount = ingredientsTrashAmount;
-            TotalTrashAmount = totalTrashAmount;
+            TrashAmount = totalTrashAmount;
             _wasteLimit = wasteLimit;
             _spoilRate = spoilRate;
 

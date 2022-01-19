@@ -28,9 +28,9 @@ namespace CommandsModule
             _currentInfo = "Current trash: " + info + "\n";
         }
 
-        public void AddTotalTrashInfo(string info)
+        public void AddOldTrashInfo(string info)
         {
-            _totalInfo = "Total trash: " + info + "\n";
+            _totalInfo = "Old trash: " + info + "\n";
         }
 
         public void Save()

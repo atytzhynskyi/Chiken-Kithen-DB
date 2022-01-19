@@ -27,7 +27,7 @@ namespace CommandsModule
             Result = "look file \"TrashHistory.txt\"";
 
             var ingredientsTrashAmount = kitchen.Storage.IngredientsTrashAmount;
-            var totalTrashAmount = kitchen.Storage.TotalTrashAmount;
+            var totalTrashAmount = kitchen.Storage.TrashAmount;
 
             totalTrashAmount = AddCurrentTrashToTotalTrash(ingredientsTrashAmount, totalTrashAmount);
             SaveHistory(totalTrashAmount, ingredientsTrashAmount);
@@ -65,7 +65,7 @@ namespace CommandsModule
             var trashHistory = new TrashHistory();
 
             trashHistory.AddCurrentTrashInfo(GetReportCurrentTrash(ingredientsTrashAmount));
-            trashHistory.AddTotalTrashInfo(GetReportTotalTrash(trash));
+            trashHistory.AddOldTrashInfo(GetReportTotalTrash(trash));
 
             trashHistory.Save();
         }

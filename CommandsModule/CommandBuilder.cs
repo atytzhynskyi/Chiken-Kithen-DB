@@ -50,7 +50,7 @@ namespace CommandsModule
                     command = new Audit(commandString, RecordsBase);
                     break;
                 case ("End Day"):
-                    command = new EndDay(commandString, accounting);
+                    command = new EndDay(commandString, accounting, kitchen);
                     break;
                 case ("Throw trash away"):
                     command = new ThrowTrashAway(kitchen, commandString);

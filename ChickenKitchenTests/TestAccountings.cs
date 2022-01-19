@@ -21,6 +21,7 @@ namespace ChickenKitchenTests
         double budget;
         double tax;
         double profit;
+        Kitchen kitchen;
 
         [SetUp]
         public void SetUp()
@@ -51,6 +52,8 @@ namespace ChickenKitchenTests
 
             foodsList = new List<Food> { cappuccino, americano };
 
+            Storage storage = new Storage(foodsList, new List<Ingredient> { coffee, milk, water, sugar });
+            kitchen = new Kitchen(storage);
         }
 
         [Test]
@@ -88,7 +91,7 @@ namespace ChickenKitchenTests
             accounting.AddMoney(20);
 
             // When
-            double actual = accounting.CalculateDailyTax();       // need change public readonly double dailyTax
+            double actual = accounting.CalculateEndDayTax(kitchen);       // need change public readonly double dailyTax
 
             // Then
             Assert.AreEqual(3.6, actual);

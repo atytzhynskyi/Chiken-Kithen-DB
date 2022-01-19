@@ -20,8 +20,8 @@ namespace ChikenKithen
                 applicationContext.InitializeFromFiles();
                 applicationContext.SetPropertiesIngredientsId();
 
-                var TaxConfigs = JsonRead.ReadFromJson<int>(@"..\..\..\Configs\TaxConfigs.json");
-                var tipConfig = JsonRead.ReadFromJson<int>(@"..\..\..\Configs\TipConfig.json");
+                var TaxConfigs = JsonRead.ReadFromJson<double>(@"..\..\..\Configs\TaxConfigs.json");
+                var tipConfig = JsonRead.ReadFromJson<double>(@"..\..\..\Configs\TipConfig.json");
                 Accounting accounting = new Accounting(applicationContext.GetBudget(),
                                                         TaxConfigs.Where(k => k.Key == "transaction tax").First().Value,
                                                         TaxConfigs.Where(k => k.Key == "profit margin").First().Value,
@@ -75,11 +75,11 @@ namespace ChikenKithen
                         hall.Customers,
                         accounting.Budget,
                         storage.IngredientsTrashAmount,
-                        storage.TotalTrashAmount);
+                        storage.TrashAmount);
 
                     recordsBase.AddRecordIfSomeChange(command, kitchen, accounting);
                 }
-
+                //*/
             }
         }
 
@@ -93,7 +93,12 @@ namespace ChikenKithen
             {
                 Console.Write($"{food.Key.Name} {food.Value}, ");
             }
-            Console.Write('\n');
+            Console.Write("\nWaste:");
+            foreach(var ingredient in kitchen.Storage.IngredientsTrashAmount.Where(i=>i.Value != 0))
+            {
+                Console.Write($"{ingredient.Key.Name} {ingredient.Value}, ");
+            }
+            Console.Write("\n");
         }
     }
 }
