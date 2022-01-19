@@ -22,6 +22,9 @@ namespace CommandsModule
         List<Customer> _Customers = new List<Customer>();
         List<Food> _Orders = new List<Food>();
 
+        private double _budgetPool = 0;
+        private Dictionary<Customer, double> _donatedForTips = new Dictionary<Customer, double>();
+
         public Table(Accounting accounting, Hall hall, Kitchen kitchen, string _FullCommand)
         {
             this.accounting = accounting;
@@ -98,14 +101,11 @@ namespace CommandsModule
             {
                 //all customers have enough money and run standart "table"
                 return false;
-
             }
 
             return true;
         }
 
-        private double _budgetPool = 0;
-        private Dictionary<Customer, double> _donatedForTips = new Dictionary<Customer, double>();
         private void ExecuteTablePooled()
         {
             _Customers.ForEach(c => _donatedForTips.Add(c, 0));
@@ -118,12 +118,7 @@ namespace CommandsModule
             foreach (var buy in Buys)
             {
                 var price = accounting.CalculateFoodMenuPrice(kitchen.Storage.Recipes, buy.Food);
-                //if(price > buy.Customer.budget && !buy.Customer.isAllergic(kitchen.Storage.Recipes, buy.Customer.Order).Item1)
-                //{
-                //    var moneyGet = Math.Round(price - buy.Customer.budget, 2);
-                //    _budgetPool = Math.Round(_budgetPool - moneyGet, 2);
-                //    buy.Customer.budget = Math.Round(moneyGet + buy.Customer.budget, 2);
-                //}
+                
                 if (!buy.Customer.isAllergic(kitchen.Storage.Recipes, buy.Customer.Order).Item1)
                 {
                     //we made right the budget of customers before, this budget we must get after buy command again
@@ -156,12 +151,10 @@ namespace CommandsModule
 
             var maxTipsAmount = budgetPoolNeeded * accounting.maxTipPercent;
 
-            //var customersWithMoney = _Customers.Where(c => c.budget > 0).ToList();
             var customersWithMoney = _Customers.Where(c => c.budget > 0 && !c.isAllergic(kitchen.Storage.Recipes, c.Order).Item1).ToList(); //get customers with money and have not allergy
 
             while (customersWithMoney.Count > 0 && maxTipsAmount > Math.Round(_donatedForTips.Values.Sum(), 2))
             {
-                //customersWithMoney = _Customers.Where(c => c.budget > 0).ToList();
                 customersWithMoney = _Customers.Where(c => c.budget > 0 && !c.isAllergic(kitchen.Storage.Recipes, c.Order).Item1).ToList(); //get customers with money and have not allergy
 
                 Customer pureCustomer = new Customer();
@@ -215,12 +208,10 @@ namespace CommandsModule
             var customersWithoutAllergy = _Customers.Where(c => !c.isAllergic(kitchen.Storage.Recipes, c.Order).Item1).ToList();
             customersWithoutAllergy.ForEach(c => budgetPoolNeeded += accounting.CalculateFoodMenuPrice(kitchen.Storage.Recipes, c.Order));
 
-            //var customersWithMoney = _Customers.Where(c => c.budget > 0).ToList(); //get customers with money
             var customersWithMoney = _Customers.Where(c => c.budget > 0 && !c.isAllergic(kitchen.Storage.Recipes, c.Order).Item1).ToList(); //get customers with money and have not allergy
 
             while (budgetPoolNeeded != _budgetPool && customersWithMoney.Count > 0)
             {
-                //customersWithMoney = _Customers.Where(c => c.budget > 0).ToList(); 
                 customersWithMoney = _Customers.Where(c => c.budget > 0 && !c.isAllergic(kitchen.Storage.Recipes, c.Order).Item1).ToList(); //get customers with money and have not allergy
 
                 //find the purest customers

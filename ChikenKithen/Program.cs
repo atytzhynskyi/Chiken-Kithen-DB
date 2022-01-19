@@ -4,7 +4,6 @@ using System.Linq;
 using AdvanceClasses;
 using CommandsModule;
 using jsonReadModule;
-using Randomizer;
 
 namespace ChikenKithen
 {
