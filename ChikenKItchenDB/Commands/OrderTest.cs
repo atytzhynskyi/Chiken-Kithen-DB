@@ -30,6 +30,8 @@ namespace ChikenKItchenDB.CommandsModule
             accounting.IngredientsPrice[salt] = 10;
 
             ingredients = new List<Ingredient> { salt };
+            saltWater.RecipeIngredients = ingredients;
+
             foods = new List<Food> { saltWater };
             storage = new Storage(foods, ingredients);
             
@@ -70,7 +72,7 @@ namespace ChikenKItchenDB.CommandsModule
 
             command.ExecuteCommand();
 
-            Assert.AreEqual(command.Result, "Ingredient or Food not found");
+            Assert.AreEqual(command.Result, "Food or Ingredient not found");
         }
 
         [TestMethod]
@@ -92,7 +94,7 @@ namespace ChikenKItchenDB.CommandsModule
 
             command.ExecuteCommand();
 
-            Assert.AreEqual(command.Result, "success; money used:15; tax:5");
+            Assert.AreEqual(command.Result, "success; money used:300; tax:100");
         }
     }
 }

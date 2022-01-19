@@ -6,7 +6,7 @@ using System.Linq;
 namespace AdvanceClasses.Tests
 {
     [TestClass()]
-    public class StorageTest
+    public class StorageTests
     {
         [TestMethod()]
         public void AddIngredientWhenIngredientsAmountIsMoreThenMaxIngredientTypeAndTotalMax()
