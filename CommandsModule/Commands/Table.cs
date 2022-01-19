@@ -62,12 +62,12 @@ namespace CommandsModule
             if (_isPooled && _Customers.Any(c => c.budget < accounting.CalculateFoodMenuPrice(
                                                       kitchen.Storage.Recipes, c.Order)))
             {
-                ExecuteTablePooled();
-
-                if (_isPooled)
+                if (CheckNeedPooled())
                 {
+                    ExecuteTablePooled();
                     return;
                 }
+
             }
 
             double startBudget = accounting.Budget;
@@ -88,9 +88,8 @@ namespace CommandsModule
             Buys.ForEach(b => Result += $"\n\t{b.FullCommand} -> {b.Result}");
             Result += "\n}";
         }
-        private double _budgetPool = 0;
-        private Dictionary<Customer, double> _donatedForTips = new Dictionary<Customer, double>();
-        private void ExecuteTablePooled()
+
+        private bool CheckNeedPooled()
         {
             //get a list of customers who there are need to be pooled
             var customersNeedPooled = _Customers.Where(c => c.budget < accounting.CalculateFoodMenuPrice(kitchen.Storage.Recipes, c.Order) && !c.isAllergic(kitchen.Storage.Recipes, c.Order).Item1).ToList();
@@ -98,10 +97,17 @@ namespace CommandsModule
             if (customersNeedPooled.Count() == 0)
             {
                 //all customers have enough money and run standart "table"
-                _isPooled = false;
-                return;
+                return false;
+
             }
 
+            return true;
+        }
+
+        private double _budgetPool = 0;
+        private Dictionary<Customer, double> _donatedForTips = new Dictionary<Customer, double>();
+        private void ExecuteTablePooled()
+        {
             _Customers.ForEach(c => _donatedForTips.Add(c, 0));
 
             FillBudgetPool();
