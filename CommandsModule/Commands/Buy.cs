@@ -60,10 +60,11 @@ namespace CommandsModule
 
             //6.11.1
             var coefficientForTip = GetСoefficientForTip();
+            //var coefficientForTip = 1;
 
             var customerBudgetOld = Customer.budget;
 
-            var tip = !TipOff && (accounting.IsTip() || coefficientForTip > 1) ? accounting.GetTip(price) : 0;
+            var tip = !TipOff && (accounting.IsTip() || coefficientForTip > 1) ? accounting.GetTip(price) * coefficientForTip : 0;
 
 
             hall.GetPaid(accounting, kitchen.Storage.Recipes, Customer, tip);

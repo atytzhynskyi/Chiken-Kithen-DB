@@ -78,6 +78,7 @@ namespace ChikenKItchenDB.CommandsModule
         [TestMethod]
         public void TestTableSuccess()
         {
+            //need to use fake raddomi
             command = new Table(accounting, hall, kitchen, "Table, Den, Bill, Tomas, Ketty, Irish Fish, Irish Fish, Irish Fish, Irish Fish");
             command.IsAllowed = true;
 

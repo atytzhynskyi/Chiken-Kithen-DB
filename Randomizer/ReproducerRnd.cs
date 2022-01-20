@@ -13,12 +13,24 @@ namespace Randomizer
 
         public double GetRandomDouble()
         {
-            return _values[(_idx++) % _values.Length] / 100;
+            //return _values[(_idx++) % _values.Length] / 100;
+            var value = (double)_values[_idx] / 100;
+            UpdataIndex();
+            return value;
         }
 
         public int GetRandomInt(int min = 0, int max = int.MaxValue)
         {
-            return _values[(_idx++) % _values.Length];
+            //return _values[(_idx++) % _values.Length];
+            var value = _values[_idx];
+            UpdataIndex();
+            return value;
+        }
+
+        private void UpdataIndex()
+        {
+            _idx++;
+            _idx = _idx != _values.Length ? _idx : 0;
         }
     }
 
