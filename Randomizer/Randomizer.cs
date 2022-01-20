@@ -4,10 +4,12 @@ namespace Randomizer
 {
     public static class Randomizer
     {
+        //public static Random Random { get; set; }
         public static Random Random { get; set; }
         public static bool GetRandomBool()
         {
             return Random.Next() % 2 == 0;
+            //return Random.GetRandomInt() % 2 == 0;
         }
         public static double GetRandomDouble()
         {
