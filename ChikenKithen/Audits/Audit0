@@ -1,0 +1,19 @@
+INIT
+Warehouse: Tuna 10, Chicken 1, Potatoes 1, Asparagus 10, Milk 9, Honey 9, Paprika 0, Garlic 1, Water 2, Lemon 2, Tomatoes 0, Pickles 1, Feta 5, Vinegar 2, Rice 3, Chocolate 9, Olives 0, Soy 0, Fish In Water 0, Tuna Cake 0, Smashed Potatoes 0, Fries 0, Ruby Salad 0, Diamond Salad 0, Omega Sauce 0, Spicy Sauce 0, Youth Sauce 0, Princess Chicken 0, Fat Cat Chicken 0, Emperor Chicken 0, 
+Budget: 1248,81
+Tips: 0
+
+START
+
+Table, Alexandra Smith, Adam Smith, Christian Donnovan, Tuna Cake, Tuna Cake, Tuna Cake -> success; money amount: 378; tax:XXX
+{
+	Buy, Alexandra Smith, Tuna Cake -> Alexandra Smith, 200, Tuna Cake, 140 -> success; money amount: 126; tax: 14; tip 0
+	Buy, Adam Smith, Tuna Cake -> Adam Smith, 4424,59, Tuna Cake, 140 -> success; money amount: 126; tax: 14; tip 0
+	Buy, Christian Donnovan, Tuna Cake -> Christian Donnovan, 4860, Tuna Cake, 140 -> success; money amount: 126; tax: 14; tip 0
+}
+Warehouse: Tuna 7, Chicken 1, Potatoes 1, Asparagus 7, Milk 6, Honey 6, Paprika 0, Garlic 1, Water 2, Lemon 2, Tomatoes 0, Pickles 1, Feta 5, Vinegar 2, Rice 3, Chocolate 6, Olives 0, Soy 0, Fish In Water 0, Tuna Cake 0, Smashed Potatoes 0, Fries 0, Ruby Salad 0, Diamond Salad 0, Omega Sauce 0, Spicy Sauce 0, Youth Sauce 0, Princess Chicken 0, Fat Cat Chicken 0, Emperor Chicken 0, 
+Budget: 1626,81
+Tips: 0
+
+
+END

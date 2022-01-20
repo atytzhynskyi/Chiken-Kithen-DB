@@ -83,7 +83,7 @@ namespace ChikenKItchenDB.CommandsModule
 
             command = new Buy(accounting, hall, kitchen, "Buy, Den, Salt water");
             command.IsAllowed = true;
-            double expectTip = 50;     //150 * (80 / 100 * 0.1) * 2 * 2 * 2 = 96;   150(budget) + 96 = 246; 246 > 200; 200 - 150 = 50
+            double expectTip = 50;     //150 * (80 / 100 * 0.1) * 2 * 2 * 2 = 96;   150(price) + 96(tip) = 246(total); 246 > 200(budget); 200 - 150 = 50
             double expectPrice = Math.Round(accounting.CalculateFoodMenuPrice(Recipes, saltWater), 2);
             double expectTax = Math.Round(accounting.CalculateTransactionTax(expectPrice), 2);
 
@@ -116,7 +116,7 @@ namespace ChikenKItchenDB.CommandsModule
         [TestMethod]
         public void TestBuySuccessWithWantOneIngredient()
         {
-            var rnd = new ReproducerRnd(new int[] { 11, 2, 0, 80 });
+            var rnd = new ReproducerRnd(new int[] { 33, 2, 0, 80 });
             accounting = new Accounting(500, 0.5, 0, 0, 0.1, 0.1, 0, ingredientsPrice, rnd);
 
             command = new Buy(accounting, hall, kitchen, "Buy, Den, Salt water");
