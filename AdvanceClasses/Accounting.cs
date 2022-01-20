@@ -1,4 +1,5 @@
 ﻿using BaseClasses;
+using Randomizer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,8 @@ namespace AdvanceClasses
         public double CollectedTip { get; private set; } = 0;
         public Dictionary<Ingredient, int> IngredientsPrice { get; set; } = new Dictionary<Ingredient, int>();
 
+        public IRnd Randomizer { get; private set; }
+
         public readonly double transactionTax;
         public readonly double dailyTax;
         public readonly double tipTax;
@@ -22,7 +25,15 @@ namespace AdvanceClasses
         
         private double _startBudget;
 
-        public Accounting(double _Budget, double _transactionTax, double _marginProfit, double _dailyTax, double _tipTax, double _maxTipPercent, double _wasteTax, Dictionary<Ingredient, int> IngredientsPrice)
+        public Accounting(double _Budget, 
+            double _transactionTax,
+            double _marginProfit,
+            double _dailyTax,
+            double _tipTax,
+            double _maxTipPercent,
+            double _wasteTax,
+            Dictionary<Ingredient, int> IngredientsPrice,
+            IRnd rnd)
         {
             Budget = _Budget;
             _startBudget = _Budget;
@@ -33,6 +44,7 @@ namespace AdvanceClasses
             tipTax = _tipTax;
             wasteTax = _wasteTax;
             this.IngredientsPrice = IngredientsPrice;
+            Randomizer = rnd;
         }
 
         public double CalculateFoodCostPrice(List<Food> Recipes, Food food)
@@ -159,7 +171,7 @@ namespace AdvanceClasses
 
         public bool IsTip()
         {
-            return Randomizer.Randomizer.GetRandomBool();
+            return Randomizer.GetRandomInt() % 2 == 0;
         }
 
         private double GetTipPercent()
@@ -169,12 +181,14 @@ namespace AdvanceClasses
                 return 0;
             }
 
-            return Randomizer.Randomizer.GetRandomDouble() * maxTipPercent;
+            return Randomizer.GetRandomDouble() * maxTipPercent;
+
         }
 
         public double GetTip(double price)
         {
             return Math.Round(price * GetTipPercent(), 2);
         }
+
     }
 }

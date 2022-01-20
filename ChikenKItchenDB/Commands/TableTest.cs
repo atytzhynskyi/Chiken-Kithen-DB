@@ -2,6 +2,7 @@
 using BaseClasses;
 using CommandsModule;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Randomizer;
 using System;
 using System.Collections.Generic;
 
@@ -30,12 +31,11 @@ namespace ChikenKItchenDB.CommandsModule
         [TestInitialize]
         public void SetupContext()
         {
-            Randomizer.Randomizer.Random = new Random(0);
             Dictionary<Ingredient, int> ingredientsPrice = new Dictionary<Ingredient, int>();
             ingredientsPrice.Add(potatoes, 3);
             ingredientsPrice.Add(tuna, 25);
 
-            accounting = new Accounting(500, 0.5, 0, 0, 0, 0, 0, ingredientsPrice);
+            accounting = new Accounting(500, 0.5, 0, 0, 0, 0, 0, ingredientsPrice, new Rnd(0));
 
             ingredients = new List<Ingredient> { potatoes, tuna };
 
@@ -107,7 +107,7 @@ namespace ChikenKItchenDB.CommandsModule
             ingredientsPrice.Add(potatoes, 3);
             ingredientsPrice.Add(tuna, 25);
 
-            accounting = new Accounting(500, 0.5, 0, 0, 0, 0.4, 0, ingredientsPrice);
+            accounting = new Accounting(500, 0.5, 0, 0, 0, 0.4, 0, ingredientsPrice, new Rnd(0));
 
             //Tomas has not enough money
             hall.Customers.Find(c => c == tomas).budget = 20;

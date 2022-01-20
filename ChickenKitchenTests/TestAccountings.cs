@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using BaseClasses;
 using AdvanceClasses;
+using Randomizer;
 
 namespace ChickenKitchenTests
 {
@@ -60,7 +61,7 @@ namespace ChickenKitchenTests
         public void CheckFoodCostPrice()                           // public double CalculateFoodCostPrice(List<Food> Recipes, Dictionary<Ingredient, int> ingredientsPrice, Food food)
         {
             // Given
-            Accounting accounting = new Accounting(budget, tax, profit, 0, 0, 0, 0, ingredientsPrice);
+            Accounting accounting = new Accounting(budget, tax, profit, 0, 0, 0, 0, ingredientsPrice, new Rnd(0));
 
             // When
             double actual = accounting.CalculateFoodCostPrice(foodsList, cappuccino);
@@ -73,7 +74,7 @@ namespace ChickenKitchenTests
         public void CheckFoodPriceInMenu()                         // public double CalculateFoodMenuPrice(List<Food> Recipes, Dictionary<Ingredient, int> ingredientsPrice, Food food)
         {
             // Given
-            Accounting accounting = new Accounting(budget, tax, profit, 0, 0, 0, 0, ingredientsPrice);
+            Accounting accounting = new Accounting(budget, tax, profit, 0, 0, 0, 0, ingredientsPrice, new Rnd(0));
 
             // When
             double actual = accounting.CalculateFoodMenuPrice(foodsList, cappuccino);
@@ -86,7 +87,7 @@ namespace ChickenKitchenTests
         public void CalculateDailyTaxTest()                        // public double CalculateDailyTax()
         {
             // Given
-            Accounting accounting = new Accounting(budget, tax, profit, 0.2, 0, 0, 0, ingredientsPrice);
+            Accounting accounting = new Accounting(budget, tax, profit, 0.2, 0, 0, 0, ingredientsPrice, new Rnd(0));
 
             accounting.AddMoney(20);
 
@@ -101,7 +102,7 @@ namespace ChickenKitchenTests
         public void CheckUseMoney()                               // public void UseMoney(double amount)
         {
             // Given
-            Accounting accounting = new Accounting(budget, tax, profit, 0, 0, 0, 0, ingredientsPrice);
+            Accounting accounting = new Accounting(budget, tax, profit, 0, 0, 0, 0, ingredientsPrice, new Rnd(0));
 
             // When
             accounting.UseMoney(50);
@@ -114,7 +115,7 @@ namespace ChickenKitchenTests
         public void CheckAddMoney()                               // public void AddMoney(double amount)
         {
             // Given
-            Accounting accounting = new Accounting(budget, tax, profit, 0, 0, 0, 0, ingredientsPrice);
+            Accounting accounting = new Accounting(budget, tax, profit, 0, 0, 0, 0, ingredientsPrice, new Rnd(0));
 
             // When
             accounting.AddMoney(50);
@@ -128,7 +129,7 @@ namespace ChickenKitchenTests
         public void CheckAddMoneyWithoutTax()                    // public void AddMoneyWithoutTax(double amount)
         {
             // Given
-            Accounting accounting = new Accounting(budget, tax, profit, 0, 0, 0, 0, ingredientsPrice);
+            Accounting accounting = new Accounting(budget, tax, profit, 0, 0, 0, 0, ingredientsPrice, new Rnd(0));
 
             // When
             accounting.AddMoneyWithoutTax(50);
@@ -141,7 +142,7 @@ namespace ChickenKitchenTests
         public void CheckUseMoneyWithoutTax()                    // public void UseMoneyWithoutTax(double amount)
         {
             // Given
-            Accounting accounting = new Accounting(budget, tax, profit, 0, 0, 0, 0, ingredientsPrice);
+            Accounting accounting = new Accounting(budget, tax, profit, 0, 0, 0, 0, ingredientsPrice, new Rnd(0));
 
             // When
             accounting.UseMoneyWithoutTax(50);
@@ -154,7 +155,7 @@ namespace ChickenKitchenTests
         public void CheckSetMoney()                              // public void SetMoney(double amount)
         {
             // Given
-            Accounting accounting = new Accounting(budget, tax, profit, 0, 0, 0, 0, ingredientsPrice);
+            Accounting accounting = new Accounting(budget, tax, profit, 0, 0, 0, 0, ingredientsPrice, new Rnd(0));
 
             // When
             accounting.SetMoney(10);
@@ -167,7 +168,7 @@ namespace ChickenKitchenTests
         public void CheckCalculateTransactionTax()               // public double CalculateTransactionTax(double amount)
         {
             // Given
-            Accounting accounting = new Accounting(budget, tax, profit, 0, 0, 0, 0, ingredientsPrice);
+            Accounting accounting = new Accounting(budget, tax, profit, 0, 0, 0, 0, ingredientsPrice, new Rnd(0));
 
             // When
             accounting.CalculateTransactionTax(10);

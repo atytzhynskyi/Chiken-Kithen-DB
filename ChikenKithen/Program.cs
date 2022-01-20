@@ -4,6 +4,7 @@ using System.Linq;
 using AdvanceClasses;
 using CommandsModule;
 using jsonReadModule;
+using Randomizer;
 
 namespace ChikenKithen
 {
@@ -13,8 +14,7 @@ namespace ChikenKithen
         {
             using (ApplicationContext applicationContext = new ApplicationContext())
             {
-                //applicationContext.Database.EnsureDeleted();
-                Randomizer.Randomizer.Random = new Random();
+                var rnd = new Rnd();
 
                 applicationContext.InitializeFromFiles();
                 applicationContext.SetPropertiesIngredientsId();
@@ -28,7 +28,8 @@ namespace ChikenKithen
                                                         tipConfig.Where(k => k.Key == "max tip").First().Value,
                                                         TaxConfigs.Where(k => k.Key == "tip tax").First().Value,
                                                         TaxConfigs.Where(k=> k.Key == "waste tax").First().Value,
-                                                        applicationContext.GetIngredientsPrice()) ;
+                                                        applicationContext.GetIngredientsPrice(),
+                                                        rnd) ;
 
                 var WarehouseSize = JsonRead.ReadFromJson<int>(@"..\..\..\Configs\WarehouseSize.json");
                 var spoilConfig = JsonRead.ReadFromJson<double>(@"..\..\..\Configs\SpoilConfig.json");
@@ -45,7 +46,8 @@ namespace ChikenKithen
                                               WarehouseSize.Where(k => k.Key == "waste limit").First().Value,
                                               spoilConfig.Where(k => k.Key == "spoil rate").First().Value,
                                               ordersDeliveries.Where(k => k.Key == "order ingredient volatility").First().Value,
-                                              ordersDeliveries.Where(k => k.Key == "order dish volatility").First().Value);
+                                              ordersDeliveries.Where(k => k.Key == "order dish volatility").First().Value,
+                                              rnd);
 
                 Kitchen kitchen = new Kitchen(storage);
                 Hall hall = new Hall(applicationContext.GetCustomers(), kitchen.Storage.Recipes);
@@ -78,7 +80,7 @@ namespace ChikenKithen
 
                     recordsBase.AddRecordIfSomeChange(command, kitchen, accounting);
                 }
-                //*/
+                
             }
         }
 

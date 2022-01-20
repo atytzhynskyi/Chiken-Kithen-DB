@@ -23,7 +23,7 @@ namespace Randomizer
 
         public int GetRandomInt(int min = 0, int max = int.MaxValue)
         {
-            return _rnd.Next(1, max);
+            return _rnd.Next(min, max);
         }
     }
 }

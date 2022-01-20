@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using BaseClasses;
 using AdvanceClasses;
+using Randomizer;
 
 namespace ChickenKitchenTests
 {
@@ -99,7 +100,7 @@ namespace ChickenKitchenTests
             Food americano = new Food("americano", new Ingredient[] { coffee, water });
             List<Food> recipes = new List<Food> { americano };
 
-            Accounting accounting = new Accounting(100, 0.1, 0.4, 0.2, 0, 0, 0, ingredientsPrice);
+            Accounting accounting = new Accounting(100, 0.1, 0.4, 0.2, 0, 0, 0, ingredientsPrice, new Rnd(0));
 
             Customer customer = new Customer("John Doe");
             customer.Order = americano;
@@ -135,7 +136,7 @@ namespace ChickenKitchenTests
 
             List<Food> recipes = new List<Food> { cappuccino, americano };
 
-            Accounting accounting = new Accounting(100, 0.1, 0.4, 0.2, 0, 0, 0, ingredientsPrice);
+            Accounting accounting = new Accounting(100, 0.1, 0.4, 0.2, 0, 0, 0, ingredientsPrice, new Rnd(0));
 
             Customer customer = new Customer("John Doe");
             customer.Order = cappuccino;
@@ -171,7 +172,7 @@ namespace ChickenKitchenTests
 
             List<Food> recipes = new List<Food> { cappuccino, americano };
 
-            Accounting accounting = new Accounting(100, 0.1, 0.4, 0.2, 0, 0, 0, ingredientsPrice);
+            Accounting accounting = new Accounting(100, 0.1, 0.4, 0.2, 0, 0, 0, ingredientsPrice, new Rnd(0));
 
             Customer customer = new Customer("John Doe");
             customer.Order = cappuccino;
@@ -206,7 +207,7 @@ namespace ChickenKitchenTests
 
             List<Food> recipes = new List<Food> { cappuccino, americano };
 
-            Accounting accounting = new Accounting(100, 0.1, 0.4, 0.2, 0, 0, 0, ingredientsPrice);
+            Accounting accounting = new Accounting(100, 0.1, 0.4, 0.2, 0, 0, 0, ingredientsPrice, new Rnd(0));
 
             Customer customer = new Customer("John Doe");
             customer.Order = cappuccino;

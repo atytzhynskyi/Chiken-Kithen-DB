@@ -75,7 +75,7 @@ namespace CommandsModule
 
         private int GetСoefficientForTip()
         {
-            var want = Randomizer.Randomizer.GetRandomDouble();
+            var want = accounting.Randomizer.GetRandomDouble();
 
             if (want <= 0.05)
             {
@@ -118,7 +118,7 @@ namespace CommandsModule
 
         private Ingredient GetRandomIngredient()
         {
-            var idx = Randomizer.Randomizer.GetRandomInt(kitchen.Storage.Ingredients.Count) - 1;
+            var idx = accounting.Randomizer.GetRandomInt(0, kitchen.Storage.Ingredients.Count);
             return kitchen.Storage.Ingredients[idx];
         }
 

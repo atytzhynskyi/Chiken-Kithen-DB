@@ -3,6 +3,7 @@ using CommandsModule;
 using System.Collections.Generic;
 using AdvanceClasses;
 using BaseClasses;
+using Randomizer;
 
 namespace ChikenKItchenDB.CommandsModule
 {
@@ -26,7 +27,7 @@ namespace ChikenKItchenDB.CommandsModule
             ingredientsPrice.Add(salt, 10);
             ingredientsPrice.Add(water, 10);
 
-            accounting = new Accounting(500, 0.5, 0, 0, 0, 0, 0, ingredientsPrice);
+            accounting = new Accounting(500, 0.5, 0, 0, 0, 0, 0, ingredientsPrice, new Rnd(0));
 
             ingredients = new List<Ingredient> { salt, water };
             saltWater = new Food("Salt water", ingredients.ToArray());
@@ -43,7 +44,8 @@ namespace ChikenKItchenDB.CommandsModule
                 0,
                 0,
                 0,
-                0);
+                0,
+                new Rnd(0));
 
             storage.IngredientsAmount.Add(salt, 10);
             storage.IngredientsAmount.Add(water, 10);
