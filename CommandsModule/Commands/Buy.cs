@@ -11,8 +11,6 @@ namespace CommandsModule
         public string CommandType { get; private set; }
         public bool IsAllowed { get; set; }
 
-        public bool TipOff { get; set; } = false;
-
         public string AllergicConfig { get; set; }
 
         private Accounting accounting { get; set; }
@@ -59,10 +57,10 @@ namespace CommandsModule
             }
 
             //6.11.1
-            var coefficientForTip = GetСoefficientForTip();
+            var wanted = accounting.GetWanted(Customer.Order);   //it's coefficient for a tip
             var customerBudgetOld = Customer.budget;
 
-            var tip = !TipOff && (accounting.IsTip() || coefficientForTip > 1) ? accounting.GetTip(price) * coefficientForTip : 0;
+            var tip = accounting.IsTip() || wanted > 1 ? accounting.GetTip(price) * wanted : 0;
 
 
             hall.GetPaid(accounting, kitchen.Storage.Recipes, Customer, tip);
@@ -70,55 +68,6 @@ namespace CommandsModule
             var tax = accounting.CalculateTransactionTax(price);
 
             Result = $"{Customer.Name}, {Math.Round(Customer.budget + price + tip, 2)}, {Customer.Order.Name}, {price} -> success; money amount: {Math.Round(price - tax + tip, 2)}; tax: {tax}; tip {tip}";
-        }
-
-        private int GetСoefficientForTip()
-        {
-            var want = accounting.Randomizer.GetRandomDouble();
-
-            if (want <= 0.05)
-            {
-                return CulculateCoefficientForTip(3);
-            }
-
-            if (want <= 0.15)
-            {
-                return CulculateCoefficientForTip(2);
-            }
-
-            if (want <= 0.5)
-            {
-                return CulculateCoefficientForTip(1);
-            }
-            else
-            {
-                return 1;
-            }
-
-        }
-
-        private int CulculateCoefficientForTip(int times)
-        {
-            var coefficient = 1;
-
-            for (int i = 0; i < times; i++)
-            {
-                Ingredient randomIngredient = GetRandomIngredient();
-
-                if (Customer.Order.HasIngredient(randomIngredient))
-                {
-                    coefficient *= 2;
-                }
-
-            }
-
-            return coefficient;
-        }
-
-        private Ingredient GetRandomIngredient()
-        {
-            var idx = accounting.Randomizer.GetRandomInt(0, kitchen.Storage.Ingredients.Count);
-            return kitchen.Storage.Ingredients[idx];
         }
 
         private void ExecuteAllergicBuy(double price)
@@ -132,7 +81,6 @@ namespace CommandsModule
                 }
                 else AllergicConfig = "waste";
             }
-
 
             string allergicResult;
             switch (AllergicConfig)

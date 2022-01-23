@@ -113,24 +113,37 @@ namespace CommandsModule
             FillBudgetPool();
             AddMoneyForTips();
 
+            double poolTipAmount = _donatedForTips.Values.Sum();
+
             double startBudget = accounting.Budget;
 
             foreach (var buy in Buys)
             {
                 var price = accounting.CalculateFoodMenuPrice(kitchen.Storage.Recipes, buy.Food);
-                
+
+                double budgetBefore = 0;
+
                 if (!buy.Customer.isAllergic(kitchen.Storage.Recipes, buy.Customer.Order).Item1)
                 {
-                    //we made right the budget of customers before, this budget we must get after buy command again
-                    //so, we have to add price to the budget and we'll lose this amount in the process of executing the buy command
-                    buy.Customer.budget = Math.Round(price + buy.Customer.budget, 2);
+                    //we made right the budget of customers after all corrected before, this budget 100% left in the customer after buying command
+
+                    //we can pass only the price of food and pool of tip
+                    //step by spep (I mean "buy command") we decrease the pool of tip
+
+                    budgetBefore = buy.Customer.budget;
+                    buy.Customer.budget = Math.Round(price + poolTipAmount, 2);
+
+                    buy.ExecuteCommand();
+
+                    poolTipAmount = buy.Customer.budget;
+                    buy.Customer.budget = budgetBefore;
                 }
 
-                buy.TipOff = true;
                 buy.ExecuteCommand();
-
-                accounting.AddTip(_donatedForTips[buy.Customer]);
             }
+
+            //and pool of tips that remain after that, we pay back to customers
+            PayBackLeftTips(poolTipAmount);
 
             double moneyAmount = Math.Round(accounting.Budget - startBudget, 2);
 
@@ -141,22 +154,70 @@ namespace CommandsModule
             Result += "\n}";
         }
 
-        private void AddMoneyForTips()
+        private void PayBackLeftTips(double leftTipAmount)
         {
-            var budgetPoolNeeded = 0.0;
-            //budgetPoolNeeded, in my opinien, doesn't include price of food of customers with allergy
-            //_Orders.ForEach(o => budgetPoolNeeded += accounting.CalculateFoodMenuPrice(kitchen.Storage.Recipes, o));
+            if (leftTipAmount == 0)
+                return;
+
+            double poolTipAmount = _donatedForTips.Values.Sum();
+            _Customers.ForEach(c => c.budget = Math.Round(_donatedForTips[c] / poolTipAmount * leftTipAmount, 2));
+        }
+
+        private void FillBudgetPool()
+        {
+            double budgetPoolNeeded = 0;
             var customersWithoutAllergy = _Customers.Where(c => !c.isAllergic(kitchen.Storage.Recipes, c.Order).Item1).ToList();
             customersWithoutAllergy.ForEach(c => budgetPoolNeeded += accounting.CalculateFoodMenuPrice(kitchen.Storage.Recipes, c.Order));
 
-            var maxTipsAmount = budgetPoolNeeded * accounting.maxTipPercent;
+            //get customers with money and have not allergy
+            var customersWithMoney = customersWithoutAllergy.Where(c => c.budget > 0).ToList();
 
-            var customersWithMoney = _Customers.Where(c => c.budget > 0 && !c.isAllergic(kitchen.Storage.Recipes, c.Order).Item1).ToList(); //get customers with money and have not allergy
+            while (budgetPoolNeeded != _budgetPool && customersWithMoney.Count > 0)
+            {
+                customersWithMoney = customersWithoutAllergy.Where(c => c.budget > 0).ToList();
+
+                //find the purest customers
+                Customer pureCustomer = new Customer();
+                double minBudget = int.MaxValue;
+                foreach (var customer in customersWithMoney)
+                {
+                    if (minBudget >= customer.budget)
+                    {
+                        pureCustomer = customer;
+                        minBudget = customer.budget;
+                    }
+                }
+
+                //how much money we would take at this iteration?
+                var i = (budgetPoolNeeded - _budgetPool) / customersWithMoney.Count > pureCustomer.budget ?
+                                                                                        pureCustomer.budget : (budgetPoolNeeded - _budgetPool) / customersWithMoney.Count;
+
+                //pool money from customers budgets to pool
+                _budgetPool = Math.Round(_budgetPool + (i * customersWithMoney.Count), 2);
+                customersWithMoney.ForEach(c => c.budget = Math.Round(c.budget - i, 2));
+            }
+        }
+
+        private void AddMoneyForTips()
+        {
+            var budgetPoolNeeded = 0.0;
+            var customersWithoutAllergy = _Customers.Where(c => !c.isAllergic(kitchen.Storage.Recipes, c.Order).Item1).ToList();
+            customersWithoutAllergy.ForEach(c => budgetPoolNeeded += accounting.CalculateFoodMenuPrice(kitchen.Storage.Recipes, c.Order));
+
+            var maxTipsAmount = budgetPoolNeeded * accounting.maxTipPercent * 8;
+
+            //get customers with money and have not allergy
+            var customersWithMoney = customersWithoutAllergy.Where(c => c.budget > 0).ToList();
+
+            var customersBudgetAmount = 0.0;
+            customersWithMoney.ForEach(c => customersBudgetAmount += c.budget);
+
+            maxTipsAmount = maxTipsAmount > customersBudgetAmount ? customersBudgetAmount : maxTipsAmount;
 
             while (customersWithMoney.Count > 0 && maxTipsAmount > Math.Round(_donatedForTips.Values.Sum(), 2))
             {
-                customersWithMoney = _Customers.Where(c => c.budget > 0 && !c.isAllergic(kitchen.Storage.Recipes, c.Order).Item1).ToList(); //get customers with money and have not allergy
-
+                customersWithMoney = customersWithoutAllergy.Where(c => c.budget > 0).ToList();
+                
                 Customer pureCustomer = new Customer();
                 double minBudget = int.MaxValue;
                 foreach (var customer in customersWithMoney)
@@ -199,43 +260,6 @@ namespace CommandsModule
             }
         }
 
-        private void FillBudgetPool()
-        {
-            double budgetPoolNeeded = 0;
-            //budgetPoolNeeded, in my opinien, doesn't include price of food of customers with allergy
-            //_Orders.ForEach(o => budgetPoolNeeded += accounting.CalculateFoodMenuPrice(kitchen.Storage.Recipes, o));//calculate budgetPoolNeeded
-
-            var customersWithoutAllergy = _Customers.Where(c => !c.isAllergic(kitchen.Storage.Recipes, c.Order).Item1).ToList();
-            customersWithoutAllergy.ForEach(c => budgetPoolNeeded += accounting.CalculateFoodMenuPrice(kitchen.Storage.Recipes, c.Order));
-
-            var customersWithMoney = _Customers.Where(c => c.budget > 0 && !c.isAllergic(kitchen.Storage.Recipes, c.Order).Item1).ToList(); //get customers with money and have not allergy
-
-            while (budgetPoolNeeded != _budgetPool && customersWithMoney.Count > 0)
-            {
-                customersWithMoney = _Customers.Where(c => c.budget > 0 && !c.isAllergic(kitchen.Storage.Recipes, c.Order).Item1).ToList(); //get customers with money and have not allergy
-
-                //find the purest customers
-                Customer pureCustomer = new Customer();
-                double minBudget = int.MaxValue;
-                foreach (var customer in customersWithMoney)
-                {
-                    if (minBudget >= customer.budget)
-                    {
-                        pureCustomer = customer;
-                        minBudget = customer.budget;
-                    }
-                }
-
-                //how much money we would take at this iteration?
-                var i = (budgetPoolNeeded - _budgetPool) / customersWithMoney.Count > pureCustomer.budget ?
-                                                                                        pureCustomer.budget : (budgetPoolNeeded - _budgetPool) / customersWithMoney.Count;
-
-                //pool money from customers budgets to pool
-                _budgetPool = Math.Round(_budgetPool + (i * customersWithMoney.Count), 2);
-                customersWithMoney.ForEach(c => c.budget = Math.Round(c.budget - i, 2));
-            }
-        }
-
         private void SetCustomersOrders()
         {
             if (_Customers.Count != _Orders.Count)
@@ -267,18 +291,21 @@ namespace CommandsModule
             }
             return buys;
         }
+
         private List<string> GetCustomersNameFromCommand()
         {
             List<string> commandSplit = new List<string>(FullCommand.Split(", "));
             List<string> customersName = (List<string>)commandSplit.Where(s => !object.Equals(hall.GetCustomer(s), null)).ToList();
             return customersName;
         }
+
         private List<string> GetFoodsNameFromCommand()
         {
             List<string> commandSplit = new List<string>(FullCommand.Split(", "));
             List<string> foodsName = commandSplit.Where(s => !object.Equals(kitchen.Storage.GetRecipe(s), null)).ToList();
             return foodsName;
         }
+
         private void SetResultIfIssues()
         {
             if (accounting.Budget < 0)
