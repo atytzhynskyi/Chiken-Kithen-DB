@@ -1,6 +1,7 @@
 ﻿using AdvanceClasses;
 using BaseClasses;
 using System;
+using System.Collections.Generic;
 
 namespace CommandsModule
 {
@@ -11,6 +12,8 @@ namespace CommandsModule
         public string CommandType { get; private set; }
         public bool IsAllowed { get; set; }
 
+        private bool _isRecommend { get; set; }
+
         public string AllergicConfig { get; set; }
 
         private Accounting accounting { get; set; }
@@ -19,6 +22,9 @@ namespace CommandsModule
 
         public Customer Customer = new Customer();
         public Food Food = new Food();
+
+        private List<Ingredient> _ingredientsRecommended { get; set; }
+
         public Buy(Accounting Accounting, Hall Hall, Kitchen Kitchen, string _FullCommand)
         {
             accounting = Accounting;
@@ -26,13 +32,42 @@ namespace CommandsModule
             kitchen = Kitchen;
 
             FullCommand = _FullCommand;
-            CommandType = FullCommand.Split(", ")[0];
 
-            Customer = hall.GetCustomer(_FullCommand.Split(", ")[1]);
-            Food = kitchen.Storage.GetRecipe(_FullCommand.Split(", ")[2]);
+            var fullCommandArr = FullCommand.Split(", ");
+            CommandType = fullCommandArr[0];
+
+            Customer = hall.GetCustomer(fullCommandArr[1]);
+
+            if (fullCommandArr.Length > 3)
+            {
+                _isRecommend = fullCommandArr[2] == "Recommend";
+
+                if (_isRecommend)
+                {
+                    for (int i = 3; i < fullCommandArr.Length; i++)
+                    {
+                        _ingredientsRecommended.Add(kitchen.Storage.GetIngredient(fullCommandArr[i]));
+                    }
+                }
+                else
+                {
+                    Food = kitchen.Storage.GetRecipe(_FullCommand.Split(", ")[2]);
+                }
+            }
+            else
+            {
+                Food = kitchen.Storage.GetRecipe(_FullCommand.Split(", ")[2]);
+            }
+
         }
+
         public void ExecuteCommand()
         {
+            if (_isRecommend)
+            {
+                var recommendedRecipeFoods = kitchen.Storage.GetRecommendedRecipeFoods(_ingredientsRecommended);
+            }
+
             SetResultIfIssues();
 
             if (!object.Equals(Result, null)) return;
@@ -137,6 +172,7 @@ namespace CommandsModule
                 Result = "Customer 404";
                 return;
             }
+
             if (object.Equals(Food, null))
             {
                 Result = "Food 404";

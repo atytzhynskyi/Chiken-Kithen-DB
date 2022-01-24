@@ -276,5 +276,10 @@ namespace AdvanceClasses
             return volatility;
         }
 
+        public List<Food> GetRecommendedRecipeFoods(List<Ingredient> ingredientsRecommended)
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }
