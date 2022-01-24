@@ -138,8 +138,10 @@ namespace CommandsModule
                     poolTipAmount = buy.Customer.budget;
                     buy.Customer.budget = budgetBefore;
                 }
-
-                buy.ExecuteCommand();
+                else
+                {
+                    buy.ExecuteCommand();
+                }
             }
 
             //and pool of tips that remain after that, we pay back to customers
@@ -160,7 +162,10 @@ namespace CommandsModule
                 return;
 
             double poolTipAmount = _donatedForTips.Values.Sum();
-            _Customers.ForEach(c => c.budget = Math.Round(_donatedForTips[c] / poolTipAmount * leftTipAmount, 2));
+
+            var customersWithoutAllergy = _Customers.Where(c => !c.isAllergic(kitchen.Storage.Recipes, c.Order).Item1).ToList();
+            customersWithoutAllergy.ForEach(c => c.budget = Math.Round(_donatedForTips[c] / poolTipAmount * leftTipAmount, 2));
+
         }
 
         private void FillBudgetPool()

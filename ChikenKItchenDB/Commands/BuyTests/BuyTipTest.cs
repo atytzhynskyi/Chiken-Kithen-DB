@@ -78,7 +78,13 @@ namespace ChikenKItchenDB.CommandsModule
         [TestMethod]
         public void TestBuySuccessWithWantThreeIngredient()
         {
-            var rnd = new ReproducerRnd(new int[] { 4, 2, 2, 2, 0, 80 });
+            //4 => 0.04 => GetWanted()          | want 3 ingredients
+            //2 => GetRandomIngredient()
+            //3 => GetRandomIngredient()
+            //2 => GetRandomIngredient()
+            //0 => IsTip()
+            //80 => 0.8 => GetTipPercent()
+            var rnd = new ReproducerRnd(new int[] { 4, 2, 3, 2, 0, 80 });
             accounting = new Accounting(500, 0.5, 0, 0, 0.1, 0.1, 0, ingredientsPrice, rnd);
 
             command = new Buy(accounting, hall, kitchen, "Buy, Den, Salt water");
@@ -97,7 +103,12 @@ namespace ChikenKItchenDB.CommandsModule
         [TestMethod]
         public void TestBuySuccessWithWantTwoIngredient()
         {
-            var rnd = new ReproducerRnd(new int[] { 11, 2, 2, 0, 80 });
+            //11 => 0.11 =>  GetWanted()        | want 2 ingredients
+            //2, GetRandomIngredient()
+            //3, GetRandomIngredient()
+            //0, IsTip()
+            //80 => 0.8 => GetTipPercent()
+            var rnd = new ReproducerRnd(new int[] { 11, 2, 3, 0, 80 });
             accounting = new Accounting(500, 0.5, 0, 0, 0.1, 0.1, 0, ingredientsPrice, rnd);
 
             command = new Buy(accounting, hall, kitchen, "Buy, Den, Salt water");
@@ -116,6 +127,10 @@ namespace ChikenKItchenDB.CommandsModule
         [TestMethod]
         public void TestBuySuccessWithWantOneIngredient()
         {
+            //33 => 0.33 =>  GetWanted()        | want 1 ingredients
+            //2 => GetRandomIngredient()
+            //0 => IsTip()
+            //80 => 0.8 => GetTipPercent()
             var rnd = new ReproducerRnd(new int[] { 33, 2, 0, 80 });
             accounting = new Accounting(500, 0.5, 0, 0, 0.1, 0.1, 0, ingredientsPrice, rnd);
 
