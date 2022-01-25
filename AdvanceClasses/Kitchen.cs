@@ -21,14 +21,14 @@ namespace AdvanceClasses
             }
 
             //if recipe doesnt exist in recipes return false
-            if(!Storage.Recipes.Any(r=>r.Name == order.Name))
+            if (!Storage.Recipes.Any(r => r.Name == order.Name))
             {
                 return false;
             }
 
             //set order from recipes because orders recipe can be empty
             order = Storage.Recipes.Where(r => r.Name == order.Name).First();
-            
+
             foreach (var ingredient in from Ingredient ingredient in Storage.Ingredients
                                        from Ingredient ingredientRecipe in order.RecipeIngredients
                                        where ingredient.Name == ingredientRecipe.Name
@@ -37,7 +37,7 @@ namespace AdvanceClasses
                 Storage.IngredientsAmount[ingredient]--;
             }
 
-            foreach(var recipeFood in order.RecipeFoods)
+            foreach (var recipeFood in order.RecipeFoods)
             {
                 if (Storage.FoodAmount[recipeFood] > 0)
                 {
@@ -86,27 +86,32 @@ namespace AdvanceClasses
 
         public bool IsEnoughIngredients(Food food)
         {
-            if(object.Equals(food, null))
+            if (object.Equals(food, null))
             {
                 return false;
             }
 
-            if(Storage.Recipes.Any(f=>f.Name == food.Name)){
+            if (Storage.Recipes.Any(f => f.Name == food.Name))
+            {
                 food = Storage.Recipes.Find(f => f.Name == food.Name);
             }
 
             //group ingredient because recipe can contain several ingredients of one type
             var groupIngredients = food.RecipeIngredients.GroupBy(x => x);
-            foreach (var item in groupIngredients){
-                if (Storage.IngredientsAmount[item.Key] < item.Count()){
+            foreach (var item in groupIngredients)
+            {
+                if (Storage.IngredientsAmount[item.Key] < item.Count())
+                {
                     return false;
                 }
             }
 
             //same for food
             var groupFoods = food.RecipeFoods.GroupBy(x => x);
-            foreach (var item in groupFoods) {
-                if (Storage.FoodAmount[item.Key] < item.Count()){
+            foreach (var item in groupFoods)
+            {
+                if (Storage.FoodAmount[item.Key] < item.Count())
+                {
                     //if amout of foods in storage doesnt enough then form new recipe with lower-level food 
                     // "Chicken with seasoning" => Chicken + season => Chicken + salt + peaper
                     //its reason why recipe can contain several ingredients or foods of one type 
@@ -124,5 +129,24 @@ namespace AdvanceClasses
 
             return true;
         }
+
+        public List<Food> GetRecipeFoodsWithEnoughIngredients(List<Food> listRecipeFoods)
+        {
+            if (listRecipeFoods.Count == 0)
+                return listRecipeFoods;
+
+            List<Food> recommendedRecipeFoods = new List<Food>();
+
+            listRecipeFoods.ForEach(r =>
+            {
+                if (Storage.FoodAmount[r] >= 1 || IsEnoughIngredients(r))
+                {
+                    recommendedRecipeFoods.Add(r);
+                }
+            });
+
+            return recommendedRecipeFoods;
+        }
+
     }
 }

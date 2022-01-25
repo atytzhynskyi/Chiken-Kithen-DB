@@ -2,6 +2,7 @@
 using BaseClasses;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CommandsModule
 {
@@ -23,7 +24,7 @@ namespace CommandsModule
         public Customer Customer = new Customer();
         public Food Food = new Food();
 
-        private List<Ingredient> _ingredientsRecommended { get; set; }
+        private List<Ingredient> _ingredientsRecommended = new List<Ingredient>();
 
         public Buy(Accounting Accounting, Hall Hall, Kitchen Kitchen, string _FullCommand)
         {
@@ -65,7 +66,12 @@ namespace CommandsModule
         {
             if (_isRecommend)
             {
-                var recommendedRecipeFoods = kitchen.Storage.GetRecommendedRecipeFoods(_ingredientsRecommended);
+                var recommendedRecipeFoods = kitchen.Storage.GetRecommendedRecipeFoods(kitchen.Storage.Recipes, _ingredientsRecommended);
+                recommendedRecipeFoods = kitchen.Storage.GetRecipeFoodsWithoutAllergy(recommendedRecipeFoods, Customer);
+                recommendedRecipeFoods = GetRecipeFoodsCustomerCanAfford(recommendedRecipeFoods, Customer);
+                recommendedRecipeFoods = kitchen.GetRecipeFoodsWithEnoughIngredients(recommendedRecipeFoods);
+
+                Food = GetTheMostExpensiveRecipeFoods(recommendedRecipeFoods);
             }
 
             SetResultIfIssues();
@@ -202,6 +208,39 @@ namespace CommandsModule
                 Result = "Can't order: dont have enough ingredients";
                 return;
             }
+        }
+
+        public List<Food> GetRecipeFoodsCustomerCanAfford(List<Food> listRecipeFoods, Customer customer)
+        {
+            if (listRecipeFoods.Count == 0)
+                return listRecipeFoods;
+
+            List<Food> recommendedRecipeFoods = new List<Food>();
+
+            listRecipeFoods.ForEach(r =>
+            {
+                if (customer.budget >= accounting.CalculateFoodMenuPrice(
+                                kitchen.Storage.Recipes, r))
+                {
+                    recommendedRecipeFoods.Add(r);
+                }
+            });
+
+            return recommendedRecipeFoods;
+        }
+
+        public Food GetTheMostExpensiveRecipeFoods(List<Food> listRecipeFoods)
+        {
+            if (listRecipeFoods.Count == 0)
+                return null;
+
+            Dictionary<Food, double> recipeFoodsPrice = new Dictionary<Food, double>();
+
+            listRecipeFoods.ForEach(r => recipeFoodsPrice.Add(r, accounting.CalculateFoodMenuPrice(
+                            kitchen.Storage.Recipes, r)));
+
+            return recipeFoodsPrice.FirstOrDefault(p => p.Value == recipeFoodsPrice.Values.Max()).Key;
+
         }
 
     }

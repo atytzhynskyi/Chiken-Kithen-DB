@@ -276,9 +276,52 @@ namespace AdvanceClasses
             return volatility;
         }
 
-        public List<Food> GetRecommendedRecipeFoods(List<Ingredient> ingredientsRecommended)
+        public List<Food> GetRecommendedRecipeFoods(List<Food> listRecipeFoods, List<Ingredient> ingredientsRecommended)
         {
-            throw new NotImplementedException();
+            ingredientsRecommended.ForEach(i =>
+            {
+
+                listRecipeFoods = GetRecommendedRecipeFoods(listRecipeFoods, i);
+            });
+
+            return listRecipeFoods;
+
+        }
+
+        public List<Food> GetRecommendedRecipeFoods(List<Food> listRecipeFoods, Ingredient ingredientRecommended)
+        {
+            if (listRecipeFoods.Count == 0)
+                return listRecipeFoods;
+
+            List<Food> recommendedRecipeFoods = new List<Food>();
+
+            listRecipeFoods.ForEach(r =>
+            {
+                if (r.HasIngredient(ingredientRecommended))
+                {
+                    recommendedRecipeFoods.Add(r);
+                }
+            });
+
+            return recommendedRecipeFoods;
+        }
+
+        public List<Food> GetRecipeFoodsWithoutAllergy(List<Food> listRecipeFoods, Customer customer)
+        {
+            if (listRecipeFoods.Count == 0)
+                return listRecipeFoods;
+
+            List<Food> recommendedRecipeFoods = new List<Food>();
+
+            listRecipeFoods.ForEach(r =>
+            {
+                if (!customer.isAllergic(listRecipeFoods, r).Item1)
+                {
+                    recommendedRecipeFoods.Add(r);
+                }
+            });
+
+            return recommendedRecipeFoods;
         }
 
     }
