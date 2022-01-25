@@ -25,16 +25,20 @@ namespace ChikenKItchenDB.CommandsModule
         Food saltWaterWithPepper;
 
         List<Ingredient> ingredients;
-        List<Food> Recipes;
+        List<Food> recipes;
+
         Storage storage;
         Accounting accounting;
         Kitchen kitchen;
+        Hall hall;
+
         Customer bill;
         Customer den;
-        Hall hall;
+
         Dictionary<Ingredient, int> ingredientsPrice;
 
         Buy command;
+
         [TestInitialize]
         public void SetupContext()
         {
@@ -70,8 +74,8 @@ namespace ChikenKItchenDB.CommandsModule
             saltWaterDouble.RecipeFoods.Add(saltWater);
             saltWaterDouble.RecipeFoods.Add(saltWater);
 
-            Recipes = new List<Food> { saltWater, saltWaterVip, saltWaterPremium, saltWaterDouble, saltWaterWithPepper };
-            storage = new Storage(Recipes, ingredients);
+            recipes = new List<Food> { saltWater, saltWaterVip, saltWaterPremium, saltWaterDouble, saltWaterWithPepper };
+            storage = new Storage(recipes, ingredients);
 
             storage.IngredientsAmount[lemon] = 4;
             storage.IngredientsAmount[paprika] = 2;
@@ -84,11 +88,11 @@ namespace ChikenKItchenDB.CommandsModule
 
             bill = new Customer("Bill", pepper);
             den = new Customer("Den", new Ingredient("Chicken"));
-            hall = new Hall(new List<Customer> { bill, den }, Recipes);
+            hall = new Hall(new List<Customer> { bill, den }, recipes);
             hall.Customers.ForEach(c => c.budget = 300);
         }
         [TestMethod]
-        public void TestBuyRecommendSuccessWithoutWant()
+        public void TestBuyRecommendWithoutWantSuccess()
         {
             var rnd = new ReproducerRnd(new int[] { 80 });
             accounting = new Accounting(500, 0.5, 0.2, 0, 0.1, 0.1, 0, ingredientsPrice, rnd);
@@ -97,6 +101,8 @@ namespace ChikenKItchenDB.CommandsModule
             command.IsAllowed = true;
 
             double expectTip = 16.8;                        //210 * (80 / 100) * 0.1 = 16.8
+            //double expectPrice = Math.Round(accounting.CalculateFoodMenuPrice(recipes, saltWaterVip), 2);
+            //double expectTax = Math.Round(accounting.CalculateTransactionTax(expectPrice), 2);
             double expectPrice = 210;                       //175 + 30(margin tax (0.1)) = 210
             double expectTax = 105;                         //210 * 0.5 = 110
             var expectedBudget = 621.8;                     //500 + 210(price) - 105(tax) + 16.8(tip) = 621.8
@@ -112,7 +118,7 @@ namespace ChikenKItchenDB.CommandsModule
         }
 
         [TestMethod]
-        public void TestBuyRecommendSuccessWithWantTwoIngredient()
+        public void TestBuyRecommendWithWantTwoIngredientSuccess()
         {
             //11 => 0.11 => GetWanted()          | want 2 ingredients
             //2 => GetRandomIngredient()
@@ -126,9 +132,11 @@ namespace ChikenKItchenDB.CommandsModule
             command.IsAllowed = true;
 
             double expectTip = 67.2;                        //210 * (80 / 100) * 0.1 * 4(want) = 67.2
+            //double expectPrice = Math.Round(accounting.CalculateFoodMenuPrice(recipes, saltWaterVip), 2);
+            //double expectTax = Math.Round(accounting.CalculateTransactionTax(expectPrice), 2);
             double expectPrice = 210;                       //175 + 30(margin tax (0.1)) = 210
             double expectTax = 105;                         //210 * 0.5 = 110
-            var expectedBudget = 672.2;                     //500 + 210(price) - 110(tax) + 67.2(tip) = 672.2
+            var expectedBudget = 672.2;                     //500 + 210(price) - 105(tax) + 67.2(tip) = 672.2
             var expectedBudgetOfCustomerBill = 22.8;        //300 - 210(price) - 67.2 = 22.8
 
             string expectResult = $"{bill.Name}, {bill.budget}, Salt water vip, {expectPrice} -> success; money amount: {Math.Round(expectPrice - expectTax + expectTip, 2)}; tax: {expectTax}; tip {expectTip}";
@@ -138,6 +146,52 @@ namespace ChikenKItchenDB.CommandsModule
             Assert.AreEqual(expectResult, command.Result);
             Assert.AreEqual(expectedBudget, accounting.Budget);
             Assert.AreEqual(expectedBudgetOfCustomerBill, hall.Customers.Find(c => c == bill).budget);
+        }
+
+        [TestMethod]
+        public void TestBuyRecommendALotWithWantOneIngredientSuccess()
+        {
+            //33 => 0.33 => GetWanted()          | want 1 ingredients
+            //3 => GetRandomIngredient()
+            //0 => IsTip()
+            //80 => 0.8 => GetTipPercent()
+            var rnd = new ReproducerRnd(new int[] { 33, 2, 0, 80 });
+            accounting = new Accounting(500, 0.5, 0.2, 0, 0.1, 0.1, 0, ingredientsPrice, rnd);
+
+            command = new Buy(accounting, hall, kitchen, "Buy, Bill, Recommend, Water, Lemon");
+            command.IsAllowed = true;
+
+            double expectTip = 33.6;                        //210 * (80 / 100) * 0.1 * 2(want) = 33.6
+            //double expectPrice = Math.Round(accounting.CalculateFoodMenuPrice(recipes, saltWaterVip), 2);
+            //double expectTax = Math.Round(accounting.CalculateTransactionTax(expectPrice), 2);
+            double expectPrice = 210;                       //175 + 30(margin tax (0.1)) = 210
+            double expectTax = 105;                         //210 * 0.5 = 110
+            var expectedBudget = 638.6;                     //500 + 210(price) - 105(tax) + 33.6(tip) = 638.6
+            var expectedBudgetOfCustomerBill = 56.4;        //300 - 210(price) - 33.6 = 56.4
+
+            string expectResult = $"{bill.Name}, {bill.budget}, Salt water vip, {expectPrice} -> success; money amount: {Math.Round(expectPrice - expectTax + expectTip, 2)}; tax: {expectTax}; tip {expectTip}";
+
+            command.ExecuteCommand();
+
+            Assert.AreEqual(expectResult, command.Result);
+            Assert.AreEqual(expectedBudget, accounting.Budget);
+            Assert.AreEqual(expectedBudgetOfCustomerBill, hall.Customers.Find(c => c == bill).budget);
+        }
+
+        [TestMethod]
+        public void TestBuyRecommendAndNoHaveAnyRecommenedOrderNegativeResult()
+        {
+            var rnd = new ReproducerRnd(new int[] { 80 });
+            accounting = new Accounting(500, 0.5, 0.2, 0, 0.1, 0.1, 0, ingredientsPrice, rnd);
+
+            command = new Buy(accounting, hall, kitchen, "Buy, Bill, Recommend, Pepper");
+            command.IsAllowed = true;
+
+            string expectResult = "Food 404";
+
+            command.ExecuteCommand();
+
+            Assert.AreEqual(expectResult, command.Result);
         }
 
     }

@@ -17,17 +17,22 @@ namespace ChikenKItchenDB.CommandsModule
         Ingredient water = new Ingredient("Water");
         
         Food saltWater;
+
         List<Ingredient> ingredients;
-        List<Food> Recipes;
+        List<Food> recipes;
+
         Storage storage;
         Accounting accounting;
         Kitchen kitchen;
+        Hall hall;
+
         Customer bill;
         Customer den;
-        Hall hall;
+
         Dictionary<Ingredient, int> ingredientsPrice;
 
         Buy command;
+
         [TestInitialize]
         public void SetupContext()
         {
@@ -40,8 +45,8 @@ namespace ChikenKItchenDB.CommandsModule
             var recipeIngredients = new List<Ingredient> { salt, water };
             ingredients = new List<Ingredient> { lemon, paprika, salt, water };
             saltWater = new Food("Salt water", recipeIngredients.ToArray());
-            Recipes = new List<Food> { saltWater };
-            storage = new Storage(Recipes, ingredients);
+            recipes = new List<Food> { saltWater };
+            storage = new Storage(recipes, ingredients);
 
             storage.IngredientsAmount[lemon] = 1;
             storage.IngredientsAmount[paprika] = 1;
@@ -53,7 +58,7 @@ namespace ChikenKItchenDB.CommandsModule
 
             bill = new Customer("Bill", water);
             den = new Customer("Den", new Ingredient("Chicken"));
-            hall = new Hall(new List<Customer> { bill, den }, Recipes);
+            hall = new Hall(new List<Customer> { bill, den }, recipes);
             hall.Customers.ForEach(c => c.budget = 200);
         }
         [TestMethod]
@@ -65,7 +70,7 @@ namespace ChikenKItchenDB.CommandsModule
             command = new Buy(accounting, hall, kitchen, "Buy, Den, Salt water");
             command.IsAllowed = true;
             double expectTip = 12;     //150 * (80 / 100) * 0.1
-            double expectPrice = Math.Round(accounting.CalculateFoodMenuPrice(Recipes, saltWater), 2);
+            double expectPrice = Math.Round(accounting.CalculateFoodMenuPrice(recipes, saltWater), 2);
             double expectTax = Math.Round(accounting.CalculateTransactionTax(expectPrice), 2);
 
             string expectResult = $"{den.Name}, {den.budget}, Salt water, {expectPrice} -> success; money amount: {Math.Round(expectPrice - expectTax + expectTip, 2)}; tax: {expectTax}; tip {expectTip}";
@@ -90,7 +95,7 @@ namespace ChikenKItchenDB.CommandsModule
             command = new Buy(accounting, hall, kitchen, "Buy, Den, Salt water");
             command.IsAllowed = true;
             double expectTip = 50;     //150 * (80 / 100 * 0.1) * 2 * 2 * 2 = 96;   150(price) + 96(tip) = 246(total); 246 > 200(budget); 200 - 150 = 50
-            double expectPrice = Math.Round(accounting.CalculateFoodMenuPrice(Recipes, saltWater), 2);
+            double expectPrice = Math.Round(accounting.CalculateFoodMenuPrice(recipes, saltWater), 2);
             double expectTax = Math.Round(accounting.CalculateTransactionTax(expectPrice), 2);
 
             string expectResult = $"{den.Name}, {den.budget}, Salt water, {expectPrice} -> success; money amount: {Math.Round(expectPrice - expectTax + expectTip, 2)}; tax: {expectTax}; tip {expectTip}";
@@ -114,7 +119,7 @@ namespace ChikenKItchenDB.CommandsModule
             command = new Buy(accounting, hall, kitchen, "Buy, Den, Salt water");
             command.IsAllowed = true;
             double expectTip = 48;     //150 * (80 / 100 * 0.1) * 2 * 2 
-            double expectPrice = Math.Round(accounting.CalculateFoodMenuPrice(Recipes, saltWater), 2);
+            double expectPrice = Math.Round(accounting.CalculateFoodMenuPrice(recipes, saltWater), 2);
             double expectTax = Math.Round(accounting.CalculateTransactionTax(expectPrice), 2);
 
             string expectResult = $"{den.Name}, {den.budget}, Salt water, {expectPrice} -> success; money amount: {Math.Round(expectPrice - expectTax + expectTip, 2)}; tax: {expectTax}; tip {expectTip}";
@@ -137,7 +142,7 @@ namespace ChikenKItchenDB.CommandsModule
             command = new Buy(accounting, hall, kitchen, "Buy, Den, Salt water");
             command.IsAllowed = true;
             double expectTip = 24;     //150 * (80 / 100 * 0.1) * 2
-            double expectPrice = Math.Round(accounting.CalculateFoodMenuPrice(Recipes, saltWater), 2);
+            double expectPrice = Math.Round(accounting.CalculateFoodMenuPrice(recipes, saltWater), 2);
             double expectTax = Math.Round(accounting.CalculateTransactionTax(expectPrice), 2);
 
             string expectResult = $"{den.Name}, {den.budget}, Salt water, {expectPrice} -> success; money amount: {Math.Round(expectPrice - expectTax + expectTip, 2)}; tax: {expectTax}; tip {expectTip}";

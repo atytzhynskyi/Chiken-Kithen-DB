@@ -9,77 +9,102 @@ using System.Collections.Generic;
 namespace ChikenKItchenDB.CommandsModule
 {
     [TestClass()]
-    public class TableTest
+    public class TableRecommendTest
     {
-        Ingredient potatoes = new Ingredient("Potatoes");
-        Ingredient tuna = new Ingredient("Tuna");
-        Food smashedPotatoes;
-        Food fries;
-        Food irishFish;
+        Ingredient lemon = new Ingredient("Lemon");
+        Ingredient paprika = new Ingredient("Paprika");
+        Ingredient salt = new Ingredient("Salt");
+        Ingredient water = new Ingredient("Water");
+        Ingredient lime = new Ingredient("Lime");
+        Ingredient pepper = new Ingredient("Pepper");
+
+        Food saltWater;
+        Food saltWaterVip;
+        Food saltWaterPremium;
+        Food saltWaterDouble;
+        Food saltWaterWithPepper;
+
         List<Ingredient> ingredients;
         List<Food> recipes;
+
         Storage storage;
         Accounting accounting;
         Kitchen kitchen;
+        Hall hall;
+
         Customer bill;
         Customer den;
         Customer ketty;
         Customer tomas;
-        Hall hall;
+
+        Dictionary<Ingredient, int> ingredientsPrice;
 
         Table command;
+
         [TestInitialize]
         public void SetupContext()
         {
-            Dictionary<Ingredient, int> ingredientsPrice = new Dictionary<Ingredient, int>();
-            ingredientsPrice.Add(potatoes, 3);
-            ingredientsPrice.Add(tuna, 25);
+            ingredientsPrice = new Dictionary<Ingredient, int>();
+            ingredientsPrice.Add(lemon, 25);
+            ingredientsPrice.Add(paprika, 10);
+            ingredientsPrice.Add(salt, 50);
+            ingredientsPrice.Add(water, 100);
+            ingredientsPrice.Add(lime, 30);
+            ingredientsPrice.Add(pepper, 30);
 
-            accounting = new Accounting(500, 0.5, 0, 0, 0, 0, 0, ingredientsPrice, new Rnd(0));
+            ingredients = new List<Ingredient> { lemon, paprika, salt, water, lime, pepper };
 
-            ingredients = new List<Ingredient> { potatoes, tuna };
+            saltWater = new Food("Salt water");
+            saltWater.RecipeIngredients.Add(water);
+            saltWater.RecipeIngredients.Add(salt);
 
-            smashedPotatoes = new Food("Smashed Potatoes");
-            smashedPotatoes.RecipeIngredients.Add(potatoes);
+            saltWaterWithPepper = new Food("Salt water with pepper");
+            saltWaterWithPepper.RecipeIngredients.Add(water);
+            saltWaterWithPepper.RecipeIngredients.Add(salt);
+            saltWaterWithPepper.RecipeIngredients.Add(pepper);
 
-            fries = new Food("Fries");
-            fries.RecipeIngredients.Add(potatoes);
+            saltWaterVip = new Food("Salt water vip");
+            saltWaterVip.RecipeIngredients.Add(lemon);
+            saltWaterVip.RecipeFoods.Add(saltWater);
 
-            irishFish = new Food("Irish Fish");
-            irishFish.RecipeIngredients.Add(tuna);
-            irishFish.RecipeFoods.Add(smashedPotatoes);
-            irishFish.RecipeFoods.Add(fries);
+            saltWaterPremium = new Food("Salt water premium");
+            saltWaterPremium.RecipeIngredients.Add(lime);
+            saltWaterPremium.RecipeIngredients.Add(lime);
+            saltWaterPremium.RecipeFoods.Add(saltWaterVip);
 
+            saltWaterDouble = new Food("Salt water double");
+            saltWaterDouble.RecipeFoods.Add(saltWater);
+            saltWaterDouble.RecipeFoods.Add(saltWater);
 
-            recipes = new List<Food> { irishFish, smashedPotatoes, fries };
+            recipes = new List<Food> { saltWater, saltWaterVip, saltWaterPremium, saltWaterDouble, saltWaterWithPepper };
             storage = new Storage(recipes, ingredients);
 
-            storage.IngredientsAmount[potatoes] = 10;
-            storage.IngredientsAmount[tuna] = 10;
+            storage.IngredientsAmount[lemon] = 4;
+            storage.IngredientsAmount[paprika] = 2;
+            storage.IngredientsAmount[salt] = 10;
+            storage.IngredientsAmount[water] = 10;
+            storage.IngredientsAmount[lime] = 1;
+            storage.IngredientsAmount[pepper] = 3;
 
             kitchen = new Kitchen(storage);
 
-            bill = new Customer("Bill");
+            
+            bill = new Customer("Bill", pepper);
             den = new Customer("Den");
-            tomas = new Customer("Tomas");
-            ketty = new Customer("Ketty", tuna);
+            tomas = new Customer("Tomas", lime);
+            ketty = new Customer("Ketty", salt);
 
             hall = new Hall(new List<Customer> { bill, den, tomas, ketty }, recipes);
-            hall.Customers.ForEach(c => c.budget = 50);
-        }
-        [TestMethod]
-        public void TestTableNotAllowed()
-        {
-            command = new Table(accounting, hall, kitchen, "Table, Den, Bill, Tomas, Ketty, Irish Fish, Irish Fish, Irish Fish");
-            command.ExecuteCommand();
-            Assert.AreEqual("Command not allowed", command.Result, "Executed not allowed command");
+            hall.Customers.ForEach(c => c.budget = 300);
         }
 
         [TestMethod]
-        public void TestTableSuccess()
+        public void TestTableRecommendSuccessWithoutWant()
         {
-            //need to use fake raddomi
-            command = new Table(accounting, hall, kitchen, "Table, Den, Bill, Tomas, Ketty, Irish Fish, Irish Fish, Irish Fish, Irish Fish");
+            var rnd = new ReproducerRnd(new int[] { 80 });
+            accounting = new Accounting(500, 0.5, 0.2, 0, 0.1, 0.1, 0, ingredientsPrice, rnd);
+
+            command = new Table(accounting, hall, kitchen, "Table, Den, Bill, Tomas, Ketty, Salt water with pepper, Recommend, Water, Recommend, Water, Lemon, Salt water double");
             command.IsAllowed = true;
 
             //3(potatoes)+3(potatoes)+25(tuna) = 31; 31 * 0.5 (tax) = 15.5
@@ -102,11 +127,11 @@ namespace ChikenKItchenDB.CommandsModule
         }
 
         [TestMethod]
-        public void TestTablePooledOnAndOneCustomerHasNotEnoughMoneySuccess()
+        public void TestTableRecommendAndPooledOnWithWantSuccess()
         {
-            Dictionary<Ingredient, int> ingredientsPrice = new Dictionary<Ingredient, int>();
-            ingredientsPrice.Add(potatoes, 3);
-            ingredientsPrice.Add(tuna, 25);
+            //Dictionary<Ingredient, int> ingredientsPrice = new Dictionary<Ingredient, int>();
+            //ingredientsPrice.Add(potatoes, 3);
+            //ingredientsPrice.Add(tuna, 25);
 
             //4 => 0.04 => GetWanted()          | want 3 ingredients
             //1 => GetRandomIngredient()
@@ -137,7 +162,7 @@ namespace ChikenKItchenDB.CommandsModule
             hall.Customers.Find(c => c == bill).budget = 50;
             hall.Customers.Find(c => c == ketty).budget = 40;
 
-            command = new Table(accounting, hall, kitchen, "Table, Pooled, Den, Bill, Tomas, Ketty, Irish Fish, Irish Fish, Irish Fish, Irish Fish");
+            command = new Table(accounting, hall, kitchen, "Table, Pooled, Den, Bill, Tomas, Ketty, Salt water with pepper, Recommend, Water, Recommend, Water, Lemon, Salt water double");
             command.IsAllowed = true;
 
             //3(potatoes)+3(potatoes)+25(tuna) = 31; 31 * 0.5 (tax) = 15.5
