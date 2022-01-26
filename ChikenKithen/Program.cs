@@ -62,6 +62,7 @@ namespace ChikenKithen
 
                     ICommand command = CommandBuilder.Build(accounting, hall, kitchen, input, recordsBase);
                     command.IsAllowed = true;
+                    //command.IsAllowed = JsonRead.ReadFromJson<bool>(@"..\..\..\CommandsAllow.json");
 
                     command.ExecuteCommand();
 

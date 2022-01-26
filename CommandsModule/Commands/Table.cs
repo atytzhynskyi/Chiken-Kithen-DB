@@ -16,14 +16,18 @@ namespace CommandsModule
         private Accounting accounting { get; set; }
         private Kitchen kitchen { get; set; }
         private Hall hall { get; set; }
-        private bool _isPooled;
+        private readonly bool _isPooled;
+        private readonly bool _isRecommend;
+
         public List<Buy> Buys = new List<Buy>();
 
-        List<Customer> _Customers = new List<Customer>();
-        List<Food> _Orders = new List<Food>();
+        private List<Customer> _Customers = new List<Customer>();
+        private List<Food> _Orders = new List<Food>();
 
         private double _budgetPool = 0;
         private Dictionary<Customer, double> _donatedForTips = new Dictionary<Customer, double>();
+
+        private Dictionary<Customer, List<Food>> _foodsRecommendedForCustomers { get; set; } = new Dictionary<Customer, List<Food>>() ;
 
         public Table(Accounting accounting, Hall hall, Kitchen kitchen, string _FullCommand)
         {
@@ -35,18 +39,30 @@ namespace CommandsModule
             CommandType = FullCommand.Split(", ")[0];
             IsAllowed = false;
             _isPooled = FullCommand.Split(", ")[1] == "Pooled";
-            foreach (var foodName in GetFoodsNameFromCommand())
-            {
-                Food searchFood = kitchen.Storage.GetRecipe(foodName);
-                if (!object.Equals(searchFood, null)) _Orders.Add(searchFood);
-            }
 
             foreach (var customerName in GetCustomersNameFromCommand())
             {
                 Customer searchCustomer = hall.GetCustomer(customerName);
                 if (!object.Equals(searchCustomer, null)) _Customers.Add(searchCustomer);
             }
+
+            _isRecommend = HasRecommend();
+
+            if (_isRecommend)
+            {
+                FillProbableOrders();
+            }
+            else
+            {
+                foreach (var foodName in GetFoodsNameFromCommand())
+                {
+                    Food searchFood = kitchen.Storage.GetRecipe(foodName);
+                    if (!object.Equals(searchFood, null)) _Orders.Add(searchFood);
+                }
+            }
+
         }
+
         public void ExecuteCommand()
         {
             if (!IsAllowed)
@@ -56,6 +72,12 @@ namespace CommandsModule
             }
 
             SetCustomersOrders();
+
+            if (_isRecommend)
+            {
+                _Customers.ForEach(c => _foodsRecommendedForCustomers.Add(c, GetRecommendedRecipeFoods(c, c.Order)));
+                _Customers.ForEach(c => c.Order = GetTheMostExpensiveRecipeFoods(_foodsRecommendedForCustomers[c]));
+            }
 
             SetResultIfIssues();
             if (!object.Equals(Result, null)) return;
@@ -90,6 +112,24 @@ namespace CommandsModule
 
             Buys.ForEach(b => Result += $"\n\t{b.FullCommand} -> {b.Result}");
             Result += "\n}";
+        }
+
+        private List<Food> GetRecommendedRecipeFoods(Customer customer, Food order)
+        {
+            List<Food> recommendedRecipeFoods = new List<Food>();
+
+            if (order.Name == "Recommend")
+            {
+                recommendedRecipeFoods = kitchen.Storage.GetRecommendedRecipeFoods(kitchen.Storage.Recipes, order.RecipeIngredients);
+                recommendedRecipeFoods = kitchen.Storage.GetRecipeFoodsWithoutAllergy(recommendedRecipeFoods, customer);
+                recommendedRecipeFoods = GetRecipeFoodsCustomerCanAfford(recommendedRecipeFoods, customer);
+                recommendedRecipeFoods = kitchen.GetRecipeFoodsWithEnoughIngredients(recommendedRecipeFoods);
+
+                return recommendedRecipeFoods;
+            }
+
+            recommendedRecipeFoods.Add(order);
+            return recommendedRecipeFoods;
         }
 
         private bool CheckNeedPooled()
@@ -291,7 +331,8 @@ namespace CommandsModule
 
             for (int i = 0; i < _Customers.Count; i++)
             {
-                buys.Add(new Buy(accounting, hall, kitchen, $"Buy, {_Customers[i].Name}, {_Orders[i].Name}"));
+                //buys.Add(new Buy(accounting, hall, kitchen, $"Buy, {_Customers[i].Name}, {_Orders[i].Name}"));
+                buys.Add(new Buy(accounting, hall, kitchen, $"Buy, {_Customers[i].Name}, {_Customers[i].Order.Name}"));
                 buys[i].IsAllowed = true;
             }
             return buys;
@@ -309,6 +350,73 @@ namespace CommandsModule
             List<string> commandSplit = new List<string>(FullCommand.Split(", "));
             List<string> foodsName = commandSplit.Where(s => !object.Equals(kitchen.Storage.GetRecipe(s), null)).ToList();
             return foodsName;
+        }
+
+        private bool HasRecommend()
+        {
+            List<string> commandSplit = new List<string>(FullCommand.Split(", "));
+            return !object.Equals(commandSplit.FirstOrDefault(s => s == "Recommend"), null);
+        }
+
+        private void FillProbableOrders()
+        {
+            //we fill in "_orders" with fake food as well
+
+            List<string> commandSplit = new List<string>(FullCommand.Split(", "));
+
+            Food fakeFood = null;
+
+            commandSplit.ForEach(s =>
+            {
+                Food searchFood = kitchen.Storage.GetRecipe(s);
+
+                if (!object.Equals(searchFood, null))
+                {
+                    if (!object.Equals(fakeFood, null))
+                    {
+                        _Orders.Add(fakeFood);
+                        fakeFood = null;
+                    }
+
+                    _Orders.Add(searchFood);
+                }
+                else if ( s == "Recommend")
+                {
+                    if (!object.Equals(fakeFood, null))
+                    {
+                        _Orders.Add(fakeFood);
+                        fakeFood = null;
+                    }
+
+                    fakeFood = new Food("Recommend");
+                }
+                else if (!object.Equals(fakeFood, null))
+                {
+                    Ingredient searchIngredient = kitchen.Storage.GetIngredient(s);
+
+                    if (!object.Equals(searchIngredient, null))
+                    {
+                        fakeFood.RecipeIngredients.Add(searchIngredient);
+                    }
+
+                }
+                else
+                {
+                    if (!object.Equals(fakeFood, null))
+                    {
+                        _Orders.Add(fakeFood);
+                        fakeFood = null;
+                    }
+                }
+
+            });
+
+            if (!object.Equals(fakeFood, null))
+            {
+                _Orders.Add(fakeFood);
+                fakeFood = null;
+            }
+
         }
 
         private void SetResultIfIssues()
@@ -342,8 +450,8 @@ namespace CommandsModule
                 return;
             }
 
-            if (_Customers.Any(c => c.budget < accounting.CalculateFoodMenuPrice(
-                                                         kitchen.Storage.Recipes, c.Order)) && !_isPooled)
+            if (_Customers.Any(c => !c.isAllergic(kitchen.Storage.Recipes, c.Order).Item1 && 
+                c.budget < accounting.CalculateFoodMenuPrice(kitchen.Storage.Recipes, c.Order)) && !_isPooled)
             {
                 Result = "FAIL. One or more persons dont have enough money";
                 return;
@@ -353,22 +461,60 @@ namespace CommandsModule
 
         private bool IsEnoughIngredients()
         {
-            List<string> foodsName = GetFoodsNameFromCommand();
-
             //form MEGAfood recipe which contain every recipes of foods in orders
             Food megaFood = new Food("");
-            foreach (var foodName in foodsName)
+
+            foreach (var customer in _Customers)
             {
-                Food searchFood = kitchen.Storage.GetRecipe(foodName); //Get Food by Name
+                if (!customer.isAllergic(kitchen.Storage.Recipes, customer.Order).Item1)
+                {
+                    continue;
+                }
+
+                var order = customer.Order;
+
                 megaFood.RecipeFoods.AddRange(
-                    searchFood.RecipeFoods.
+                    order.RecipeFoods.
                     Where(x => true)); //"Where" using to prevent linking to one list
 
                 megaFood.RecipeIngredients.AddRange(
-                    searchFood.RecipeIngredients.Where(x => true));
+                    order.RecipeIngredients.Where(x => true));
             }
 
-            return true;
+            return kitchen.IsEnoughIngredients(megaFood);
         }
+
+        public List<Food> GetRecipeFoodsCustomerCanAfford(List<Food> listRecipeFoods, Customer customer)
+        {
+            if (listRecipeFoods.Count == 0)
+                return listRecipeFoods;
+
+            List<Food> recommendedRecipeFoods = new List<Food>();
+
+            listRecipeFoods.ForEach(r =>
+            {
+                if (customer.budget >= accounting.CalculateFoodMenuPrice(
+                                kitchen.Storage.Recipes, r))
+                {
+                    recommendedRecipeFoods.Add(r);
+                }
+            });
+
+            return recommendedRecipeFoods;
+        }
+
+        public Food GetTheMostExpensiveRecipeFoods(List<Food> listRecipeFoods)
+        {
+            if (listRecipeFoods.Count == 0)
+                return null;
+
+            Dictionary<Food, double> recipeFoodsPrice = new Dictionary<Food, double>();
+
+            listRecipeFoods.ForEach(r => recipeFoodsPrice.Add(r, accounting.CalculateFoodMenuPrice(
+                            kitchen.Storage.Recipes, r)));
+
+            return recipeFoodsPrice.FirstOrDefault(p => p.Value == recipeFoodsPrice.Values.Max()).Key;
+        }
+
     }
 }

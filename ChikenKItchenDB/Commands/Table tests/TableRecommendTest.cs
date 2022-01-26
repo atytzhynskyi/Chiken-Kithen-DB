@@ -108,12 +108,12 @@ namespace ChikenKItchenDB.CommandsModule
             command.IsAllowed = true;
 
             //3(potatoes)+3(potatoes)+25(tuna) = 31; 31 * 0.5 (tax) = 15.5
-            var expectedBudget = 546.5;                 //500 + 15.5 * 3 + 0(allergy)
-            var expectedBudgetOfCustomerDen = 19;       //50 - 31;
-            var expectedBudgetOfCustomerBill = 19;      //50 - 31;
-            var expectedBudgetOfCustomerTomas = 19;     //50 - 31;
-            var expectedBudgetOfCustomerKetty = 50;     //50 - 0;
-            var expectedMoneyAmount = 46.5;             //15.5 * 3
+            var expectedBudget = 868.88;                //500 + 216(price) - 108(tax) + 17.28(tip) + 210(price) - 105(tax) + 16.8(tip) + 210(price) - 105(tax) + 16.8(tip) = 868.88
+            var expectedBudgetOfCustomerDen = 66.72;    //300 - 216(price) - 17.28(tip) = 66.72;            //Salt water with pepper
+            var expectedBudgetOfCustomerBill = 73.2;    //300 - 210(price) - 16.8(tip) = 73.2;              //Salt water Vip
+            var expectedBudgetOfCustomerTomas = 73.2;   //300 - 210(price) - 16.8(tip) = 73.2;              //Salt water Vip
+            var expectedBudgetOfCustomerKetty = 300;    //Allergy
+            var expectedMoneyAmount = 368.88;           //868.88 - 500 = 368.88
             var expectResult = $"success; money amount: {expectedMoneyAmount}; tax:";
 
             command.ExecuteCommand();
@@ -156,10 +156,10 @@ namespace ChikenKItchenDB.CommandsModule
             accounting = new Accounting(500, 0.5, 0, 0, 0, 0.4, 0, ingredientsPrice, rnd);
 
             //Tomas has not enough money
-            hall.Customers.Find(c => c == tomas).budget = 20;
+            hall.Customers.Find(c => c == tomas).budget = 400;
 
-            hall.Customers.Find(c => c == den).budget = 300;
-            hall.Customers.Find(c => c == bill).budget = 50;
+            hall.Customers.Find(c => c == den).budget = 150;
+            hall.Customers.Find(c => c == bill).budget = 600;
             hall.Customers.Find(c => c == ketty).budget = 40;
 
             command = new Table(accounting, hall, kitchen, "Table, Pooled, Den, Bill, Tomas, Ketty, Salt water with pepper, Recommend, Water, Recommend, Water, Lemon, Salt water double");

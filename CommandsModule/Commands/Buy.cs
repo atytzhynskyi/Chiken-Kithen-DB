@@ -13,7 +13,7 @@ namespace CommandsModule
         public string CommandType { get; private set; }
         public bool IsAllowed { get; set; }
 
-        private bool _isRecommend { get; set; }
+        private readonly bool _isRecommend;
 
         public string AllergicConfig { get; set; }
 
@@ -24,7 +24,7 @@ namespace CommandsModule
         public Customer Customer = new Customer();
         public Food Food = new Food();
 
-        private List<Ingredient> _ingredientsRecommended = new List<Ingredient>();
+        private List<Ingredient> _ingredientsRecommended { get; set; } = new List<Ingredient>();
 
         public Buy(Accounting Accounting, Hall Hall, Kitchen Kitchen, string _FullCommand)
         {
@@ -240,7 +240,6 @@ namespace CommandsModule
                             kitchen.Storage.Recipes, r)));
 
             return recipeFoodsPrice.FirstOrDefault(p => p.Value == recipeFoodsPrice.Values.Max()).Key;
-
         }
 
     }
