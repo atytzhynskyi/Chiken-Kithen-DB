@@ -27,7 +27,7 @@ namespace CommandsModule
         private double _budgetPool = 0;
         private Dictionary<Customer, double> _donatedForTips = new Dictionary<Customer, double>();
 
-        private Dictionary<Customer, List<Food>> _foodsRecommendedForCustomers { get; set; } = new Dictionary<Customer, List<Food>>() ;
+        private Dictionary<Customer, List<Food>> _foodsRecommendedForCustomers { get; set; } = new Dictionary<Customer, List<Food>>();
 
         public Table(Accounting accounting, Hall hall, Kitchen kitchen, string _FullCommand)
         {
@@ -76,6 +76,12 @@ namespace CommandsModule
             if (_isRecommend)
             {
                 _Customers.ForEach(c => _foodsRecommendedForCustomers.Add(c, GetRecommendedRecipeFoods(c, c.Order)));
+
+                if (_isPooled)
+                {
+                    MakeOptimizationRecommendedRecipeFoods();
+                }
+
                 _Customers.ForEach(c => c.Order = GetTheMostExpensiveRecipeFoods(_foodsRecommendedForCustomers[c]));
             }
 
@@ -122,7 +128,12 @@ namespace CommandsModule
             {
                 recommendedRecipeFoods = kitchen.Storage.GetRecommendedRecipeFoods(kitchen.Storage.Recipes, order.RecipeIngredients);
                 recommendedRecipeFoods = kitchen.Storage.GetRecipeFoodsWithoutAllergy(recommendedRecipeFoods, customer);
-                recommendedRecipeFoods = GetRecipeFoodsCustomerCanAfford(recommendedRecipeFoods, customer);
+
+                if (!_isPooled)
+                {
+                    recommendedRecipeFoods = GetRecipeFoodsCustomerCanAfford(recommendedRecipeFoods, customer);
+                }
+
                 recommendedRecipeFoods = kitchen.GetRecipeFoodsWithEnoughIngredients(recommendedRecipeFoods);
 
                 return recommendedRecipeFoods;
@@ -262,7 +273,7 @@ namespace CommandsModule
             while (customersWithMoney.Count > 0 && maxTipsAmount > Math.Round(_donatedForTips.Values.Sum(), 2))
             {
                 customersWithMoney = customersWithoutAllergy.Where(c => c.budget > 0).ToList();
-                
+
                 Customer pureCustomer = new Customer();
                 double minBudget = int.MaxValue;
                 foreach (var customer in customersWithMoney)
@@ -380,7 +391,7 @@ namespace CommandsModule
 
                     _Orders.Add(searchFood);
                 }
-                else if ( s == "Recommend")
+                else if (s == "Recommend")
                 {
                     if (!object.Equals(fakeFood, null))
                     {
@@ -450,7 +461,7 @@ namespace CommandsModule
                 return;
             }
 
-            if (_Customers.Any(c => !c.isAllergic(kitchen.Storage.Recipes, c.Order).Item1 && 
+            if (_Customers.Any(c => !c.isAllergic(kitchen.Storage.Recipes, c.Order).Item1 &&
                 c.budget < accounting.CalculateFoodMenuPrice(kitchen.Storage.Recipes, c.Order)) && !_isPooled)
             {
                 Result = "FAIL. One or more persons dont have enough money";
@@ -516,5 +527,82 @@ namespace CommandsModule
             return recipeFoodsPrice.FirstOrDefault(p => p.Value == recipeFoodsPrice.Values.Max()).Key;
         }
 
+        public void MakeOptimizationRecommendedRecipeFoods()
+        {
+            //_foodsRecommendedForCustomers
+
+            //double budgetPoolNeeded = 0;
+            //var customersWithoutAllergy = _Customers.Where(c => !c.isAllergic(kitchen.Storage.Recipes, c.Order).Item1).ToList();
+            //customersWithoutAllergy.ForEach(c => budgetPoolNeeded += accounting.CalculateFoodMenuPrice(kitchen.Storage.Recipes, c.Order));
+
+            double poolBudgetCustomers = 0;
+            var customersWithoutAllergy = _Customers.Where(c => !c.isAllergic(kitchen.Storage.Recipes, c.Order).Item1).ToList();
+            customersWithoutAllergy.ForEach(c => poolBudgetCustomers += c.budget);
+
+            List<List<Dictionary<Customer, Food>>> allProbableRecipeFoods = GetAllProbableRecipeFoods();
+
+
+
+
+            var a = 123;
+        }
+
+        private List<List<Dictionary<Customer, Food>>> GetAllProbableRecipeFoods()
+        {
+            //_foodsRecommendedForCustomers
+            List<List<Dictionary<Customer, Food>>> allProbableRecipeFoods = new List<List<Dictionary<Customer, Food>>>();
+
+            Dictionary<Customer, Food> ProbableRecipeFoods = new Dictionary<Customer, Food>();
+
+            for (int i = 0; i < _foodsRecommendedForCustomers.Count; i++)
+            {
+                var item = _foodsRecommendedForCustomers.ElementAt(i);
+
+                allProbableRecipeFoods = GetAllProbableRecipeFoods111(item.Key, item.Value, allProbableRecipeFoods);
+            }
+
+            
+
+
+
+        }
+
+        private List<List<Dictionary<Customer, Food>>> GetAllProbableRecipeFoods111(Customer customer, List<Food> recipeFoods, List<List<Dictionary<Customer, Food>>> allProbableRecipeFoods)
+        {
+            List<List<Dictionary<Customer, Food>>> probableRecipeFoodsNew = new List<List<Dictionary<Customer, Food>>>();
+
+            if (allProbableRecipeFoods.Count() != 0)
+            {
+                foreach (var recipeFood in recipeFoods)
+                {
+                    Dictionary<Customer, Food> foodRecommended = new Dictionary<Customer, Food>();
+                    List<Dictionary<Customer, Food>> listFoodsRecommended = new List<Dictionary<Customer, Food>>();
+
+                    foodRecommended.Add(customer, recipeFood);
+                    listFoodsRecommended.Add(foodRecommended);
+                    probableRecipeFoodsNew.Add(listFoodsRecommended);
+                }
+            }
+            else
+            {
+                foreach (var recipeFood in recipeFoods)
+                {
+                    Dictionary<Customer, Food> foodsRecommended = new Dictionary<Customer, Food>();
+                    List<Dictionary<Customer, Food>> listFoodsRecommended = new List<Dictionary<Customer, Food>>();
+
+                    foodsRecommended.Add(customer, recipeFood);
+                    listFoodsRecommended.Add(foodsRecommended);
+
+                    allProbableRecipeFoods.ForEach(r =>
+                    {
+                        probableRecipeFoodsNew.Add(r);
+                        probableRecipeFoodsNew.Add(listFoodsRecommended);
+                    });
+
+                }
+            }
+
+            return probableRecipeFoodsNew;
+        }
     }
 }

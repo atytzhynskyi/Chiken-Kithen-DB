@@ -36,6 +36,7 @@ namespace ChikenKItchenDB.CommandsModule
         Customer den;
         Customer ketty;
         Customer tomas;
+        Customer elon;
 
         Dictionary<Ingredient, int> ingredientsPrice;
 
@@ -79,11 +80,11 @@ namespace ChikenKItchenDB.CommandsModule
             recipes = new List<Food> { saltWater, saltWaterVip, saltWaterPremium, saltWaterDouble, saltWaterWithPepper };
             storage = new Storage(recipes, ingredients);
 
-            storage.IngredientsAmount[lemon] = 4;
+            storage.IngredientsAmount[lemon] = 2;
             storage.IngredientsAmount[paprika] = 2;
             storage.IngredientsAmount[salt] = 10;
             storage.IngredientsAmount[water] = 10;
-            storage.IngredientsAmount[lime] = 1;
+            storage.IngredientsAmount[lime] = 4;
             storage.IngredientsAmount[pepper] = 3;
 
             kitchen = new Kitchen(storage);
@@ -93,8 +94,9 @@ namespace ChikenKItchenDB.CommandsModule
             den = new Customer("Den");
             tomas = new Customer("Tomas", lime);
             ketty = new Customer("Ketty", salt);
+            elon = new Customer("Elon", pepper, lime);
 
-            hall = new Hall(new List<Customer> { bill, den, tomas, ketty }, recipes);
+            hall = new Hall(new List<Customer> { bill, den, tomas, ketty, elon }, recipes);
             hall.Customers.ForEach(c => c.budget = 300);
         }
 
@@ -104,16 +106,18 @@ namespace ChikenKItchenDB.CommandsModule
             var rnd = new ReproducerRnd(new int[] { 80 });
             accounting = new Accounting(500, 0.5, 0.2, 0, 0.1, 0.1, 0, ingredientsPrice, rnd);
 
-            command = new Table(accounting, hall, kitchen, "Table, Den, Bill, Tomas, Ketty, Salt water with pepper, Recommend, Water, Recommend, Water, Lemon, Salt water double");
+            hall.Customers.Find(c => c == elon).budget = 400;
+
+            command = new Table(accounting, hall, kitchen, "Table, Den, Bill, Tomas, Ketty, Elon, Salt water with pepper, Recommend, Water, Recommend, Water, Lemon, Salt water double, Recommend, Water");
             command.IsAllowed = true;
 
-            //3(potatoes)+3(potatoes)+25(tuna) = 31; 31 * 0.5 (tax) = 15.5
-            var expectedBudget = 868.88;                //500 + 216(price) - 108(tax) + 17.28(tip) + 210(price) - 105(tax) + 16.8(tip) + 210(price) - 105(tax) + 16.8(tip) = 868.88
+            var expectedBudget = 1077.68;               //500 + 216(price) - 108(tax) + 17.28(tip) + 210(price) - 105(tax) + 16.8(tip) + 210(price) - 105(tax) + 16.8(tip) + 360(price) - 180(tax) + 28.8(tip) = 1077.68
             var expectedBudgetOfCustomerDen = 66.72;    //300 - 216(price) - 17.28(tip) = 66.72;            //Salt water with pepper
             var expectedBudgetOfCustomerBill = 73.2;    //300 - 210(price) - 16.8(tip) = 73.2;              //Salt water Vip
             var expectedBudgetOfCustomerTomas = 73.2;   //300 - 210(price) - 16.8(tip) = 73.2;              //Salt water Vip
             var expectedBudgetOfCustomerKetty = 300;    //Allergy
-            var expectedMoneyAmount = 368.88;           //868.88 - 500 = 368.88
+            var expectedBudgetOfCustomerElon = 11.2;    //400 - 360(price) - 28.8(tip) = 11.2;              //Salt water double
+            var expectedMoneyAmount = 577.68;           //1077.68 - 500 = 577.68
             var expectResult = $"success; money amount: {expectedMoneyAmount}; tax:";
 
             command.ExecuteCommand();
@@ -124,22 +128,12 @@ namespace ChikenKItchenDB.CommandsModule
             Assert.AreEqual(expectedBudgetOfCustomerBill, hall.Customers.Find(c => c == bill).budget);
             Assert.AreEqual(expectedBudgetOfCustomerTomas, hall.Customers.Find(c => c == tomas).budget);
             Assert.AreEqual(expectedBudgetOfCustomerKetty, hall.Customers.Find(c => c == ketty).budget);
+            Assert.AreEqual(expectedBudgetOfCustomerElon, hall.Customers.Find(c => c == elon).budget);
         }
 
         [TestMethod]
         public void TestTableRecommendAndPooledOnWithWantSuccess()
         {
-            //Dictionary<Ingredient, int> ingredientsPrice = new Dictionary<Ingredient, int>();
-            //ingredientsPrice.Add(potatoes, 3);
-            //ingredientsPrice.Add(tuna, 25);
-
-            //4 => 0.04 => GetWanted()          | want 3 ingredients
-            //1 => GetRandomIngredient()
-            //0 => GetRandomIngredient()
-            //1 => GetRandomIngredient()
-            //0 => IsTip()
-            //80 => 0.8 => GetTipPercent()
-
             //33 => 0.33 =>  GetWanted()        | want 1 ingredients
             //1 => GetRandomIngredient()
             //0 => IsTip()
@@ -151,22 +145,29 @@ namespace ChikenKItchenDB.CommandsModule
             //0, IsTip()
             //80 => 0.8 => GetTipPercent()
 
-            var rnd = new ReproducerRnd(new int[] { 4, 1, 0, 1, 0, 80, 33, 1, 0, 80, 11, 1, 0, 0, 80 });
+            //33 => 0.33 =>  GetWanted()        | want 1 ingredients
+            //1 => GetRandomIngredient()
+            //0 => IsTip()
+            //80 => 0.8 => GetTipPercent()
+
+            //33 => 0.33 =>  GetWanted()        | want 1 ingredients
+            //1 => GetRandomIngredient()
+            //0 => IsTip()
+            //80 => 0.8 => GetTipPercent()
+
+            var rnd = new ReproducerRnd(new int[] {33, 1, 0, 80, 11, 1, 0, 0, 80, 33, 1, 0, 80, 33, 1, 0, 80 });
 
             accounting = new Accounting(500, 0.5, 0, 0, 0, 0.4, 0, ingredientsPrice, rnd);
 
-            //Tomas has not enough money
-            hall.Customers.Find(c => c == tomas).budget = 400;
+            hall.Customers.Find(c => c == den).budget = 100;
+            hall.Customers.Find(c => c == bill).budget = 200;
+            hall.Customers.Find(c => c == tomas).budget = 300;
+            hall.Customers.Find(c => c == ketty).budget = 50;
+            hall.Customers.Find(c => c == elon).budget = 450;
 
-            hall.Customers.Find(c => c == den).budget = 150;
-            hall.Customers.Find(c => c == bill).budget = 600;
-            hall.Customers.Find(c => c == ketty).budget = 40;
-
-            command = new Table(accounting, hall, kitchen, "Table, Pooled, Den, Bill, Tomas, Ketty, Salt water with pepper, Recommend, Water, Recommend, Water, Lemon, Salt water double");
+            command = new Table(accounting, hall, kitchen, "Table, Pooled, Den, Bill, Tomas, Ketty, Elon, Salt water with pepper, Recommend, Water, Recommend, Water, Lemon, Salt water double, Recommend, Water");
             command.IsAllowed = true;
 
-            //3(potatoes)+3(potatoes)+25(tuna) = 31; 31 * 0.5 (tax) = 15.5
-            //93 * 0.4 = 37.2 - tip
             var expectedBudget = 685.38;                    //500 + 15.5 * 3 + 0(allergy) + 79.36(tip) + 19.84(tip) + 39.68(tip) = 685.38
             var expectedBudgetOfCustomerDen = 131.39;       //300 - 36.5(pooled) = 263.5    |   236.5 + 13.5 = 277  | 277    - 79.36(tip) = 197.64  | 263.5 / 277 * 138.12 = 131.39
             var expectedBudgetOfCustomerBill = 6.73;        //50  - 36.5(pooled) = 13.5     |                       | 197.64 - 19.84(tip) = 177.8   | 13.5  / 277 * 138.12 = 6.73
