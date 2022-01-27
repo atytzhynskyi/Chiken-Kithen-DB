@@ -536,20 +536,40 @@ namespace CommandsModule
             //customersWithoutAllergy.ForEach(c => budgetPoolNeeded += accounting.CalculateFoodMenuPrice(kitchen.Storage.Recipes, c.Order));
 
             double poolBudgetCustomers = 0;
-            var customersWithoutAllergy = _Customers.Where(c => !c.isAllergic(kitchen.Storage.Recipes, c.Order).Item1).ToList();
+            var customersWithoutAllergy = _Customers.Where(c => c.Order.Name == "Recommend" || !c.isAllergic(kitchen.Storage.Recipes, c.Order).Item1).ToList();
             customersWithoutAllergy.ForEach(c => poolBudgetCustomers += c.budget);
 
-            List<List<Dictionary<Customer, Food>>> allProbableRecipeFoods = GetAllProbableRecipeFoods();
+            List<List<Dictionary<Customer, Food>>> allProbableRecipeFoods = GetAllProbableCombinationRecipeFoods();
 
 
+            Dictionary<int, double> combinationRecipeFoodsPrice = new Dictionary<int, double>();
 
+            for (int i = 0; i < allProbableRecipeFoods.Count; i++)
+            {
+                var combinationRecipeFoods = allProbableRecipeFoods[i];
+
+                double recipeFoodsPrice = 0;
+
+                //    combinationRecipeFoods.ForEach(r => recipeFoodsPrice += accounting.CalculateFoodMenuPrice(
+                //kitchen.Storage.Recipes, r.ToList()[0].Value));
+
+                foreach (var item in allProbableRecipeFoods[i])
+                {
+                    var fff = item.ToList();
+                    recipeFoodsPrice += accounting.CalculateFoodMenuPrice(
+                        kitchen.Storage.Recipes, fff[0].Value);
+                }
+
+                combinationRecipeFoodsPrice.Add(i, recipeFoodsPrice);
+
+
+            }
 
             var a = 123;
         }
 
-        private List<List<Dictionary<Customer, Food>>> GetAllProbableRecipeFoods()
+        private List<List<Dictionary<Customer, Food>>> GetAllProbableCombinationRecipeFoods()
         {
-            //_foodsRecommendedForCustomers
             List<List<Dictionary<Customer, Food>>> allProbableRecipeFoods = new List<List<Dictionary<Customer, Food>>>();
 
             Dictionary<Customer, Food> ProbableRecipeFoods = new Dictionary<Customer, Food>();
@@ -558,20 +578,21 @@ namespace CommandsModule
             {
                 var item = _foodsRecommendedForCustomers.ElementAt(i);
 
-                allProbableRecipeFoods = GetAllProbableRecipeFoods111(item.Key, item.Value, allProbableRecipeFoods);
+                if (item.Key.Order.Name == "Recommend" || !item.Key.isAllergic(kitchen.Storage.Recipes, item.Key.Order).Item1)
+                {
+                    allProbableRecipeFoods = AddCombinationRecipeFoods(item.Key, item.Value, allProbableRecipeFoods);
+                }
+
             }
 
-            
-
-
-
+            return allProbableRecipeFoods;
         }
 
-        private List<List<Dictionary<Customer, Food>>> GetAllProbableRecipeFoods111(Customer customer, List<Food> recipeFoods, List<List<Dictionary<Customer, Food>>> allProbableRecipeFoods)
+        private List<List<Dictionary<Customer, Food>>> AddCombinationRecipeFoods(Customer customer, List<Food> recipeFoods, List<List<Dictionary<Customer, Food>>> allProbableRecipeFoods)
         {
             List<List<Dictionary<Customer, Food>>> probableRecipeFoodsNew = new List<List<Dictionary<Customer, Food>>>();
 
-            if (allProbableRecipeFoods.Count() != 0)
+            if (allProbableRecipeFoods.Count() == 0)
             {
                 foreach (var recipeFood in recipeFoods)
                 {
@@ -588,14 +609,15 @@ namespace CommandsModule
                 foreach (var recipeFood in recipeFoods)
                 {
                     Dictionary<Customer, Food> foodsRecommended = new Dictionary<Customer, Food>();
-                    List<Dictionary<Customer, Food>> listFoodsRecommended = new List<Dictionary<Customer, Food>>();
 
                     foodsRecommended.Add(customer, recipeFood);
-                    listFoodsRecommended.Add(foodsRecommended);
 
                     allProbableRecipeFoods.ForEach(r =>
                     {
-                        probableRecipeFoodsNew.Add(r);
+                        List<Dictionary<Customer, Food>> listFoodsRecommended = new List<Dictionary<Customer, Food>>();
+                        listFoodsRecommended.Add(foodsRecommended);
+                        listFoodsRecommended.AddRange(r);
+
                         probableRecipeFoodsNew.Add(listFoodsRecommended);
                     });
 
