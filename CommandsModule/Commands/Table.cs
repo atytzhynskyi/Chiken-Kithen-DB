@@ -477,7 +477,7 @@ namespace CommandsModule
 
             foreach (var customer in _Customers)
             {
-                if (!customer.isAllergic(kitchen.Storage.Recipes, customer.Order).Item1)
+                if (customer.isAllergic(kitchen.Storage.Recipes, customer.Order).Item1)
                 {
                     continue;
                 }
@@ -529,43 +529,55 @@ namespace CommandsModule
 
         public void MakeOptimizationRecommendedRecipeFoods()
         {
-            //_foodsRecommendedForCustomers
-
-            //double budgetPoolNeeded = 0;
-            //var customersWithoutAllergy = _Customers.Where(c => !c.isAllergic(kitchen.Storage.Recipes, c.Order).Item1).ToList();
-            //customersWithoutAllergy.ForEach(c => budgetPoolNeeded += accounting.CalculateFoodMenuPrice(kitchen.Storage.Recipes, c.Order));
-
             double poolBudgetCustomers = 0;
             var customersWithoutAllergy = _Customers.Where(c => c.Order.Name == "Recommend" || !c.isAllergic(kitchen.Storage.Recipes, c.Order).Item1).ToList();
             customersWithoutAllergy.ForEach(c => poolBudgetCustomers += c.budget);
 
-            List<List<Dictionary<Customer, Food>>> allProbableRecipeFoods = GetAllProbableCombinationRecipeFoods();
-
+            List<List<Dictionary<Customer, Food>>> allProbableCombinationRecipeFoods = GetAllProbableCombinationRecipeFoods();
 
             Dictionary<int, double> combinationRecipeFoodsPrice = new Dictionary<int, double>();
 
-            for (int i = 0; i < allProbableRecipeFoods.Count; i++)
+            for (int i = 0; i < allProbableCombinationRecipeFoods.Count; i++)
             {
-                var combinationRecipeFoods = allProbableRecipeFoods[i];
-
                 double recipeFoodsPrice = 0;
 
-                //    combinationRecipeFoods.ForEach(r => recipeFoodsPrice += accounting.CalculateFoodMenuPrice(
-                //kitchen.Storage.Recipes, r.ToList()[0].Value));
-
-                foreach (var item in allProbableRecipeFoods[i])
-                {
-                    var fff = item.ToList();
-                    recipeFoodsPrice += accounting.CalculateFoodMenuPrice(
-                        kitchen.Storage.Recipes, fff[0].Value);
-                }
+                allProbableCombinationRecipeFoods[i].ForEach(r => recipeFoodsPrice += accounting.CalculateFoodMenuPrice(
+                    kitchen.Storage.Recipes, r.ToList()[0].Value));
 
                 combinationRecipeFoodsPrice.Add(i, recipeFoodsPrice);
-
-
             }
 
-            var a = 123;
+            while (combinationRecipeFoodsPrice.Count() > 0)
+            {
+                var theExapansiveCombination = combinationRecipeFoodsPrice.FirstOrDefault(p => p.Value == combinationRecipeFoodsPrice.Values.Max());
+                var idxCombination = theExapansiveCombination.Key;
+                var priceCombination = theExapansiveCombination.Value;
+
+                if (priceCombination > poolBudgetCustomers)
+                {
+                    combinationRecipeFoodsPrice.Remove(idxCombination);
+                    continue;
+                }
+
+                allProbableCombinationRecipeFoods[idxCombination].ForEach(r =>
+                {
+                    var res = r.ToList();
+                    res.ForEach(t =>
+                    {
+                        t.Key.Order = t.Value;
+                    });
+
+                });
+
+                if (!IsEnoughIngredients())
+                {
+                    combinationRecipeFoodsPrice.Remove(idxCombination);
+                    continue;
+                }
+
+                break;
+            }
+
         }
 
         private List<List<Dictionary<Customer, Food>>> GetAllProbableCombinationRecipeFoods()
@@ -582,7 +594,6 @@ namespace CommandsModule
                 {
                     allProbableRecipeFoods = AddCombinationRecipeFoods(item.Key, item.Value, allProbableRecipeFoods);
                 }
-
             }
 
             return allProbableRecipeFoods;

@@ -111,13 +111,13 @@ namespace ChikenKItchenDB.CommandsModule
             command = new Table(accounting, hall, kitchen, "Table, Den, Bill, Tomas, Ketty, Elon, Salt water with pepper, Recommend, Water, Recommend, Water, Lemon, Salt water double, Recommend, Water");
             command.IsAllowed = true;
 
-            var expectedBudget = 1077.68;               //500 + 216(price) - 108(tax) + 17.28(tip) + 210(price) - 105(tax) + 16.8(tip) + 210(price) - 105(tax) + 16.8(tip) + 360(price) - 180(tax) + 28.8(tip) = 1077.68
+            var expectedBudget = 1114.88;               //500 + 216(price) - 108(tax) + 17.28(tip) + 282(price) - 141(tax) + 18(tip) + 210(price) - 105(tax) + 16.8(tip) + 360(price) - 180(tax) + 28.8(tip) = 1114.88
             var expectedBudgetOfCustomerDen = 66.72;    //300 - 216(price) - 17.28(tip) = 66.72;            //Salt water with pepper
-            var expectedBudgetOfCustomerBill = 73.2;    //300 - 210(price) - 16.8(tip) = 73.2;              //Salt water Vip
+            var expectedBudgetOfCustomerBill = 0;       //300 - 282(price) - 18(tip) = 0;                   //Salt water premium
             var expectedBudgetOfCustomerTomas = 73.2;   //300 - 210(price) - 16.8(tip) = 73.2;              //Salt water Vip
             var expectedBudgetOfCustomerKetty = 300;    //Allergy
             var expectedBudgetOfCustomerElon = 11.2;    //400 - 360(price) - 28.8(tip) = 11.2;              //Salt water double
-            var expectedMoneyAmount = 577.68;           //1077.68 - 500 = 577.68
+            var expectedMoneyAmount = 614.88;           //1114.88 - 500 = 614.88
             var expectResult = $"success; money amount: {expectedMoneyAmount}; tax:";
 
             command.ExecuteCommand();
@@ -157,23 +157,27 @@ namespace ChikenKItchenDB.CommandsModule
 
             var rnd = new ReproducerRnd(new int[] {33, 1, 0, 80, 11, 1, 0, 0, 80, 33, 1, 0, 80, 33, 1, 0, 80 });
 
-            accounting = new Accounting(500, 0.5, 0, 0, 0, 0.4, 0, ingredientsPrice, rnd);
+            accounting = new Accounting(500, 0.5, 0.2, 0, 0.1, 0.1, 0, ingredientsPrice, rnd);
 
             hall.Customers.Find(c => c == den).budget = 100;
             hall.Customers.Find(c => c == bill).budget = 200;
             hall.Customers.Find(c => c == tomas).budget = 300;
-            hall.Customers.Find(c => c == ketty).budget = 50;
+            hall.Customers.Find(c => c == ketty).budget = 75;
             hall.Customers.Find(c => c == elon).budget = 450;
 
+            storage.IngredientsAmount[lemon] = 1;
+
+            //command = new Table(accounting, hall, kitchen, "Table, Pooled, Den, Elon, Tomas, Ketty, Bill, Salt water with pepper, Recommend, Water, Recommend, Water, Lemon, Salt water double, Recommend, Water");
             command = new Table(accounting, hall, kitchen, "Table, Pooled, Den, Bill, Tomas, Ketty, Elon, Salt water with pepper, Recommend, Water, Recommend, Water, Lemon, Salt water double, Recommend, Water");
             command.IsAllowed = true;
 
-            var expectedBudget = 685.38;                    //500 + 15.5 * 3 + 0(allergy) + 79.36(tip) + 19.84(tip) + 39.68(tip) = 685.38
-            var expectedBudgetOfCustomerDen = 131.39;       //300 - 36.5(pooled) = 263.5    |   236.5 + 13.5 = 277  | 277    - 79.36(tip) = 197.64  | 263.5 / 277 * 138.12 = 131.39
-            var expectedBudgetOfCustomerBill = 6.73;        //50  - 36.5(pooled) = 13.5     |                       | 197.64 - 19.84(tip) = 177.8   | 13.5  / 277 * 138.12 = 6.73
-            var expectedBudgetOfCustomerTomas = 0;          //20  + 11(pooled)   = 0        |                       | 177.8  - 39.68(tip) = 138.12  |
-            var expectedBudgetOfCustomerKetty = 40;         //40
-            var expectedMoneyAmount = 185.38;                 //685.38 - 500 = 185.38;
+            var expectedBudget = 1073;                  //500 + 15.5 * 3 + 0(allergy) + 79.36(tip) + 19.84(tip) + 39.68(tip) = 685.38
+            var expectedBudgetOfCustomerDen = 0;        //100 - 36.5(pooled) = 263.5    |   236.5 + 13.5 = 277  | 277    - 79.36(tip) = 197.64  | 263.5 / 277 * 138.12 = 131.39
+            var expectedBudgetOfCustomerBill = 0;       //200  - 36.5(pooled) = 13.5     |                       | 197.64 - 19.84(tip) = 177.8   | 13.5  / 277 * 138.12 = 6.73
+            var expectedBudgetOfCustomerTomas = 0;      //300  + 11(pooled)   = 0        |                       | 177.8  - 39.68(tip) = 138.12  |
+            var expectedBudgetOfCustomerKetty = 75;     //75
+            var expectedBudgetOfCustomerElon = 50;      //450 - 360(price) - 28.8(tip) = 11.2;              //Salt water double
+            var expectedMoneyAmount = 573;              //1073 - 500 = 573;
             var expectResult = $"success; money amount: {expectedMoneyAmount}; tax:";
 
             command.ExecuteCommand();
