@@ -101,11 +101,13 @@ namespace CommandsModule
             var wanted = accounting.GetWanted(Customer.Order);   //it's coefficient for a tip
             var customerBudgetOld = Customer.budget;
 
-            var tip = accounting.IsTip() || wanted > 1 ? accounting.GetTip(price) * wanted : 0;
+            var isTip = accounting.IsTip();
+
+            var tip = isTip || wanted > 1 ? accounting.GetTip(price) * wanted : 0;
 
 
             hall.GetPaid(accounting, kitchen.Storage.Recipes, Customer, tip);
-            tip = price + tip < customerBudgetOld ? tip : customerBudgetOld - price;
+            tip = price + tip < customerBudgetOld ? tip : Math.Round(customerBudgetOld - price, 2);
             var tax = accounting.CalculateTransactionTax(price);
 
             Result = $"{Customer.Name}, {Math.Round(Customer.budget + price + tip, 2)}, {Customer.Order.Name}, {price} -> success; money amount: {Math.Round(price - tax + tip, 2)}; tax: {tax}; tip {tip}";

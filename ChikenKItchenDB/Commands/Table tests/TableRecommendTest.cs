@@ -89,7 +89,7 @@ namespace ChikenKItchenDB.CommandsModule
 
             kitchen = new Kitchen(storage);
 
-            
+
             bill = new Customer("Bill", pepper);
             den = new Customer("Den");
             tomas = new Customer("Tomas", lime);
@@ -134,28 +134,25 @@ namespace ChikenKItchenDB.CommandsModule
         [TestMethod]
         public void TestTableRecommendAndPooledOnWithWantSuccess()
         {
+            //55 => 0.55 =>  GetWanted()        | no want // standart tip
+            //0 => IsTip()                      | true
+            //80 => 0.8 => GetTipPercent()
+
+            //55 => 0.55 =>  GetWanted()        | no want
+            //1, IsTip()                        | false
+
             //33 => 0.33 =>  GetWanted()        | want 1 ingredients
-            //1 => GetRandomIngredient()
+            //0 => GetRandomIngredient()
             //0 => IsTip()
             //80 => 0.8 => GetTipPercent()
 
             //11 => 0.11 =>  GetWanted()        | want 2 ingredients
-            //1, GetRandomIngredient()
-            //0, GetRandomIngredient()
-            //0, IsTip()
-            //80 => 0.8 => GetTipPercent()
-
-            //33 => 0.33 =>  GetWanted()        | want 1 ingredients
-            //1 => GetRandomIngredient()
+            //2 => GetRandomIngredient()
+            //3 => GetRandomIngredient()
             //0 => IsTip()
             //80 => 0.8 => GetTipPercent()
 
-            //33 => 0.33 =>  GetWanted()        | want 1 ingredients
-            //1 => GetRandomIngredient()
-            //0 => IsTip()
-            //80 => 0.8 => GetTipPercent()
-
-            var rnd = new ReproducerRnd(new int[] {33, 1, 0, 80, 11, 1, 0, 0, 80, 33, 1, 0, 80, 33, 1, 0, 80 });
+            var rnd = new ReproducerRnd(new int[] { 55, 0, 80, 55, 1, 33, 0, 0, 80, 11, 2, 3, 0, 80 });
 
             accounting = new Accounting(500, 0.5, 0.2, 0, 0.1, 0.1, 0, ingredientsPrice, rnd);
 
@@ -167,17 +164,16 @@ namespace ChikenKItchenDB.CommandsModule
 
             storage.IngredientsAmount[lemon] = 1;
 
-            //command = new Table(accounting, hall, kitchen, "Table, Pooled, Den, Elon, Tomas, Ketty, Bill, Salt water with pepper, Recommend, Water, Recommend, Water, Lemon, Salt water double, Recommend, Water");
             command = new Table(accounting, hall, kitchen, "Table, Pooled, Den, Bill, Tomas, Ketty, Elon, Salt water with pepper, Recommend, Water, Recommend, Water, Lemon, Salt water double, Recommend, Water");
             command.IsAllowed = true;
 
-            var expectedBudget = 1073;                  //500 + 15.5 * 3 + 0(allergy) + 79.36(tip) + 19.84(tip) + 39.68(tip) = 685.38
-            var expectedBudgetOfCustomerDen = 0;        //100 - 36.5(pooled) = 263.5    |   236.5 + 13.5 = 277  | 277    - 79.36(tip) = 197.64  | 263.5 / 277 * 138.12 = 131.39
-            var expectedBudgetOfCustomerBill = 0;       //200  - 36.5(pooled) = 13.5     |                       | 197.64 - 19.84(tip) = 177.8   | 13.5  / 277 * 138.12 = 6.73
-            var expectedBudgetOfCustomerTomas = 0;      //300  + 11(pooled)   = 0        |                       | 177.8  - 39.68(tip) = 138.12  |
+            var expectedBudget = 1067;                  //500 + 216(price) - 108(tax) + 17.28(tip) + 360(price) - 180(tax) + 0(tip) + 210(price) - 105(tax) + 33.6(tip) + 180(price) - 90(tax) + 33.12(tip)
+            var expectedBudgetOfCustomerDen = 0;        //100   | Salt water with pepper(216 price)     | 100 + 116(pooled) = 0     | 84 - 17.28 = 66.72            | 263.5 / 277 * 138.12 = 131.39
+            var expectedBudgetOfCustomerBill = 0;       //200   | Salt water double(360 price)          | 200 + 160(pooled) = 0     | 66.72 - 0(tip) = 66.72        |
+            var expectedBudgetOfCustomerTomas = 0;      //300   | Salt water vip(210 price)             | 300 - 90(pooled)  = 0     | 66.72 - 33.6(tip) = 33.12     |
             var expectedBudgetOfCustomerKetty = 75;     //75
-            var expectedBudgetOfCustomerElon = 50;      //450 - 360(price) - 28.8(tip) = 11.2;              //Salt water double
-            var expectedMoneyAmount = 573;              //1073 - 500 = 573;
+            var expectedBudgetOfCustomerElon = 0;       //450   | Salt water(180 price)                 | 450 - 186(price) = 84     |  33.12 - 33.12(tip) = 0       |84  / 84 * 0 = 0
+            var expectedMoneyAmount = 567;              //1082 - 500 = 582;
             var expectResult = $"success; money amount: {expectedMoneyAmount}; tax:";
 
             command.ExecuteCommand();
@@ -188,6 +184,7 @@ namespace ChikenKItchenDB.CommandsModule
             Assert.AreEqual(expectedBudgetOfCustomerBill, hall.Customers.Find(c => c == bill).budget);
             Assert.AreEqual(expectedBudgetOfCustomerTomas, hall.Customers.Find(c => c == tomas).budget);
             Assert.AreEqual(expectedBudgetOfCustomerKetty, hall.Customers.Find(c => c == ketty).budget);
+            Assert.AreEqual(expectedBudgetOfCustomerElon, hall.Customers.Find(c => c == elon).budget);
         }
 
     }

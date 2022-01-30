@@ -79,10 +79,13 @@ namespace CommandsModule
 
                 if (_isPooled)
                 {
-                    MakeOptimizationRecommendedRecipeFoods();
+                    SetOptimizationRecommendedRecipeFoodsForCustomers();
+                }
+                else
+                {
+                    _Customers.ForEach(c => c.Order = GetTheMostExpensiveRecipeFoods(_foodsRecommendedForCustomers[c]));
                 }
 
-                _Customers.ForEach(c => c.Order = GetTheMostExpensiveRecipeFoods(_foodsRecommendedForCustomers[c]));
             }
 
             SetResultIfIssues();
@@ -232,6 +235,11 @@ namespace CommandsModule
             {
                 customersWithMoney = customersWithoutAllergy.Where(c => c.budget > 0).ToList();
 
+                if (customersWithMoney.Count == 0)
+                {
+                    break;
+                }
+
                 //find the purest customers
                 Customer pureCustomer = new Customer();
                 double minBudget = int.MaxValue;
@@ -260,7 +268,7 @@ namespace CommandsModule
             var customersWithoutAllergy = _Customers.Where(c => !c.isAllergic(kitchen.Storage.Recipes, c.Order).Item1).ToList();
             customersWithoutAllergy.ForEach(c => budgetPoolNeeded += accounting.CalculateFoodMenuPrice(kitchen.Storage.Recipes, c.Order));
 
-            var maxTipsAmount = budgetPoolNeeded * accounting.maxTipPercent * 8;
+            var maxTipsAmount = Math.Round(budgetPoolNeeded * accounting.maxTipPercent * 8, 2);
 
             //get customers with money and have not allergy
             var customersWithMoney = customersWithoutAllergy.Where(c => c.budget > 0).ToList();
@@ -527,7 +535,7 @@ namespace CommandsModule
             return recipeFoodsPrice.FirstOrDefault(p => p.Value == recipeFoodsPrice.Values.Max()).Key;
         }
 
-        public void MakeOptimizationRecommendedRecipeFoods()
+        public void SetOptimizationRecommendedRecipeFoodsForCustomers()
         {
             double poolBudgetCustomers = 0;
             var customersWithoutAllergy = _Customers.Where(c => c.Order.Name == "Recommend" || !c.isAllergic(kitchen.Storage.Recipes, c.Order).Item1).ToList();
