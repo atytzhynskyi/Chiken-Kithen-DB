@@ -2,6 +2,7 @@
 using BaseClasses;
 using CommandsModule;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Randomizer;
 using System;
 using System.Collections.Generic;
 
@@ -12,31 +13,35 @@ namespace ChikenKItchenDB.CommandsModule
     {
         Ingredient salt = new Ingredient("Salt");
         Ingredient water = new Ingredient("Water");
+
         Food saltWater;
+
         List<Ingredient> ingredients;
-        List<Food> Recipes;
+        List<Food> recipes;
+
         Storage storage;
         Accounting accounting;
         Kitchen kitchen;
+
         Customer bill;
         Customer den;
         Hall hall;
 
         Buy command;
+
         [TestInitialize]
         public void SetupContext()
         {
-            Randomizer.Randomizer.Random = new Random(0);
             Dictionary<Ingredient, int> ingredientsPrice = new Dictionary<Ingredient, int>();
             ingredientsPrice.Add(salt, 10);
             ingredientsPrice.Add(water, 10);
 
-            accounting = new Accounting(500, 0.5, 0, 0, 0, 0, 0, ingredientsPrice);
+            accounting = new Accounting(500, 0.5, 0, 0, 0, 0, 0, ingredientsPrice, new Rnd(0));
 
             ingredients = new List<Ingredient> { salt, water };
             saltWater = new Food("Salt water", ingredients.ToArray());
-            Recipes = new List<Food> { saltWater };
-            storage = new Storage(Recipes, ingredients);
+            recipes = new List<Food> { saltWater };
+            storage = new Storage(recipes, ingredients);
 
             storage.IngredientsAmount[salt] = 10;
             storage.IngredientsAmount[water] = 10;
@@ -45,7 +50,7 @@ namespace ChikenKItchenDB.CommandsModule
 
             bill = new Customer("Bill", water);
             den = new Customer("Den", new Ingredient("Chicken"));
-            hall = new Hall(new List<Customer> { bill, den }, Recipes);
+            hall = new Hall(new List<Customer> { bill, den }, recipes);
             hall.Customers.ForEach(c => c.budget = 100);
         }
         [TestMethod]
@@ -61,7 +66,7 @@ namespace ChikenKItchenDB.CommandsModule
         {
             command = new Buy(accounting, hall, kitchen, "Buy, Den, Salt water");
             command.IsAllowed = true;
-            double price = Math.Round(accounting.CalculateFoodMenuPrice(Recipes, saltWater), 2);
+            double price = Math.Round(accounting.CalculateFoodMenuPrice(recipes, saltWater), 2);
             double tax = Math.Round(accounting.CalculateTransactionTax(price), 2);
 
             var amountOfTip = 0;
@@ -94,7 +99,7 @@ namespace ChikenKItchenDB.CommandsModule
             command.IsAllowed = true;
             command.AllergicConfig = "keep";
 
-            double expectBudget = Math.Round(accounting.Budget - (accounting.CalculateFoodCostPrice(Recipes, saltWater) / 25), 2);
+            double expectBudget = Math.Round(accounting.Budget - (accounting.CalculateFoodCostPrice(recipes, saltWater) / 25), 2);
 
             command.ExecuteCommand();
 
@@ -112,7 +117,7 @@ namespace ChikenKItchenDB.CommandsModule
             command.IsAllowed = true;
             command.AllergicConfig = "100";
 
-            double expectBudget = Math.Round(accounting.Budget - (accounting.CalculateFoodCostPrice(Recipes, saltWater) / 25), 2);
+            double expectBudget = Math.Round(accounting.Budget - (accounting.CalculateFoodCostPrice(recipes, saltWater) / 25), 2);
 
             command.ExecuteCommand();
 
@@ -191,7 +196,7 @@ namespace ChikenKItchenDB.CommandsModule
             command.IsAllowed = true;
             storage.FoodAmount[saltWater] = 2;
 
-            double price = Math.Round(accounting.CalculateFoodMenuPrice(Recipes, saltWater), 2);
+            double price = Math.Round(accounting.CalculateFoodMenuPrice(recipes, saltWater), 2);
             double tax = Math.Round(accounting.CalculateTransactionTax(price), 2);
 
             var amountOfTip = 0;

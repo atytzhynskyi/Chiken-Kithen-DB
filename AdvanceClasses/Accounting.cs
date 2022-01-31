@@ -1,4 +1,5 @@
 ﻿using BaseClasses;
+using Randomizer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,8 @@ namespace AdvanceClasses
         public double CollectedTip { get; private set; } = 0;
         public Dictionary<Ingredient, int> IngredientsPrice { get; set; } = new Dictionary<Ingredient, int>();
 
+        public IRnd Randomizer { get; private set; }
+
         public readonly double transactionTax;
         public readonly double dailyTax;
         public readonly double tipTax;
@@ -19,10 +22,18 @@ namespace AdvanceClasses
 
         public readonly double marginProfit;
         public readonly double maxTipPercent;
-        
+
         private double _startBudget;
 
-        public Accounting(double _Budget, double _transactionTax, double _marginProfit, double _dailyTax, double _tipTax, double _maxTipPercent, double _wasteTax, Dictionary<Ingredient, int> IngredientsPrice)
+        public Accounting(double _Budget,
+            double _transactionTax,
+            double _marginProfit,
+            double _dailyTax,
+            double _tipTax,
+            double _maxTipPercent,
+            double _wasteTax,
+            Dictionary<Ingredient, int> IngredientsPrice,
+            IRnd rnd)
         {
             Budget = _Budget;
             _startBudget = _Budget;
@@ -33,17 +44,18 @@ namespace AdvanceClasses
             tipTax = _tipTax;
             wasteTax = _wasteTax;
             this.IngredientsPrice = IngredientsPrice;
+            Randomizer = rnd;
         }
 
         public double CalculateFoodCostPrice(List<Food> Recipes, Food food)
         {
             double price = 0;
 
-            if (Recipes.Any(r=>r.Name == food.Name))
+            if (Recipes.Any(r => r.Name == food.Name))
             {
                 food = Recipes.Find(r => r.Name == food.Name);
             }
-            
+
             foreach (Food foodRecipe in food.RecipeFoods)
             {
                 price += CalculateFoodCostPrice(Recipes, foodRecipe);
@@ -54,7 +66,7 @@ namespace AdvanceClasses
                 price += IngredientsPrice[IngredientsPrice.Keys.Where(i => i.Name == ingredient.Name).First()];
             }
 
-            return Math.Round(price,2);
+            return Math.Round(price, 2);
         }
 
 
@@ -64,20 +76,20 @@ namespace AdvanceClasses
         }
         public void PayDayTax(Kitchen kitchen)
         {
-            Budget = Math.Round(Budget - CalculateEndDayTax(kitchen),2);
+            Budget = Math.Round(Budget - CalculateEndDayTax(kitchen), 2);
             _startBudget = Budget;
         }
 
         public double CalculateWasteTax(Kitchen kitchen)
         {
             var totalPrice = 0;
-            
-            foreach(var ingredient in kitchen.Storage.IngredientsTrashAmount.Keys)
+
+            foreach (var ingredient in kitchen.Storage.IngredientsTrashAmount.Keys)
             {
                 totalPrice += kitchen.Storage.IngredientsTrashAmount[ingredient] * IngredientsPrice[ingredient];
             }
 
-            return (double)totalPrice*wasteTax;
+            return (double)totalPrice * wasteTax;
         }
         public double CalculateProfitTax()
         {
@@ -103,7 +115,7 @@ namespace AdvanceClasses
 
             double dailyTax = CalculateProfitTax() + CalculateTipTax() + CalculateWasteTax(kitchen);
 
-            if(dailyTax <= 0)
+            if (dailyTax <= 0)
             {
                 return 0;
             }
@@ -159,7 +171,7 @@ namespace AdvanceClasses
 
         public bool IsTip()
         {
-            return Randomizer.Randomizer.GetRandomBool();
+            return Randomizer.GetRandomInt() % 2 == 0;
         }
 
         private double GetTipPercent()
@@ -169,12 +181,62 @@ namespace AdvanceClasses
                 return 0;
             }
 
-            return Randomizer.Randomizer.GetRandomDouble() * maxTipPercent;
+            return Randomizer.GetRandomDouble() * maxTipPercent;
+
         }
 
         public double GetTip(double price)
         {
             return Math.Round(price * GetTipPercent(), 2);
+        }
+
+        //it's coefficient for a tip
+        public int GetWanted(Food food)
+        {
+            var want = Randomizer.GetRandomDouble();
+
+            if (want <= 0.05)
+            {
+                return CulculateWanted(3, food);
+            }
+
+            if (want <= 0.15)
+            {
+                return CulculateWanted(2, food);
+            }
+
+            if (want <= 0.5)
+            {
+                return CulculateWanted(1, food);
+            }
+            else
+            {
+                return 1;
+            }
+
+        }
+
+        private int CulculateWanted(int times, Food food)
+        {
+            var coefficient = 1;
+
+            for (int i = 0; i < times; i++)
+            {
+                Ingredient randomIngredient = GetRandomIngredient();
+
+                if (food.HasIngredient(randomIngredient))
+                {
+                    coefficient *= 2;
+                }
+            }
+            return coefficient;
+        }
+
+        private Ingredient GetRandomIngredient()
+        {
+            var idx = Randomizer.GetRandomInt(0, IngredientsPrice.Values.Count());
+            return IngredientsPrice.Keys.ElementAt(idx);
+
         }
     }
 }

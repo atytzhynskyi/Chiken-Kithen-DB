@@ -29,5 +29,22 @@ namespace BaseClasses
             RecipeIngredients.AddRange(_RecipeIngredients);
             RecipeFoods.AddRange(_RecipeFoods);
         }
+
+        public bool HasIngredient(Ingredient ingredient)
+        {
+            var result = RecipeIngredients.Find(i => i == ingredient);
+
+            if (!object.Equals(result, null)) return true;
+
+            foreach (var food in RecipeFoods)
+            {
+                if (food.HasIngredient(ingredient))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using AdvanceClasses;
 using BaseClasses;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CommandsModule
 {
@@ -11,7 +13,7 @@ namespace CommandsModule
         public string CommandType { get; private set; }
         public bool IsAllowed { get; set; }
 
-        public bool TipOff { get; set; } = false;
+        private readonly bool _isRecommend;
 
         public string AllergicConfig { get; set; }
 
@@ -21,6 +23,9 @@ namespace CommandsModule
 
         public Customer Customer = new Customer();
         public Food Food = new Food();
+
+        private List<Ingredient> _ingredientsRecommended { get; set; } = new List<Ingredient>();
+
         public Buy(Accounting Accounting, Hall Hall, Kitchen Kitchen, string _FullCommand)
         {
             accounting = Accounting;
@@ -28,13 +33,47 @@ namespace CommandsModule
             kitchen = Kitchen;
 
             FullCommand = _FullCommand;
-            CommandType = FullCommand.Split(", ")[0];
 
-            Customer = hall.GetCustomer(_FullCommand.Split(", ")[1]);
-            Food = kitchen.Storage.GetRecipe(_FullCommand.Split(", ")[2]);
+            var fullCommandArr = FullCommand.Split(", ");
+            CommandType = fullCommandArr[0];
+
+            Customer = hall.GetCustomer(fullCommandArr[1]);
+
+            if (fullCommandArr.Length > 3)
+            {
+                _isRecommend = fullCommandArr[2] == "Recommend";
+
+                if (_isRecommend)
+                {
+                    for (int i = 3; i < fullCommandArr.Length; i++)
+                    {
+                        _ingredientsRecommended.Add(kitchen.Storage.GetIngredient(fullCommandArr[i]));
+                    }
+                }
+                else
+                {
+                    Food = kitchen.Storage.GetRecipe(_FullCommand.Split(", ")[2]);
+                }
+            }
+            else
+            {
+                Food = kitchen.Storage.GetRecipe(_FullCommand.Split(", ")[2]);
+            }
+
         }
+
         public void ExecuteCommand()
         {
+            if (_isRecommend)
+            {
+                var recommendedRecipeFoods = kitchen.Storage.GetRecommendedRecipeFoods(kitchen.Storage.Recipes, _ingredientsRecommended);
+                recommendedRecipeFoods = kitchen.Storage.GetRecipeFoodsWithoutAllergy(recommendedRecipeFoods, Customer);
+                recommendedRecipeFoods = GetRecipeFoodsCustomerCanAfford(recommendedRecipeFoods, Customer);
+                recommendedRecipeFoods = kitchen.GetRecipeFoodsWithEnoughIngredients(recommendedRecipeFoods);
+
+                Food = GetTheMostExpensiveRecipeFoods(recommendedRecipeFoods);
+            }
+
             SetResultIfIssues();
 
             if (!object.Equals(Result, null)) return;
@@ -58,13 +97,17 @@ namespace CommandsModule
                 return;
             }
 
+            //6.11.1
+            var wanted = accounting.GetWanted(Customer.Order);   //it's coefficient for a tip
             var customerBudgetOld = Customer.budget;
 
-            var tip = !TipOff && accounting.IsTip() ? accounting.GetTip(price) : 0;
+            var isTip = accounting.IsTip();
+
+            var tip = isTip || wanted > 1 ? accounting.GetTip(price) * wanted : 0;
 
 
             hall.GetPaid(accounting, kitchen.Storage.Recipes, Customer, tip);
-            tip = price + tip < customerBudgetOld ? tip : customerBudgetOld - price;
+            tip = price + tip < customerBudgetOld ? tip : Math.Round(customerBudgetOld - price, 2);
             var tax = accounting.CalculateTransactionTax(price);
 
             Result = $"{Customer.Name}, {Math.Round(Customer.budget + price + tip, 2)}, {Customer.Order.Name}, {price} -> success; money amount: {Math.Round(price - tax + tip, 2)}; tax: {tax}; tip {tip}";
@@ -81,7 +124,6 @@ namespace CommandsModule
                 }
                 else AllergicConfig = "waste";
             }
-
 
             string allergicResult;
             switch (AllergicConfig)
@@ -138,6 +180,7 @@ namespace CommandsModule
                 Result = "Customer 404";
                 return;
             }
+
             if (object.Equals(Food, null))
             {
                 Result = "Food 404";
@@ -167,6 +210,38 @@ namespace CommandsModule
                 Result = "Can't order: dont have enough ingredients";
                 return;
             }
+        }
+
+        public List<Food> GetRecipeFoodsCustomerCanAfford(List<Food> listRecipeFoods, Customer customer)
+        {
+            if (listRecipeFoods.Count == 0)
+                return listRecipeFoods;
+
+            List<Food> recommendedRecipeFoods = new List<Food>();
+
+            listRecipeFoods.ForEach(r =>
+            {
+                if (customer.budget >= accounting.CalculateFoodMenuPrice(
+                                kitchen.Storage.Recipes, r))
+                {
+                    recommendedRecipeFoods.Add(r);
+                }
+            });
+
+            return recommendedRecipeFoods;
+        }
+
+        public Food GetTheMostExpensiveRecipeFoods(List<Food> listRecipeFoods)
+        {
+            if (listRecipeFoods.Count == 0)
+                return null;
+
+            Dictionary<Food, double> recipeFoodsPrice = new Dictionary<Food, double>();
+
+            listRecipeFoods.ForEach(r => recipeFoodsPrice.Add(r, accounting.CalculateFoodMenuPrice(
+                            kitchen.Storage.Recipes, r)));
+
+            return recipeFoodsPrice.FirstOrDefault(p => p.Value == recipeFoodsPrice.Values.Max()).Key;
         }
 
     }

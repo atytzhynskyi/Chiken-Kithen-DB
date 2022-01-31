@@ -3,6 +3,7 @@ using BaseClasses;
 using CommandsModule;
 using CommandsModule.Commands;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Randomizer;
 using System;
 using System.Collections.Generic;
 
@@ -27,12 +28,11 @@ namespace ChikenKItchenDB.CommandsModule
         [TestInitialize]
         public void SetupContext()
         {
-            Randomizer.Randomizer.Random = new Random(0);
             Dictionary<Ingredient, int> ingredientsPrice = new Dictionary<Ingredient, int>();
             ingredientsPrice.Add(salt, 10);
             ingredientsPrice.Add(water, 10);
 
-            accounting = new Accounting(500, 0.5, 0, 0.1, 0.1, 0.1, 0.1, ingredientsPrice);
+            accounting = new Accounting(500, 0.5, 0, 0.1, 0.1, 0.1, 0.1, ingredientsPrice, new Rnd(0));
 
             ingredients = new List<Ingredient> { salt, water };
 
@@ -48,7 +48,20 @@ namespace ChikenKItchenDB.CommandsModule
             saltWater = new Food("Salt water", ingredients.ToArray());
             foodsAmount.Add(saltWater, 0);
             Recipes = new List<Food> { saltWater };
-            storage = new Storage(Recipes, ingredients, foodsAmount, ingredientsAmount, ingredientsTrashAmount, new Dictionary<Ingredient, int>(), int.MaxValue, int.MaxValue, int.MaxValue, 0, 0, 0, 0);
+            storage = new Storage(Recipes,
+                ingredients,
+                foodsAmount,
+                ingredientsAmount,
+                ingredientsTrashAmount,
+                new Dictionary<Ingredient, int>(),
+                int.MaxValue,
+                int.MaxValue,
+                int.MaxValue,
+                0,
+                0,
+                0,
+                0,
+                new Rnd(0));
 
 
             kitchen = new Kitchen(storage);

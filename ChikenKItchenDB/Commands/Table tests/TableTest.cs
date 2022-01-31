@@ -2,6 +2,7 @@
 using BaseClasses;
 using CommandsModule;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Randomizer;
 using System;
 using System.Collections.Generic;
 
@@ -12,30 +13,36 @@ namespace ChikenKItchenDB.CommandsModule
     {
         Ingredient potatoes = new Ingredient("Potatoes");
         Ingredient tuna = new Ingredient("Tuna");
+
         Food smashedPotatoes;
         Food fries;
         Food irishFish;
+
         List<Ingredient> ingredients;
         List<Food> recipes;
+
         Storage storage;
         Accounting accounting;
         Kitchen kitchen;
+        Hall hall;
+
         Customer bill;
         Customer den;
         Customer ketty;
         Customer tomas;
-        Hall hall;
+
+        Dictionary<Ingredient, int> ingredientsPrice;
 
         Table command;
+
         [TestInitialize]
         public void SetupContext()
         {
-            Randomizer.Randomizer.Random = new Random(0);
-            Dictionary<Ingredient, int> ingredientsPrice = new Dictionary<Ingredient, int>();
+            ingredientsPrice = new Dictionary<Ingredient, int>();
             ingredientsPrice.Add(potatoes, 3);
             ingredientsPrice.Add(tuna, 25);
 
-            accounting = new Accounting(500, 0.5, 0, 0, 0, 0, 0, ingredientsPrice);
+            accounting = new Accounting(500, 0.5, 0, 0, 0, 0, 0, ingredientsPrice, new Rnd(0));
 
             ingredients = new List<Ingredient> { potatoes, tuna };
 
@@ -78,6 +85,7 @@ namespace ChikenKItchenDB.CommandsModule
         [TestMethod]
         public void TestTableSuccess()
         {
+            //need to use fake raddomi
             command = new Table(accounting, hall, kitchen, "Table, Den, Bill, Tomas, Ketty, Irish Fish, Irish Fish, Irish Fish, Irish Fish");
             command.IsAllowed = true;
 
@@ -101,18 +109,34 @@ namespace ChikenKItchenDB.CommandsModule
         }
 
         [TestMethod]
-        public void TestTablePooledOnAndOneCustomerHasNotEnoughMoneySuccess()
+        public void TestTablePooledOnWithWantSuccess()
         {
-            Dictionary<Ingredient, int> ingredientsPrice = new Dictionary<Ingredient, int>();
-            ingredientsPrice.Add(potatoes, 3);
-            ingredientsPrice.Add(tuna, 25);
+            //4 => 0.04 => GetWanted()          | want 3 ingredients
+            //1 => GetRandomIngredient()
+            //0 => GetRandomIngredient()
+            //1 => GetRandomIngredient()
+            //0 => IsTip()
+            //80 => 0.8 => GetTipPercent()
 
-            accounting = new Accounting(500, 0.5, 0, 0, 0, 0.4, 0, ingredientsPrice);
+            //33 => 0.33 =>  GetWanted()        | want 1 ingredients
+            //1 => GetRandomIngredient()
+            //0 => IsTip()
+            //80 => 0.8 => GetTipPercent()
+
+            //11 => 0.11 =>  GetWanted()        | want 2 ingredients
+            //1, GetRandomIngredient()
+            //0, GetRandomIngredient()
+            //0, IsTip()
+            //80 => 0.8 => GetTipPercent()
+
+            var rnd = new ReproducerRnd(new int[] { 4, 1, 0, 1, 0, 80, 33, 1, 0, 80, 11, 1, 0, 0, 80 });
+
+            accounting = new Accounting(500, 0.5, 0, 0, 0, 0.4, 0, ingredientsPrice, rnd);
 
             //Tomas has not enough money
             hall.Customers.Find(c => c == tomas).budget = 20;
 
-            hall.Customers.Find(c => c == den).budget = 100;
+            hall.Customers.Find(c => c == den).budget = 300;
             hall.Customers.Find(c => c == bill).budget = 50;
             hall.Customers.Find(c => c == ketty).budget = 40;
 
@@ -121,12 +145,12 @@ namespace ChikenKItchenDB.CommandsModule
 
             //3(potatoes)+3(potatoes)+25(tuna) = 31; 31 * 0.5 (tax) = 15.5
             //93 * 0.4 = 37.2 - tip
-            var expectedBudget = 583.7;                     //500 + 15.5 * 3 + 0(allergy) + 37.2(tip)
-            var expectedBudgetOfCustomerDen = 38.15;        //100 - 36.5(pooled) - 25.35(tip)
-            var expectedBudgetOfCustomerBill = 1.65;        //50 - 36.5(pooled) - 11.85(tip)
-            var expectedBudgetOfCustomerTomas = 0;          //20 + 11(pooled) - 31(price)
+            var expectedBudget = 685.38;                    //500 + 15.5 * 3 + 0(allergy) + 79.36(tip) + 19.84(tip) + 39.68(tip) = 685.38
+            var expectedBudgetOfCustomerDen = 131.39;       //300 - 36.5(pooled) = 263.5    |   236.5 + 13.5 = 277  | 277    - 79.36(tip) = 197.64  | 263.5 / 277 * 138.12 = 131.39
+            var expectedBudgetOfCustomerBill = 6.73;        //50  - 36.5(pooled) = 13.5     |                       | 197.64 - 19.84(tip) = 177.8   | 13.5  / 277 * 138.12 = 6.73
+            var expectedBudgetOfCustomerTomas = 0;          //20  + 11(pooled)   = 0        |                       | 177.8  - 39.68(tip) = 138.12  |
             var expectedBudgetOfCustomerKetty = 40;         //40
-            var expectedMoneyAmount = 83.7;                 //500 + 46.5 + 37.2(tips);
+            var expectedMoneyAmount = 185.38;               //685.38 - 500 = 185.38;
             var expectResult = $"success; money amount: {expectedMoneyAmount}; tax:";
 
             command.ExecuteCommand();

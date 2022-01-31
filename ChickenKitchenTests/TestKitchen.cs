@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using BaseClasses;
 using AdvanceClasses;
+using Randomizer;
 
 namespace ChickenKitchenTests
 {
@@ -91,7 +92,8 @@ namespace ChickenKitchenTests
                 0,
                 spoilRate,
                 ingredientVolatility,
-                dishVolatility);
+                dishVolatility,
+                new Rnd(0));
 
             kitchen = new Kitchen(storage);
         }

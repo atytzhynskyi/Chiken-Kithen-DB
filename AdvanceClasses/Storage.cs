@@ -1,4 +1,5 @@
 ﻿using BaseClasses;
+using Randomizer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,9 @@ namespace AdvanceClasses
 
         private readonly int _maxIngredientVolatility;
         private readonly int _maxDishVolatility;
+
+        public IRnd Randomizer { get; private set; }
+
         public Storage(List<Food> _Foods,
             List<Ingredient> _Ingredients,
             Dictionary<Food, int> foodsAmount,
@@ -36,7 +40,8 @@ namespace AdvanceClasses
             int wasteLimit,
             double spoilRate,
             int maxIngredientVolatility,
-            int maxDishVolatility)
+            int maxDishVolatility,
+            IRnd rnd)
         {
             totalMax = _totalMax;
             maxIngredientType = _maxIngredientType;
@@ -54,6 +59,8 @@ namespace AdvanceClasses
 
             _maxIngredientVolatility = maxIngredientVolatility;
             _maxDishVolatility = maxDishVolatility;
+
+            Randomizer = rnd;
         }
 
         public Storage(List<Ingredient> _Ingredients, int _maxIngredientType, int _totalMax)
@@ -258,9 +265,9 @@ namespace AdvanceClasses
                 return 0;
             }
 
-            int volatility = Randomizer.Randomizer.GetRandomInt(maxVolatility);
-            volatility = Randomizer.Randomizer.GetRandomBool() ? volatility : volatility * (-1);
-            
+            int volatility = Randomizer.GetRandomInt(0, maxVolatility + 1);
+            volatility = Randomizer.GetRandomInt() % 2 == 0 ? volatility : volatility * (-1);
+
             if (volatility <= -100)
             {
                 return -100;
@@ -269,6 +276,53 @@ namespace AdvanceClasses
             return volatility;
         }
 
+        public List<Food> GetRecommendedRecipeFoods(List<Food> listRecipeFoods, List<Ingredient> ingredientsRecommended)
+        {
+            ingredientsRecommended.ForEach(i =>
+            {
+
+                listRecipeFoods = GetRecommendedRecipeFoods(listRecipeFoods, i);
+            });
+
+            return listRecipeFoods;
+
+        }
+
+        public List<Food> GetRecommendedRecipeFoods(List<Food> listRecipeFoods, Ingredient ingredientRecommended)
+        {
+            if (listRecipeFoods.Count == 0)
+                return listRecipeFoods;
+
+            List<Food> recommendedRecipeFoods = new List<Food>();
+
+            listRecipeFoods.ForEach(r =>
+            {
+                if (r.HasIngredient(ingredientRecommended))
+                {
+                    recommendedRecipeFoods.Add(r);
+                }
+            });
+
+            return recommendedRecipeFoods;
+        }
+
+        public List<Food> GetRecipeFoodsWithoutAllergy(List<Food> listRecipeFoods, Customer customer)
+        {
+            if (listRecipeFoods.Count == 0)
+                return listRecipeFoods;
+
+            List<Food> recommendedRecipeFoods = new List<Food>();
+
+            listRecipeFoods.ForEach(r =>
+            {
+                if (!customer.isAllergic(listRecipeFoods, r).Item1)
+                {
+                    recommendedRecipeFoods.Add(r);
+                }
+            });
+
+            return recommendedRecipeFoods;
+        }
 
     }
 }
