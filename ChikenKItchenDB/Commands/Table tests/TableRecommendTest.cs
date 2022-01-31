@@ -167,13 +167,13 @@ namespace ChikenKItchenDB.CommandsModule
             command = new Table(accounting, hall, kitchen, "Table, Pooled, Den, Bill, Tomas, Ketty, Elon, Salt water with pepper, Recommend, Water, Recommend, Water, Lemon, Salt water double, Recommend, Water");
             command.IsAllowed = true;
 
-            var expectedBudget = 1067;                  //500 + 216(price) - 108(tax) + 17.28(tip) + 360(price) - 180(tax) + 0(tip) + 210(price) - 105(tax) + 33.6(tip) + 180(price) - 90(tax) + 33.12(tip)
-            var expectedBudgetOfCustomerDen = 0;        //100   | Salt water with pepper(216 price)     | 100 + 116(pooled) = 0     | 84 - 17.28 = 66.72            | 263.5 / 277 * 138.12 = 131.39
+            var expectedBudget = 1067;                  //500 + 216(price) - 108(tax) + 17.28(tip) + 360(price) - 180(tax) + 0(tip) + 210(price) - 105(tax) + 33.6(tip) + 180(price) - 90(tax) + 33.12(tip) = 1067
+            var expectedBudgetOfCustomerDen = 0;        //100   | Salt water with pepper(216 price)     | 100 + 116(pooled) = 0     | 84 - 17.28 = 66.72            |
             var expectedBudgetOfCustomerBill = 0;       //200   | Salt water double(360 price)          | 200 + 160(pooled) = 0     | 66.72 - 0(tip) = 66.72        |
             var expectedBudgetOfCustomerTomas = 0;      //300   | Salt water vip(210 price)             | 300 - 90(pooled)  = 0     | 66.72 - 33.6(tip) = 33.12     |
             var expectedBudgetOfCustomerKetty = 75;     //75
             var expectedBudgetOfCustomerElon = 0;       //450   | Salt water(180 price)                 | 450 - 186(price) = 84     |  33.12 - 33.12(tip) = 0       |84  / 84 * 0 = 0
-            var expectedMoneyAmount = 567;              //1082 - 500 = 582;
+            var expectedMoneyAmount = 567;              //1067 - 500 = 567;
             var expectResult = $"success; money amount: {expectedMoneyAmount}; tax:";
 
             command.ExecuteCommand();
